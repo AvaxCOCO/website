@@ -308,13 +308,25 @@ function initSocialIconEffects() {
     socialIcons.forEach(icon => {
         icon.addEventListener('mouseenter', function() {
             const iconElement = this.querySelector('i');
-            iconElement.classList.add('fa-beat');
+            if (iconElement) {
+                iconElement.classList.add('fa-beat');
+            }
         });
         
         icon.addEventListener('mouseleave', function() {
             const iconElement = this.querySelector('i');
-            iconElement.classList.remove('fa-beat');
+            if (iconElement) {
+                iconElement.classList.remove('fa-beat');
+            }
         });
+        
+        // Add coming soon popup for all social media except X
+        if (!icon.querySelector('.x-icon-small')) {
+            icon.addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('Coming soon! Follow us on X for updates.');
+            });
+        }
     });
     
     // Add hover effects to social links in community section
@@ -322,13 +334,25 @@ function initSocialIconEffects() {
     socialLinks.forEach(link => {
         link.addEventListener('mouseenter', function() {
             const iconElement = this.querySelector('i');
-            iconElement.classList.add('fa-beat');
+            if (iconElement) {
+                iconElement.classList.add('fa-beat');
+            }
         });
         
         link.addEventListener('mouseleave', function() {
             const iconElement = this.querySelector('i');
-            iconElement.classList.remove('fa-beat');
+            if (iconElement) {
+                iconElement.classList.remove('fa-beat');
+            }
         });
+        
+        // Add coming soon popup for all social media except X
+        if (!link.classList.contains('x')) {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('Coming soon! Follow us on X for updates.');
+            });
+        }
     });
 }
 
