@@ -1,0 +1,240 @@
+/* 
+ * $COCO - The Pink Ostrich of AVAX
+ * Responsive Stylesheet
+ */
+
+/* ===== Media Queries ===== */
+
+/* Large Devices (desktops, less than 1200px) */
+@media (max-width: 1199.98px) {
+    .hero-text h1 {
+        font-size: 2.5rem;
+    }
+    
+    .hero-text h2 {
+        font-size: 1.75rem;
+    }
+    
+    .hero-text p {
+        font-size: 1.1rem;
+    }
+    
+    .defi-card {
+        padding: var(--spacing-md);
+    }
+}
+
+/* Medium Devices (tablets, less than 992px) */
+@media (max-width: 991.98px) {
+    .hero-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .hero-text {
+        order: 2;
+    }
+    
+    .hero-image {
+        order: 1;
+        margin-bottom: var(--spacing-xl);
+    }
+    
+    .hero-buttons {
+        justify-content: center;
+    }
+    
+    .hero-coco-img {
+        max-height: 350px;
+    }
+    
+    .defi-content, 
+    .how-to-buy-content, 
+    .community-content, 
+    .presale-content {
+        flex-direction: column;
+    }
+    
+    .defi-card, 
+    .how-to-buy-card, 
+    .community-card, 
+    .presale-info, 
+    .presale-countdown {
+        width: 100%;
+        margin-bottom: var(--spacing-xl);
+    }
+    
+    .step-card {
+        width: 100%;
+        margin-bottom: var(--spacing-lg);
+    }
+    
+    .step-card:nth-child(even) {
+        margin-left: 0;
+    }
+    
+    .step-card:nth-child(odd) {
+        margin-right: 0;
+    }
+    
+    .step-card-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .step-card-image {
+        margin-bottom: var(--spacing-md);
+        margin-right: 0;
+    }
+    
+    .step-card:nth-child(even) .step-card-content {
+        flex-direction: column;
+    }
+    
+    .step-card:nth-child(even) .step-card-image {
+        margin-left: 0;
+        margin-bottom: var(--spacing-md);
+    }
+    
+    .footer-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .footer-logo, .footer-links, .footer-social {
+        margin-bottom: var(--spacing-xl);
+    }
+}
+
+/* Small Devices (landscape phones, less than 768px) */
+@media (max-width: 767.98px) {
+    html {
+        font-size: 14px;
+    }
+    
+    .container {
+        padding: 0 var(--spacing-md);
+    }
+    
+    header .container {
+        padding: 0 var(--spacing-md);
+    }
+    
+    nav ul {
+        display: none;
+    }
+    
+    .mobile-menu-toggle {
+        display: block;
+    }
+    
+    .connect-wallet {
+        display: none;
+    }
+    
+    .hero-text h1 {
+        font-size: 2rem;
+    }
+    
+    .hero-text h2 {
+        font-size: 1.5rem;
+    }
+    
+    .hero-text p {
+        font-size: 1rem;
+    }
+    
+    .section-header h2 {
+        font-size: 1.75rem;
+    }
+    
+    .section-header p {
+        font-size: 1rem;
+    }
+    
+    .countdown {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .countdown-item {
+        min-width: 70px;
+        margin-bottom: var(--spacing-md);
+    }
+    
+    .social-links {
+        max-width: 100%;
+    }
+    
+    .social-link {
+        min-width: auto;
+        width: 100%;
+    }
+    
+    .gallery-container {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    }
+}
+
+/* Extra Small Devices (phones, less than 576px) */
+@media (max-width: 575.98px) {
+    .hero-section {
+        padding-top: 100px;
+    }
+    
+    .hero-text h1 {
+        font-size: 1.75rem;
+    }
+    
+    .hero-text h2 {
+        font-size: 1.25rem;
+    }
+    
+    .hero-buttons {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+    
+    .btn {
+        width: 100%;
+    }
+    
+    .section-header h2 {
+        font-size: 1.5rem;
+    }
+    
+    .defi-card, 
+    .how-to-buy-card, 
+    .community-card, 
+    .presale-info, 
+    .presale-countdown {
+        padding: var(--spacing-md);
+    }
+    
+    .countdown-item {
+        min-width: 60px;
+    }
+    
+    .countdown-item span:first-child {
+        font-size: 1.5rem;
+    }
+    
+    .footer-bottom {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+    
+    .gallery-container {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: var(--spacing-sm);
+    }
+    
+    .lightbox-image-container {
+        max-width: 90%;
+    }
+    
+    .lightbox-actions {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+}
