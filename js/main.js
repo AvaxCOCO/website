@@ -153,8 +153,8 @@ function initMobileMenu() {
  * Initialize countdown timer
  */
 function initCountdown() {
-    // Set the countdown date to May 3rd, 2025
-    const countdownDate = new Date('May 3, 2025 00:00:00');
+    // Set the countdown date to May 3rd, 2025 at 3:30 PM CST
+    const countdownDate = new Date('May 3, 2025 15:30:00 GMT-0600');
     
     // Update countdown every second
     const countdownTimer = setInterval(function() {
