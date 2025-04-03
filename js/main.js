@@ -153,9 +153,8 @@ function initMobileMenu() {
  * Initialize countdown timer
  */
 function initCountdown() {
-    // Set the countdown date (1 month from now)
-    const countdownDate = new Date();
-    countdownDate.setMonth(countdownDate.getMonth() + 1);
+    // Set the countdown date to May 3rd, 2025
+    const countdownDate = new Date('May 3, 2025 00:00:00');
     
     // Update countdown every second
     const countdownTimer = setInterval(function() {
