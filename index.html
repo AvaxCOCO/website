@@ -21,8 +21,68 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/animations.css">
     <link rel="stylesheet" href="css/responsive.css">
+    <style>
+        /* Direct fix for alignment issues */
+        body {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .page-wrapper {
+            width: 100%;
+            max-width: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            box-sizing: border-box;
+        }
+        
+        section {
+            width: 100%;
+            max-width: 100%;
+            padding: 80px 0;
+            margin: 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Fix background images */
+        .defi-section {
+            background: linear-gradient(rgba(13, 2, 33, 0.8), rgba(13, 2, 33, 0.8)), url('images/cocoavaxtokenomics.png');
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .how-to-buy-section {
+            background: linear-gradient(rgba(13, 2, 33, 0.9), rgba(13, 2, 33, 0.9)), url('images/cocowhyavax.png');
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .community-section {
+            background: linear-gradient(rgba(13, 2, 33, 0.8), rgba(13, 2, 33, 0.8)), url('images/cocoleaderboardcoming.png');
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .presale-section {
+            background: linear-gradient(rgba(13, 2, 33, 0.9), rgba(13, 2, 33, 0.9)), url('images/wenpresale.png');
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
 </head>
 <body>
+    <div class="page-wrapper">
     <!-- Preloader -->
     <div id="preloader">
         <div class="preloader-content">
@@ -313,7 +373,6 @@
             </div>
         </div>
     </section>
-    </section>
 
     <!-- Community & Sticker Campaign Section -->
     <section id="community" class="community-section">
@@ -432,5 +491,7 @@
     <script src="js/animations.js"></script>
     <script src="js/wallet.js"></script>
     <script src="js/particles-config.js"></script>
+    <script src="js/fix-layout.js"></script>
+    </div><!-- End of page-wrapper -->
 </body>
 </html>

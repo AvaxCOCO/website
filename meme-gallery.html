@@ -22,8 +22,44 @@
     <link rel="stylesheet" href="css/animations.css">
     <link rel="stylesheet" href="css/gallery.css">
     <link rel="stylesheet" href="css/responsive.css">
+    
+    <style>
+        /* Direct fix for alignment issues */
+        body {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .page-wrapper {
+            width: 100%;
+            max-width: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            box-sizing: border-box;
+        }
+        
+        section {
+            width: 100%;
+            max-width: 100%;
+            padding: 80px 0;
+            margin: 0;
+            position: relative;
+            overflow: hidden;
+        }
+    </style>
 </head>
 <body>
+    <div class="page-wrapper">
     <!-- Preloader -->
     <div id="preloader">
         <div class="preloader-content">
@@ -393,5 +429,7 @@
     
     <!-- Gallery JavaScript -->
     <script src="js/gallery.js"></script>
+    <script src="js/fix-layout.js"></script>
+    </div><!-- End of page-wrapper -->
 </body>
 </html>
