@@ -116,6 +116,16 @@ function setupEventListeners() {
             connectTwitterBtn.addEventListener('click', handleTwitterConnect);
         }
         
+        // Show Redirect URI button
+        const showRedirectUriBtn = document.getElementById('show-redirect-uri-btn');
+        if (showRedirectUriBtn) {
+            showRedirectUriBtn.addEventListener('click', function() {
+                const redirectUri = `${window.location.origin}/callback.html`;
+                alert(`Current Redirect URI: ${redirectUri}\n\nMake sure this matches the callback URL in your X Developer Portal.`);
+                console.log('Current Redirect URI:', redirectUri);
+            });
+        }
+        
         // Search functionality
         const searchBtn = document.getElementById('search-btn');
         const searchInput = document.getElementById('search-input');
