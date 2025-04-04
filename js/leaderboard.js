@@ -510,6 +510,17 @@ function showNotification(message, type = 'info') {
                 }
             }, 300);
         }
+        
+        /**
+         * Calculate AVAX allocation bonus based on points
+         * @param {number} points - User points
+         * @returns {number} - AVAX allocation bonus
+         */
+        function calculateAvaxBonus(points) {
+            // Convert points to AVAX bonus (1000 points = 0.1 AVAX)
+            const bonus = (points / 10000).toFixed(2);
+            return bonus;
+        }
     }, 5000);
 }
 
