@@ -68,6 +68,10 @@ module.exports = async (req, res) => {
     };
     
     try {
+      // Temporarily use mock data while database is being set up
+      console.log('Using mock data temporarily while database is being set up');
+      
+      /*
       // Create or update the user in the database
       const userId = await db.createOrUpdateUser(xUser);
       
@@ -90,6 +94,28 @@ module.exports = async (req, res) => {
       };
       
       res.json(combinedUserData);
+      */
+      
+      // Use mock data for now
+      const mockData = {
+        id: userData.data.id,
+        handle: '@' + userData.data.username,
+        name: userData.data.name,
+        profileImage: userData.data.profile_image_url,
+        points: 1000, // Mock points
+        rank: 42,     // Mock rank
+        level: 'Beginner',
+        activities: [
+          {
+            type: 'tweet',
+            content: 'Just connected to the $COCO leaderboard! 🚀',
+            timestamp: new Date().toISOString(),
+            points: 50
+          }
+        ]
+      };
+      
+      res.json(mockData);
     } catch (dbError) {
       console.error('Database error:', dbError);
       
@@ -99,8 +125,8 @@ module.exports = async (req, res) => {
         handle: '@' + userData.data.username,
         name: userData.data.name,
         profileImage: userData.data.profile_image_url,
-        points: Math.floor(Math.random() * 10000),
-        rank: Math.floor(Math.random() * 100) + 1,
+        points: 500, // Different mock points for error case
+        rank: 99,    // Different mock rank for error case
         level: 'Beginner',
         activities: [
           {
@@ -113,9 +139,9 @@ module.exports = async (req, res) => {
       };
       
       res.json(mockData);
-    };
+    }
     
-    res.json(combinedUserData);
+    // Remove the duplicate response
   } catch (error) {
     console.error('Error fetching user data:', error);
     res.status(500).json({ error: 'Failed to fetch user data' });
