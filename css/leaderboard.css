@@ -113,6 +113,33 @@
     color: var(--text-muted);
 }
 
+/* Verification Status */
+.verification-status {
+    margin-top: var(--spacing-md);
+}
+
+.verification-status .btn-sm {
+    font-size: var(--font-size-sm);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background-color: #1da1f2;
+    border: none;
+    transition: background-color 0.3s;
+}
+
+.verification-status .btn-sm:hover {
+    background-color: #0c85d0;
+}
+
+.verification-status .btn-sm i {
+    margin-right: var(--spacing-xs);
+}
+
+.verification-note {
+    font-size: var(--font-size-sm);
+    color: var(--text-muted);
+    margin-top: var(--spacing-xs);
+}
+
 /* ===== Top Users Section ===== */
 .top-users-section {
     padding: var(--spacing-3xl) 0;

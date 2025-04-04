@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>$COCO - X Verification</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="css/leaderboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .verification-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.5);
+        }
+        
+        .verification-step {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            border-left: 4px solid #ff69b4;
+        }
+        
+        .verification-step h3 {
+            color: #ff69b4;
+            margin-top: 0;
+        }
+        
+        .suggested-post {
+            background: rgba(29, 161, 242, 0.1);
+            border: 1px solid rgba(29, 161, 242, 0.3);
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Arial', sans-serif;
+            color: #fff;
+        }
+        
+        .btn-twitter {
+            background-color: #1da1f2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-twitter:hover {
+            background-color: #0c85d0;
+        }
+        
+        .btn-twitter i {
+            margin-right: 8px;
+        }
+        
+        .btn-verify {
+            background-color: #ff69b4;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-verify:hover {
+            background-color: #ff5ba7;
+        }
+        
+        .btn-verify i {
+            margin-right: 8px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .alert-info {
+            background-color: rgba(0, 123, 255, 0.2);
+            border: 1px solid rgba(0, 123, 255, 0.3);
+            color: #0dcaf0;
+        }
+        
+        .alert-success {
+            background-color: rgba(40, 167, 69, 0.2);
+            border: 1px solid rgba(40, 167, 69, 0.3);
+            color: #75b798;
+        }
+        
+        .alert-danger {
+            background-color: rgba(220, 53, 69, 0.2);
+            border: 1px solid rgba(220, 53, 69, 0.3);
+            color: #ea868f;
+        }
+        
+        .mt-4 {
+            margin-top: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="logo">
+                <a href="index.html">
+                    <img src="images/cocopfp.jpg" alt="$COCO Logo">
+                    <span>$COCO</span>
+                </a>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="leaderboard.html">Leaderboard</a></li>
+                    <li><a href="meme-gallery.html">Meme Gallery</a></li>
+                </ul>
+            </nav>
+            <div class="connect-wallet">
+                <a href="#" class="btn">CONNECT WALLET</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>X Account Verification</h1>
+                <p>Complete the verification process to earn your spot on the $COCO leaderboard!</p>
+            </div>
+        </section>
+
+        <section class="verification-section">
+            <div class="container">
+                <div id="x-post-verification" class="verification-container">
+                    <div id="verification-status">
+                        <div class="alert alert-info">
+                            <p>Follow the steps below to verify your X account and earn points on the $COCO leaderboard.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="verification-step">
+                        <h3><i class="fas fa-1"></i> Post about $COCO</h3>
+                        <p>Create a post on X with the following text:</p>
+                        <div class="suggested-post" id="suggested-post">
+                            I'm joining the $COCO leaderboard! 🚀 Building my $COCO bag on #AVAX. Verification: CODE123 #AVAXCOCO
+                        </div>
+                        <p>This post will verify your X account and earn you 50 points on the leaderboard!</p>
+                        <button id="post-to-x-button" class="btn-twitter">
+                            <i class="fab fa-twitter"></i> Post to X
+                        </button>
+                    </div>
+                    
+                    <div class="verification-step">
+                        <h3><i class="fas fa-2"></i> Verify Your Post</h3>
+                        <p>After posting, click the button below to verify your post and earn points:</p>
+                        <button id="verify-post-button" class="btn-verify hidden">
+                            <i class="fas fa-check-circle"></i> Verify My Post
+                        </button>
+                        <p class="mt-4"><small>Note: Your post must include the exact verification code shown above.</small></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="images/cocopfp.jpg" alt="$COCO Logo">
+                    <span>$COCO</span>
+                </div>
+                <div class="footer-links">
+                    <a href="terms.html">Terms</a>
+                    <a href="privacy.html">Privacy</a>
+                </div>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-telegram"></i></a>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 $COCO. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+    <script src="js/x-auth-server.js"></script>
+    <script src="js/x-post-verification.js"></script>
+</body>
+</html>

@@ -1,5 +1,21 @@
 {
+  "name": "coco-website",
+  "version": "1.0.0",
+  "description": "$COCO Website with X Authentication",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'No build step required'",
+    "deploy": "vercel --prod"
+  },
   "dependencies": {
-    "@vercel/analytics": "^1.5.0"
+    "node-fetch": "^2.6.9",
+    "dotenv": "^16.0.3",
+    "pg": "^8.11.3"
+  },
+  "devDependencies": {
+    "vercel": "^32.5.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
   }
 }

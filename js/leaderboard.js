@@ -229,27 +229,42 @@ function handleTwitterConnect() {
 
 /**
  * Check if user is already authenticated with X
- * This is now handled by initXAuth() in x-auth.js
  */
 function checkAuthStatus() {
     try {
-        // Initialize X authentication
-        if (typeof initXAuth === 'function') {
-            initXAuth();
-        } else {
-            console.error('X authentication not initialized');
-            
-            // Fallback to local storage check
-            const userData = localStorage.getItem('cocoXUser');
-            if (userData) {
-                try {
-                    const parsedUserData = JSON.parse(userData);
-                    updateUIAfterAuth(parsedUserData);
-                } catch (error) {
-                    console.error('Error parsing user data:', error);
-                    localStorage.removeItem('cocoXUser');
-                }
+        console.log('Checking authentication status');
+        
+        // Check for user data in localStorage first
+        const userData = localStorage.getItem('cocoXUser');
+        if (userData) {
+            try {
+                console.log('Found user data in localStorage');
+                const parsedUserData = JSON.parse(userData);
+                updateUIAfterAuth(parsedUserData);
+                return; // Exit early if we have user data
+            } catch (error) {
+                console.error('Error parsing user data:', error);
+                localStorage.removeItem('cocoXUser');
             }
+        }
+        
+        // If no user data, check for access token
+        const accessToken = localStorage.getItem('xAccessToken');
+        if (accessToken) {
+            console.log('Found access token, fetching user data');
+            // We have a token but no user data, try to fetch user data
+            fetchXUserData(accessToken)
+                .catch(error => {
+                    console.error('Error fetching user data with stored token:', error);
+                    // If token is invalid, clear it
+                    if (error.message.includes('401') || error.message.includes('Unauthorized')) {
+                        console.log('Token appears to be invalid, clearing stored tokens');
+                        localStorage.removeItem('xAccessToken');
+                        localStorage.removeItem('xRefreshToken');
+                    }
+                });
+        } else {
+            console.log('No authentication data found');
         }
     } catch (error) {
         console.error('Error in checkAuthStatus:', error);
