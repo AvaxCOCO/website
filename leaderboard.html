@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>$COCO Leaderboard - The Pink Ostrich of AVAX</title>
+    <meta name="description" content="Join the $COCO leaderboard by connecting your Twitter account and talking about $COCO to earn rewards.">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    
+    <!-- Google Fonts - Fredoka -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/leaderboard.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="preloader-content">
+            <img src="images/transparent images/cocorockettrspt.png" alt="COCO Rocket" class="preloader-rocket">
+            <p>Loading $COCO...</p>
+        </div>
+    </div>
+
+    <!-- Particles Background -->
+    <div id="particles-js"></div>
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="logo">
+                <img src="images/transparent images/cocoannounce-transparent.png" alt="COCO Logo" class="logo-img">
+                <span class="logo-text">$COCO</span>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html#hero">Home</a></li>
+                    <li><a href="index.html#defi">DeFi</a></li>
+                    <li><a href="index.html#how-to-buy">How to Buy</a></li>
+                    <li><a href="index.html#community">Community</a></li>
+                    <li><a href="index.html#presale">Presale</a></li>
+                    <li><a href="meme-gallery.html">Meme Gallery</a></li>
+                    <li><a href="leaderboard.html" class="active">Leaderboard</a></li>
+                </ul>
+            </nav>
+            <div class="connect-wallet">
+                <button id="connect-wallet-btn" class="btn btn-primary">Connect Wallet</button>
+            </div>
+            <div class="mobile-menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu">
+        <div class="close-menu">
+            <i class="fas fa-times"></i>
+        </div>
+        <ul>
+            <li><a href="index.html#hero">Home</a></li>
+            <li><a href="index.html#defi">DeFi</a></li>
+            <li><a href="index.html#how-to-buy">How to Buy</a></li>
+            <li><a href="index.html#community">Community</a></li>
+            <li><a href="index.html#presale">Presale</a></li>
+            <li><a href="meme-gallery.html">Meme Gallery</a></li>
+            <li><a href="leaderboard.html" class="active">Leaderboard</a></li>
+            <li><button id="mobile-connect-wallet-btn" class="btn btn-primary">Connect Wallet</button></li>
+        </ul>
+    </div>
+
+    <!-- Hero Section -->
+    <section id="leaderboard-hero" class="leaderboard-hero-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>$COCO Leaderboard</h2>
+                <p>Talk about $COCO on X, earn AVAX allocation bonus!</p>
+            </div>
+            
+            <div class="leaderboard-hero-content">
+                <div class="leaderboard-hero-text">
+                    <p>Connect your X account to start earning points and climb the leaderboard. The more you talk about $COCO, the higher your allocation bonus!</p>
+                    <div id="twitter-connect-container" class="twitter-connect">
+                        <button id="connect-twitter-btn" class="btn btn-primary btn-large">
+                            <img src="images/Ecosystem/xiconwhite.png" alt="X" class="x-icon-small" style="width: 20px; margin-right: 8px;"> Connect X
+                        </button>
+                    </div>
+                    <div id="user-profile-preview" class="user-profile-preview hidden">
+                        <div class="user-profile-header">
+                            <img id="user-avatar" src="" alt="User Avatar" class="user-avatar">
+                            <div class="user-info">
+                                <h3 id="user-handle">@username</h3>
+                                <p id="user-rank">Rank: #0</p>
+                                <p id="user-points">Points: 0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="leaderboard-hero-image">
+                    <img src="images/cocoleaderboardreward.png" alt="COCO Leaderboard" class="hero-img">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Top Users Section -->
+    <section id="top-users" class="top-users-section">
+        <div class="container">
+            <h3 class="section-title">Top $COCO Influencers</h3>
+            
+            <div class="top-users-container">
+                <!-- Top 3 users will be displayed here -->
+                <div class="top-user rank-2">
+                    <div class="rank">#2</div>
+                    <div class="user-card">
+                        <img src="images/transparent images/cocotrophy-transparent.png" alt="User 2" class="user-avatar">
+                        <div class="user-info">
+                            <div class="user-handle">@coco_fan2</div>
+                            <div class="user-points">18,500 <i class="fas fa-star"></i></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="top-user rank-1">
+                    <div class="rank">#1</div>
+                    <div class="user-card">
+                        <img src="images/transparent images/cocoannounce-transparent.png" alt="User 1" class="user-avatar">
+                        <div class="user-info">
+                            <div class="user-handle">@coco_king</div>
+                            <div class="user-points">24,750 <i class="fas fa-star"></i></div>
+                        </div>
+                    </div>
+                    <div class="crown-icon">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                </div>
+                
+                <div class="top-user rank-3">
+                    <div class="rank">#3</div>
+                    <div class="user-card">
+                        <img src="images/transparent images/cococoffee-transparent.png" alt="User 3" class="user-avatar">
+                        <div class="user-info">
+                            <div class="user-handle">@coco_lover</div>
+                            <div class="user-points">12,300 <i class="fas fa-star"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Leaderboard Table Section -->
+    <section id="leaderboard-table" class="leaderboard-table-section">
+        <div class="container">
+            <div class="leaderboard-controls">
+                <div class="search-container">
+                    <input type="text" id="search-input" placeholder="Search by X handle..." class="search-input">
+                    <button id="search-btn" class="search-btn"><i class="fas fa-search"></i></button>
+                </div>
+                <div class="filter-container">
+                    <select id="time-filter" class="filter-select">
+                        <option value="all-time">All Time</option>
+                        <option value="this-week">This Week</option>
+                        <option value="this-month">This Month</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="leaderboard-table-container">
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>User</th>
+                            <th>Points</th>
+                            <th>Allocation Bonus</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard-table-body">
+                        <!-- Leaderboard entries will be populated here -->
+                        <tr>
+                            <td class="rank-cell">4</td>
+                            <td class="user-cell">
+                                <img src="images/transparent images/cocobusinesstrspt.png" alt="User 4" class="user-avatar-small">
+                                <span class="user-handle">@coco_trader</span>
+                            </td>
+                            <td class="points-cell">9,850</td>
+                            <td class="activity-cell">+9.85 AVAX Bonus</td>
+                        </tr>
+                        <tr>
+                            <td class="rank-cell">5</td>
+                            <td class="user-cell">
+                                <img src="images/transparent images/cocopharaohtrspt.png" alt="User 5" class="user-avatar-small">
+                                <span class="user-handle">@coco_pharaoh</span>
+                            </td>
+                            <td class="points-cell">8,720</td>
+                            <td class="activity-cell">+8.72 AVAX Bonus</td>
+                        </tr>
+                        <tr>
+                            <td class="rank-cell">6</td>
+                            <td class="user-cell">
+                                <img src="images/transparent images/cocorockettrspt.png" alt="User 6" class="user-avatar-small">
+                                <span class="user-handle">@coco_rocket</span>
+                            </td>
+                            <td class="points-cell">7,650</td>
+                            <td class="activity-cell">+7.65 AVAX Bonus</td>
+                        </tr>
+                        <tr>
+                            <td class="rank-cell">7</td>
+                            <td class="user-cell">
+                                <img src="images/transparent images/cocolaunchtrspt.png" alt="User 7" class="user-avatar-small">
+                                <span class="user-handle">@coco_launch</span>
+                            </td>
+                            <td class="points-cell">6,980</td>
+                            <td class="activity-cell">+6.98 AVAX Bonus</td>
+                        </tr>
+                        <tr>
+                            <td class="rank-cell">8</td>
+                            <td class="user-cell">
+                                <img src="images/transparent images/cocoswaptrspt.png" alt="User 8" class="user-avatar-small">
+                                <span class="user-handle">@coco_swap</span>
+                            </td>
+                            <td class="points-cell">5,430</td>
+                            <td class="activity-cell">+5.43 AVAX Bonus</td>
+                        </tr>
+                        <tr>
+                            <td class="rank-cell">9</td>
+                            <td class="user-cell">
+                                <img src="images/transparent images/cocoofficetrspt.png" alt="User 9" class="user-avatar-small">
+                                <span class="user-handle">@coco_office</span>
+                            </td>
+                            <td class="points-cell">4,870</td>
+                            <td class="activity-cell">+4.87 AVAX Bonus</td>
+                        </tr>
+                        <tr>
+                            <td class="rank-cell">10</td>
+                            <td class="user-cell">
+                                <img src="images/transparent images/cococoreapptrspt.png" alt="User 10" class="user-avatar-small">
+                                <span class="user-handle">@coco_core</span>
+                            </td>
+                            <td class="points-cell">3,920</td>
+                            <td class="activity-cell">+3.92 AVAX Bonus</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="pagination">
+                <button class="pagination-btn" disabled><i class="fas fa-chevron-left"></i></button>
+                <span class="pagination-info">Page 1 of 1</span>
+                <button class="pagination-btn" disabled><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="how-it-works-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>How It Works</h2>
+                <p>Earn points by talking about $COCO on X</p>
+            </div>
+            
+            <div class="steps-container">
+                <!-- Step 1: Connect Twitter -->
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <div class="step-image">
+                        <img src="images/Ecosystem/xiconwhite.png" alt="Connect Twitter" class="step-img">
+                    </div>
+                    <div class="step-content">
+                        <h3>Connect Your X Account</h3>
+                        <p>Link your X account to start earning points on the $COCO leaderboard.</p>
+                        <ul>
+                            <li><i class="fas fa-check"></i> Secure authentication</li>
+                            <li><i class="fas fa-check"></i> Privacy protected</li>
+                            <li><i class="fas fa-check"></i> Easy one-click process</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Step 2: Talk About COCO -->
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <div class="step-image">
+                        <img src="images/transparent images/cococoffee-transparent.png" alt="Talk About COCO" class="step-img">
+                    </div>
+                    <div class="step-content">
+                        <h3>Talk About $COCO</h3>
+                        <p>Earn points by mentioning $COCO in your posts and engaging with $COCO content on X.</p>
+                        <ul>
+                            <li><i class="fas fa-check"></i> Mention $COCO in X posts: 10 points</li>
+                            <li><i class="fas fa-check"></i> Use #COCO hashtag: 5 points</li>
+                            <li><i class="fas fa-check"></i> Repost official $COCO content: 15 points</li>
+                            <li><i class="fas fa-check"></i> Like official $COCO posts: 2 points</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Step 3: Earn Rewards -->
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <div class="step-image">
+                        <img src="images/transparent images/cocotrophy-transparent.png" alt="Earn Rewards" class="step-img">
+                    </div>
+                    <div class="step-content">
+                        <h3>Earn AVAX Allocation Bonus</h3>
+                        <p>Climb the leaderboard to earn additional AVAX allocation in the $COCO presale.</p>
+                        <ul>
+                            <li><i class="fas fa-check"></i> Top 10: Up to 50 AVAX bonus allocation</li>
+                            <li><i class="fas fa-check"></i> Top 100: Up to 25 AVAX bonus allocation</li>
+                            <li><i class="fas fa-check"></i> Top 1000: Up to 10 AVAX bonus allocation</li>
+                            <li><i class="fas fa-check"></i> All participants: Proportional bonus based on points</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- User Profile Section (visible only when connected) -->
+    <section id="user-profile" class="user-profile-section hidden">
+        <div class="container">
+            <div class="section-header">
+                <h2>Your $COCO Profile</h2>
+                <p>Track your progress and AVAX allocation bonus</p>
+            </div>
+            
+            <div class="profile-container">
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <img id="profile-avatar-img" src="" alt="Your Profile" class="profile-avatar-img">
+                    </div>
+                    <div class="profile-info">
+                        <h3 id="profile-handle">@username</h3>
+                        <div class="profile-stats">
+                            <div class="profile-stat">
+                                <span class="stat-label">Rank</span>
+                                <span id="profile-rank" class="stat-value">#0</span>
+                            </div>
+                            <div class="profile-stat">
+                                <span class="stat-label">Points</span>
+                                <span id="profile-points" class="stat-value">0</span>
+                            </div>
+                            <div class="profile-stat">
+                                <span class="stat-label">Level</span>
+                                <span id="profile-level" class="stat-value">Beginner</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="profile-content">
+                    <div class="profile-section">
+                        <h4>Allocation Bonus Progress</h4>
+                        <div id="recent-activity" class="recent-activity">
+                            <p class="no-activity">No allocation bonus yet. Start talking about $COCO on X!</p>
+                            <!-- Activity items will be populated here -->
+                        </div>
+                    </div>
+                    
+                    <div class="profile-section">
+                        <h4>Rewards Progress</h4>
+                        <div class="rewards-progress">
+                            <div class="progress-bar-container">
+                                <div class="progress-bar">
+                                    <div id="progress-bar-fill" class="progress-bar-fill" style="width: 0%"></div>
+                                </div>
+                                <div class="progress-labels">
+                                    <span>0</span>
+                                    <span>10,000</span>
+                                    <span>10,000</span>
+                                    <span>30,000</span>
+                                    <span>40,000</span>
+                                    <span>50,000</span>
+                                </div>
+                            </div>
+                            <div class="rewards-tiers">
+                                <div class="reward-tier">
+                                    <div class="tier-icon"><i class="fas fa-medal"></i></div>
+                                    <div class="tier-info">
+                                        <h5>Bronze Tier</h5>
+                                        <p>10,000 points: +10 AVAX Allocation Bonus</p>
+                                    </div>
+                                </div>
+                                <div class="reward-tier">
+                                    <div class="tier-icon"><i class="fas fa-medal"></i></div>
+                                    <div class="tier-info">
+                                        <h5>Silver Tier</h5>
+                                        <p>25,000 points: +25 AVAX Allocation Bonus</p>
+                                    </div>
+                                </div>
+                                <div class="reward-tier">
+                                    <div class="tier-icon"><i class="fas fa-medal"></i></div>
+                                    <div class="tier-info">
+                                        <h5>Gold Tier</h5>
+                                        <p>50,000 points: +50 AVAX Allocation Bonus</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="images/transparent images/cocoannounce-transparent.png" alt="COCO Logo" class="footer-logo-img">
+                    <span class="footer-logo-text">$COCO</span>
+                </div>
+                
+                <div class="footer-links">
+                    <div class="footer-nav">
+                        <h4>Navigation</h4>
+                        <ul>
+                            <li><a href="index.html#hero">Home</a></li>
+                            <li><a href="index.html#defi">DeFi</a></li>
+                            <li><a href="index.html#how-to-buy">How to Buy</a></li>
+                            <li><a href="index.html#community">Community</a></li>
+                            <li><a href="index.html#presale">Presale</a></li>
+                            <li><a href="meme-gallery.html">Meme Gallery</a></li>
+                            <li><a href="leaderboard.html">Leaderboard</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-social">
+                        <h4>Social Media</h4>
+                        <div class="social-icons">
+                            <a href="#" target="_blank"><img src="images/Ecosystem/xiconwhite.png" alt="X" class="x-icon-small"></a>
+                            <a href="#" target="_blank"><i class="fab fa-telegram"></i></a>
+                            <a href="#" target="_blank"><i class="fab fa-discord"></i></a>
+                            <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+                            <a href="#" target="_blank"><i class="fab fa-youtube"></i></a>
+                        </div>
+                    </div>
+                    
+                    <div class="footer-ecosystem">
+                        <h4>Ecosystem</h4>
+                        <ul>
+                            <li><a href="https://crypto.com" target="_blank">Buy AVAX on Crypto.com</a></li>
+                            <li><a href="https://core.app" target="_blank">Core Wallet</a></li>
+                            <li><a href="https://pharaoh.exchange" target="_blank">Pharaoh Exchange</a></li>
+                            <li><a href="https://apexdefi.xyz" target="_blank">Apex DeFi</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <div class="powered-by">
+                    <img src="images/Ecosystem/Avax/Poweredbyavax.png" alt="Powered by Avalanche" class="powered-by-img">
+                </div>
+                <p>&copy; 2025 $COCO. All rights reserved.</p>
+                <p class="disclaimer">$COCO is a memecoin for entertainment purposes. Always do your own research before investing.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="https://cdn.thirdweb.com/js/connect/dist/thirdweb-connect.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script src="js/main.js"></script>
+    <script src="js/animations.js"></script>
+    <script src="js/wallet.js"></script>
+    <script src="js/particles-config.js"></script>
+    <script src="js/x-auth.js"></script>
+    <script src="js/leaderboard.js"></script>
+</body>
+</html>
