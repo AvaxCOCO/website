@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X Authentication Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #0a0225;
+            color: white;
+        }
+        
+        h1 {
+            color: #FF1493;
+        }
+        
+        button {
+            background-color: #FF1493;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        
+        button:hover {
+            background-color: #ff47a8;
+        }
+        
+        pre {
+            background-color: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+        
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            border-radius: 5px;
+            color: white;
+            font-weight: bold;
+            display: none;
+        }
+        
+        .notification.error {
+            background-color: #e74c3c;
+        }
+        
+        .notification.success {
+            background-color: #2ecc71;
+        }
+        
+        .notification.info {
+            background-color: #3498db;
+        }
+    </style>
+</head>
+<body>
+    <h1>X Authentication Test</h1>
+    <p>This page tests direct X authentication without using serverless functions.</p>
+    
+    <button id="connect-x-btn">Connect X</button>
+    
+    <div id="debug-output"></div>
+    
+    <div id="notification" class="notification"></div>
+    
+    <script>
+        // Configuration
+        const config = {
+            clientId: 'IavMbSoWyh6KFgFnHY6NxJ5jH',
+            redirectUri: window.location.origin + '/callback.html',
+            scope: 'tweet.read users.read offline.access'
+        };
+        
+        // Debug output
+        function log(message, data = null) {
+            const debugOutput = document.getElementById('debug-output');
+            const logItem = document.createElement('pre');
+            
+            if (data) {
+                logItem.textContent = `${message}\n${JSON.stringify(data, null, 2)}`;
+            } else {
+                logItem.textContent = message;
+            }
+            
+            debugOutput.appendChild(logItem);
+            console.log(message, data);
+        }
+        
+        // Show notification
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = 'notification ' + type;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 5000);
+        }
+        
+        // Generate random string for state and code verifier
+        function generateRandomString(length = 32) {
+            const array = new Uint8Array(length);
+            window.crypto.getRandomValues(array);
+            return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+        }
+        
+        // Base64Url encode
+        function base64UrlEncode(buffer) {
+            const base64 = btoa(String.fromCharCode.apply(null, new Uint8Array(buffer)));
+            return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+        }
+        
+        // Generate code challenge from verifier
+        async function generateCodeChallenge(codeVerifier) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(codeVerifier);
+            const hash = await window.crypto.subtle.digest('SHA-256', data);
+            return base64UrlEncode(hash);
+        }
+        
+        // Connect to X
+        async function connectToX() {
+            try {
+                log('Starting X authentication flow');
+                
+                // Generate state and code verifier
+                const state = generateRandomString();
+                const codeVerifier = generateRandomString(64);
+                
+                // Store state and code verifier
+                localStorage.setItem('xAuthState', state);
+                localStorage.setItem('xCodeVerifier', codeVerifier);
+                
+                log('Generated state and code verifier', {
+                    state: state.substring(0, 5) + '...',
+                    codeVerifier: codeVerifier.substring(0, 5) + '...'
+                });
+                
+                // Generate code challenge
+                const codeChallenge = await generateCodeChallenge(codeVerifier);
+                
+                log('Generated code challenge', {
+                    codeChallenge: codeChallenge.substring(0, 5) + '...'
+                });
+                
+                // Build authorization URL
+                const authUrl = new URL('https://twitter.com/i/oauth2/authorize');
+                authUrl.searchParams.append('response_type', 'code');
+                authUrl.searchParams.append('client_id', config.clientId);
+                authUrl.searchParams.append('redirect_uri', config.redirectUri);
+                authUrl.searchParams.append('scope', config.scope);
+                authUrl.searchParams.append('state', state);
+                authUrl.searchParams.append('code_challenge', codeChallenge);
+                authUrl.searchParams.append('code_challenge_method', 'S256');
+                
+                log('Built authorization URL', {
+                    url: authUrl.toString()
+                });
+                
+                // Redirect to X authorization page
+                window.location.href = authUrl.toString();
+            } catch (error) {
+                log('Error starting authentication', error);
+                showNotification('Failed to start authentication: ' + error.message, 'error');
+            }
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            log('Page loaded');
+            
+            // Connect X button
+            const connectXBtn = document.getElementById('connect-x-btn');
+            connectXBtn.addEventListener('click', connectToX);
+            
+            log('Configuration', {
+                clientId: config.clientId,
+                redirectUri: config.redirectUri,
+                scope: config.scope
+            });
+        });
+    </script>
+</body>
+</html>
