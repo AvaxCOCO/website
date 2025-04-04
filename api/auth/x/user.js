@@ -1,4 +1,4 @@
-// X Authentication User Data Endpoint
+// X Authentication User Data Endpoint - Updated to use mock data temporarily
 const fetch = require('node-fetch');
 const db = require('../../db');
 
