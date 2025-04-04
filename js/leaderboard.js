@@ -250,13 +250,21 @@ function checkAuthStatus() {
  * Update UI after successful authentication
  */
 function updateUIAfterAuth(userData) {
+    console.log('updateUIAfterAuth called with user data:', userData);
+    
     try {
         // Update connect button container
         const twitterConnectContainer = document.getElementById('twitter-connect-container');
         const userProfilePreview = document.getElementById('user-profile-preview');
         
+        console.log('Elements found:', {
+            twitterConnectContainer: twitterConnectContainer ? 'Found' : 'Not found',
+            userProfilePreview: userProfilePreview ? 'Found' : 'Not found'
+        });
+        
         if (twitterConnectContainer && userProfilePreview) {
             try {
+                console.log('Updating UI elements: hiding connect button, showing user preview');
                 twitterConnectContainer.classList.add('hidden');
                 userProfilePreview.classList.remove('hidden');
                 
@@ -266,22 +274,37 @@ function updateUIAfterAuth(userData) {
                 const userRank = document.getElementById('user-rank');
                 const userPoints = document.getElementById('user-points');
                 
+                console.log('User preview elements found:', {
+                    userAvatar: userAvatar ? 'Found' : 'Not found',
+                    userHandle: userHandle ? 'Found' : 'Not found',
+                    userRank: userRank ? 'Found' : 'Not found',
+                    userPoints: userPoints ? 'Found' : 'Not found'
+                });
+                
                 if (userAvatar) userAvatar.src = userData.profileImage;
                 if (userHandle) userHandle.textContent = userData.handle;
                 if (userRank) userRank.textContent = `Rank: #${userData.rank}`;
                 
                 // Calculate and display AVAX allocation bonus
                 const avaxBonus = calculateAvaxBonus(userData.points);
+                console.log('Calculated AVAX bonus:', avaxBonus);
                 if (userPoints) userPoints.textContent = `+${avaxBonus} AVAX Bonus`;
+                
+                console.log('User preview updated successfully');
             } catch (error) {
                 console.error('Error updating user preview:', error);
             }
+        } else {
+            console.error('Required UI elements not found for user preview');
         }
         
         // Show user profile section
         const userProfileSection = document.getElementById('user-profile');
+        console.log('User profile section found:', userProfileSection ? 'Yes' : 'No');
+        
         if (userProfileSection) {
             try {
+                console.log('Showing user profile section');
                 userProfileSection.classList.remove('hidden');
                 
                 // Update profile data
@@ -291,12 +314,21 @@ function updateUIAfterAuth(userData) {
                 const profilePoints = document.getElementById('profile-points');
                 const profileLevel = document.getElementById('profile-level');
                 
+                console.log('Profile elements found:', {
+                    profileAvatar: profileAvatar ? 'Found' : 'Not found',
+                    profileHandle: profileHandle ? 'Found' : 'Not found',
+                    profileRank: profileRank ? 'Found' : 'Not found',
+                    profilePoints: profilePoints ? 'Found' : 'Not found',
+                    profileLevel: profileLevel ? 'Found' : 'Not found'
+                });
+                
                 if (profileAvatar) profileAvatar.src = userData.profileImage;
                 if (profileHandle) profileHandle.textContent = userData.handle;
                 if (profileRank) profileRank.textContent = `#${userData.rank}`;
                 
                 // Calculate and display AVAX allocation bonus
                 const avaxBonus = calculateAvaxBonus(userData.points);
+                console.log('Calculated AVAX bonus for profile:', avaxBonus);
                 if (profilePoints) profilePoints.textContent = `${userData.points} points (${avaxBonus} AVAX)`;
                 if (profileLevel) profileLevel.textContent = userData.level;
                 
@@ -304,18 +336,25 @@ function updateUIAfterAuth(userData) {
                 const progressBarFill = document.getElementById('progress-bar-fill');
                 if (progressBarFill) {
                     const progressPercentage = Math.min((userData.points / 50000) * 100, 100);
+                    console.log('Setting progress bar to:', progressPercentage + '%');
                     progressBarFill.style.width = `${progressPercentage}%`;
+                } else {
+                    console.error('Progress bar fill element not found');
                 }
                 
                 // Update allocation bonus progress
                 const recentActivity = document.getElementById('recent-activity');
+                console.log('Recent activity element found:', recentActivity ? 'Yes' : 'No');
+                
                 if (recentActivity) {
                     try {
                         if (userData.activities && userData.activities.length > 0) {
+                            console.log('Updating recent activities:', userData.activities.length + ' activities found');
                             recentActivity.innerHTML = '';
                             
-                            userData.activities.forEach(activity => {
+                            userData.activities.forEach((activity, index) => {
                                 try {
+                                    console.log(`Processing activity ${index + 1}:`, activity.type);
                                     const activityTime = new Date(activity.timestamp);
                                     const timeAgo = getTimeAgo(activityTime);
                                     
@@ -332,18 +371,26 @@ function updateUIAfterAuth(userData) {
                                     `;
                                     
                                     recentActivity.appendChild(activityItem);
+                                    console.log(`Activity ${index + 1} added to DOM`);
                                 } catch (error) {
-                                    console.error('Error rendering activity item:', error);
+                                    console.error(`Error rendering activity item ${index + 1}:`, error);
                                 }
                             });
+                            console.log('All activities rendered successfully');
+                        } else {
+                            console.log('No activities found in user data');
                         }
                     } catch (error) {
                         console.error('Error updating recent activity:', error);
                     }
                 }
+                
+                console.log('User profile section updated successfully');
             } catch (error) {
                 console.error('Error updating user profile section:', error);
             }
+        } else {
+            console.error('User profile section element not found');
         }
     } catch (error) {
         console.error('Error in updateUIAfterAuth:', error);
