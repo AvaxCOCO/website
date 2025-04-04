@@ -1,277 +1,467 @@
 /*
  * $COCO - The Pink Ostrich of AVAX
- * Responsive Stylesheet
+ * Responsive Stylesheet - Complete Rewrite
  */
 
 /* ===== Global Fixes ===== */
 html, body {
     overflow-x: hidden;
     width: 100%;
+    max-width: 100%;
     position: relative;
 }
-
 body {
     max-width: 100vw;
-}
-
-/* Fix background images and section alignment */
-section {
-    width: 100%;
-    max-width: 100vw;
-    overflow: hidden;
     box-sizing: border-box;
-    padding-left: 0;
-    padding-right: 0;
 }
 
-/* Ensure container is properly centered */
+/* Fix container alignment */
 .container {
     width: 100%;
     max-width: 1200px;
-    margin: 0 auto;
+    margin-left: auto;
+    margin-right: auto;
     padding-left: var(--spacing-lg);
     padding-right: var(--spacing-lg);
     box-sizing: border-box;
+    position: relative;
+}
+
+/* Fix section alignment */
+section {
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 0;
+    padding-right: 0;
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Fix background images */
+section[style*="background"],
+.defi-section,
+.how-to-buy-section,
+.community-section,
+.presale-section {
+    background-size: cover;
+    background-position: center center;
+    position: relative;
+}
+/* Fix background images for specific sections */
+.defi-section {
+    background: linear-gradient(rgba(13, 2, 33, 0.8), rgba(13, 2, 33, 0.8)), url('../images/cocoavaxtokenomics.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: scroll;
+}
+
+.how-to-buy-section {
+    background: linear-gradient(rgba(13, 2, 33, 0.9), rgba(13, 2, 33, 0.9)), url('../images/cocowhyavax.png') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-attachment: scroll !important;
+}
+
+.community-section {
+    background: linear-gradient(rgba(13, 2, 33, 0.8), rgba(13, 2, 33, 0.8)), url('../images/cocoleaderboardcoming.png') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-attachment: scroll !important;
+}
+
+.presale-section {
+    background: linear-gradient(rgba(13, 2, 33, 0.9), rgba(13, 2, 33, 0.9)), url('../images/wenpresale.png') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-attachment: scroll !important;
+}
+
+/* Fix content alignment */
+.section-header {
+    width: 100% !important;
+    max-width: 100% !important;
+    text-align: center !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+/* Fix content cards */
+.defi-card, 
+.how-to-buy-card, 
+.community-card, 
+.presale-info, 
+.presale-countdown,
+.step-card,
+.community-links,
+.sticker-campaign {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+/* Fix flex layouts */
+.defi-content, 
+.how-to-buy-content, 
+.community-content, 
+.presale-content,
+.hero-content,
+.footer-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    box-sizing: border-box !important;
+}
+
+/* ===== Desktop Fixes ===== */
+@media (min-width: 992px) {
+    /* Reset all styles to default for desktop */
+    html, body, section, .container, .hero-section, .defi-section, .how-to-buy-section, .community-section, .presale-section {
+        overflow-x: visible;
+        width: auto;
+        max-width: none;
+        margin: 0;
+        padding: 0;
+    }
+    
+    /* Basic container centering */
+    .container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 24px;
+        box-sizing: border-box;
+    }
+    
+    /* Fix section padding */
+    section {
+        padding: 80px 0;
+        position: relative;
+    }
+    
+    /* Fix background images */
+    .defi-section {
+        background: linear-gradient(rgba(13, 2, 33, 0.8), rgba(13, 2, 33, 0.8)), url('../images/cocoavaxtokenomics.png');
+        background-size: cover;
+        background-position: center;
+    }
+    
+    .how-to-buy-section {
+        background: linear-gradient(rgba(13, 2, 33, 0.9), rgba(13, 2, 33, 0.9)), url('../images/cocowhyavax.png');
+        background-size: cover;
+        background-position: center;
+    }
+    
+    .community-section {
+        background: linear-gradient(rgba(13, 2, 33, 0.8), rgba(13, 2, 33, 0.8)), url('../images/cocoleaderboardcoming.png');
+        background-size: cover;
+        background-position: center;
+    }
+    
+    .presale-section {
+        background: linear-gradient(rgba(13, 2, 33, 0.9), rgba(13, 2, 33, 0.9)), url('../images/wenpresale.png');
+        background-size: cover;
+        background-position: center;
+    }
+    
 }
 
 /* ===== Media Queries ===== */
 
 /* Large Devices (desktops, less than 1200px) */
 @media (max-width: 1199.98px) {
+    .container {
+        max-width: 960px !important;
+    }
+    
     .hero-text h1 {
-        font-size: 2.5rem;
+        font-size: 2.5rem !important;
     }
     
     .hero-text h2 {
-        font-size: 1.75rem;
+        font-size: 1.75rem !important;
     }
     
     .hero-text p {
-        font-size: 1.1rem;
-    }
-    
-    .defi-card {
-        padding: var(--spacing-md);
+        font-size: 1.1rem !important;
     }
 }
 
 /* Medium Devices (tablets, less than 992px) */
-/* Fix for background images and section alignment */
-section::before,
-section::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 100vw;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: -1;
-}
-
-/* Ensure all content is properly centered */
-.section-header {
-    text-align: center;
-    width: 100%;
-    max-width: 100%;
-}
-
 @media (max-width: 991.98px) {
+    .container {
+        max-width: 720px !important;
+    }
+    
     .hero-content {
-        flex-direction: column;
-        text-align: center;
+        flex-direction: column !important;
+        text-align: center !important;
     }
     
     .hero-text {
-        order: 2;
+        order: 2 !important;
     }
     
     .hero-image {
-        order: 1;
-        margin-bottom: var(--spacing-xl);
+        order: 1 !important;
+        margin-bottom: var(--spacing-xl) !important;
     }
     
     .hero-buttons {
-        justify-content: center;
+        justify-content: center !important;
     }
     
     .hero-coco-img {
-        max-height: 350px;
+        max-height: 350px !important;
     }
     
     .defi-content, 
     .how-to-buy-content, 
     .community-content, 
     .presale-content {
-        flex-direction: column;
+        flex-direction: column !important;
     }
     
     .defi-card, 
     .how-to-buy-card, 
     .community-card, 
     .presale-info, 
-    .presale-countdown {
-        width: 100%;
-        margin-bottom: var(--spacing-xl);
-    }
-    
-    .step-card {
-        width: 100%;
-        margin-bottom: var(--spacing-lg);
-    }
-    
-    .step-card:nth-child(even) {
-        margin-left: 0;
-    }
-    
-    .step-card:nth-child(odd) {
-        margin-right: 0;
+    .presale-countdown,
+    .step-card,
+    .community-links,
+    .sticker-campaign {
+        width: 100% !important;
+        margin-bottom: var(--spacing-xl) !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
     }
     
     .step-card-content {
-        flex-direction: column;
-        text-align: center;
+        flex-direction: column !important;
+        text-align: center !important;
     }
     
     .step-card-image {
-        margin-bottom: var(--spacing-md);
-        margin-right: 0;
+        margin-bottom: var(--spacing-md) !important;
+        margin-right: 0 !important;
+        margin-left: 0 !important;
     }
     
     .step-card:nth-child(even) .step-card-content {
-        flex-direction: column;
+        flex-direction: column !important;
     }
     
     .step-card:nth-child(even) .step-card-image {
-        margin-left: 0;
-        margin-bottom: var(--spacing-md);
+        margin-left: 0 !important;
+        margin-bottom: var(--spacing-md) !important;
     }
     
     .footer-content {
-        flex-direction: column;
-        text-align: center;
+        flex-direction: column !important;
+        text-align: center !important;
     }
     
     .footer-logo, .footer-links, .footer-social {
-        margin-bottom: var(--spacing-xl);
+        margin-bottom: var(--spacing-xl) !important;
+    }
+    
+    .footer-links h4::after {
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+    }
+}
+
+/* Fix for mobile devices */
+@media (max-width: 991px) {
+    /* Disable animations that might affect layout */
+    .reveal,
+    .reveal-left,
+    .reveal-right,
+    .reveal-bottom,
+    .fade-in,
+    .hover-float,
+    .hover-scale,
+    .scale-animation,
+    .pulse {
+        transform: none !important;
+        animation: none !important;
+        transition: none !important;
+        opacity: 1 !important;
+    }
+    
+    /* Disable parallax effects */
+    .hero-section,
+    .defi-section,
+    .how-to-buy-section,
+    .community-section,
+    .presale-section {
+        background-attachment: scroll !important;
+    }
+    
+    /* Hide floating characters on mobile */
+    .floating-characters {
+        display: none !important;
     }
 }
 
 /* Small Devices (landscape phones, less than 768px) */
 @media (max-width: 767.98px) {
     html {
-        font-size: 14px;
+        font-size: 14px !important;
     }
     
     .container {
-        padding-left: var(--spacing-md);
-        padding-right: var(--spacing-md);
+        max-width: 540px !important;
+        padding-left: var(--spacing-md) !important;
+        padding-right: var(--spacing-md) !important;
     }
     
     header .container {
-        padding-left: var(--spacing-md);
-        padding-right: var(--spacing-md);
-    }
-    
-    /* Fix background alignment */
-    section {
-        padding-left: 0;
-        padding-right: 0;
-        margin-left: 0;
-        margin-right: 0;
-        width: 100%;
-    }
-    
-    /* Fix content alignment */
-    .defi-content,
-    .how-to-buy-content,
-    .community-content,
-    .presale-content {
-        width: 100%;
-        margin: 0 auto;
+        padding-left: var(--spacing-md) !important;
+        padding-right: var(--spacing-md) !important;
     }
     
     nav ul {
-        display: none;
+        display: none !important;
     }
     
     .mobile-menu-toggle {
-        display: block;
+        display: block !important;
     }
     
     .connect-wallet {
-        display: none;
+        display: none !important;
     }
     
     .hero-text h1 {
-        font-size: 2rem;
+        font-size: 2rem !important;
     }
     
     .hero-text h2 {
-        font-size: 1.5rem;
+        font-size: 1.5rem !important;
     }
     
     .hero-text p {
-        font-size: 1rem;
+        font-size: 1rem !important;
     }
     
     .section-header h2 {
-        font-size: 1.75rem;
+        font-size: 1.75rem !important;
     }
     
     .section-header p {
-        font-size: 1rem;
+        font-size: 1rem !important;
     }
     
     .countdown {
-        flex-wrap: wrap;
-        justify-content: center;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
     }
     
     .countdown-item {
-        min-width: 70px;
-        margin-bottom: var(--spacing-md);
+        min-width: 70px !important;
+        margin-bottom: var(--spacing-md) !important;
     }
     
     .social-links {
-        max-width: 100%;
+        max-width: 100% !important;
     }
     
     .social-link {
-        min-width: auto;
-        width: 100%;
+        min-width: auto !important;
+        width: 100% !important;
     }
     
     .gallery-container {
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
+    }
+    
+    /* Fix step vertical layout */
+    .step-vertical {
+        width: 100% !important;
+        margin-bottom: 40px !important;
+    }
+    
+    .step-content-wrapper {
+        flex-direction: column !important;
+        width: 100% !important;
+        padding: 15px !important;
+    }
+    
+    .step-image-vertical {
+        max-width: 100% !important;
+        margin-bottom: var(--spacing-lg) !important;
+        text-align: center !important;
+    }
+    
+    .step-image-vertical img {
+        max-width: 80% !important;
+        margin: 0 auto !important;
+        display: block !important;
+    }
+    
+    .step-content-vertical {
+        width: 100% !important;
+        text-align: center !important;
+    }
+    
+    .step-number-vertical {
+        position: relative !important;
+        margin: 0 auto 20px auto !important;
+        transform: none !important;
+        left: auto !important;
     }
 }
 
 /* Extra Small Devices (phones, less than 576px) */
 @media (max-width: 575.98px) {
+    .container {
+        width: 100% !important;
+        padding-left: var(--spacing-md) !important;
+        padding-right: var(--spacing-md) !important;
+    }
     .hero-section {
-        padding-top: 100px;
+        padding-top: 100px !important;
+        padding-bottom: 50px !important;
+        min-height: auto !important;
+        height: auto !important;
+        margin-top: 60px !important;
+    }
+    
+    .hero-image {
+        width: 100% !important;
+        text-align: center !important;
+    }
+    
+    .hero-image img {
+        max-width: 80% !important;
+        margin: 0 auto !important;
+        display: block !important;
     }
     
     .hero-text h1 {
-        font-size: 1.75rem;
+        font-size: 1.75rem !important;
     }
     
     .hero-text h2 {
-        font-size: 1.25rem;
+        font-size: 1.25rem !important;
     }
     
     .hero-buttons {
-        flex-direction: column;
-        gap: var(--spacing-md);
+        flex-direction: column !important;
+        gap: var(--spacing-md) !important;
     }
     
     .btn {
-        width: 100%;
+        width: 100% !important;
     }
     
     .section-header h2 {
-        font-size: 1.5rem;
+        font-size: 1.5rem !important;
     }
     
     .defi-card, 
@@ -279,33 +469,33 @@ section::after {
     .community-card, 
     .presale-info, 
     .presale-countdown {
-        padding: var(--spacing-md);
+        padding: var(--spacing-md) !important;
     }
     
     .countdown-item {
-        min-width: 60px;
+        min-width: 60px !important;
     }
     
     .countdown-item span:first-child {
-        font-size: 1.5rem;
+        font-size: 1.5rem !important;
     }
     
     .footer-bottom {
-        flex-direction: column;
-        gap: var(--spacing-md);
+        flex-direction: column !important;
+        gap: var(--spacing-md) !important;
     }
     
     .gallery-container {
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-        gap: var(--spacing-sm);
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)) !important;
+        gap: var(--spacing-sm) !important;
     }
     
     .lightbox-image-container {
-        max-width: 90%;
+        max-width: 90% !important;
     }
     
     .lightbox-actions {
-        flex-direction: column;
-        gap: var(--spacing-sm);
+        flex-direction: column !important;
+        gap: var(--spacing-sm) !important;
     }
 }
