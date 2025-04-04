@@ -8,8 +8,12 @@ const xConfig = {
     clientId: 'ZjBWSGMwTWwyai1UeXQwQlJhdFU6MTpjaQ', // X API client ID
     redirectUri: `${window.location.origin}/callback.html`, // Dynamically use current domain
     scope: 'tweet.read users.read offline.access', // Required permissions
-    state: generateRandomState(), // Security measure to prevent CSRF attacks
+    // We'll generate a new state for each authentication attempt
 };
+
+// Generate and store a new state when the page loads
+const xAuthState = generateRandomState();
+console.log('Generated new state:', xAuthState.substring(0, 5) + '...');
 
 /**
  * Initialize X authentication
@@ -65,8 +69,11 @@ function initXAuth() {
  * Start X authentication flow
  */
 function connectToX() {
+    console.log('connectToX called');
+    
     // Store state for CSRF protection
-    localStorage.setItem('xAuthState', xConfig.state);
+    localStorage.setItem('xAuthState', xAuthState);
+    console.log('Stored state in localStorage:', xAuthState.substring(0, 5) + '...');
     
     // Build authorization URL
     const authUrl = new URL('https://twitter.com/i/oauth2/authorize');
@@ -74,9 +81,11 @@ function connectToX() {
     authUrl.searchParams.append('client_id', xConfig.clientId);
     authUrl.searchParams.append('redirect_uri', xConfig.redirectUri);
     authUrl.searchParams.append('scope', xConfig.scope);
-    authUrl.searchParams.append('state', xConfig.state);
+    authUrl.searchParams.append('state', xAuthState);
     authUrl.searchParams.append('code_challenge', 'challenge'); // For PKCE
     authUrl.searchParams.append('code_challenge_method', 'plain');
+    
+    console.log('Authorization URL created with redirect_uri:', xConfig.redirectUri);
     
     // Redirect to X authorization page
     window.location.href = authUrl.toString();

@@ -84,6 +84,33 @@
             const storedState = localStorage.getItem('xAuthState');
             console.log('Stored state in localStorage:', storedState ? 'Present (not shown for security)' : 'Missing');
             
+            if (!code || !state) {
+                console.error('Missing code or state in URL parameters');
+                document.querySelector('.callback-message').textContent = 'Authentication failed: Missing parameters';
+                document.querySelector('.callback-spinner').innerHTML = '<i class="fas fa-times" style="color: red;"></i>';
+                
+                // Redirect back to leaderboard after a short delay
+                setTimeout(() => {
+                    window.location.href = 'leaderboard.html';
+                }, 3000);
+                return;
+            }
+            
+            if (state !== storedState) {
+                console.error('State mismatch - possible CSRF attack');
+                console.log('URL state:', state ? state.substring(0, 5) + '...' : 'null');
+                console.log('Stored state:', storedState ? storedState.substring(0, 5) + '...' : 'null');
+                
+                document.querySelector('.callback-message').textContent = 'Authentication failed: Security error';
+                document.querySelector('.callback-spinner').innerHTML = '<i class="fas fa-times" style="color: red;"></i>';
+                
+                // Redirect back to leaderboard after a short delay
+                setTimeout(() => {
+                    window.location.href = 'leaderboard.html';
+                }, 3000);
+                return;
+            }
+            
             // Process the callback
             try {
                 console.log('Calling initXAuth()');
@@ -101,11 +128,17 @@
                 
                 if (userData) {
                     console.log('Authentication successful, user data stored');
+                    document.querySelector('.callback-message').textContent = 'Successfully connected X account!';
+                    document.querySelector('.callback-spinner').innerHTML = '<i class="fas fa-check" style="color: green;"></i>';
                 } else {
                     console.log('Authentication may have failed, no user data found');
+                    document.querySelector('.callback-message').textContent = 'Authentication failed: No user data';
+                    document.querySelector('.callback-spinner').innerHTML = '<i class="fas fa-times" style="color: red;"></i>';
                 }
             } catch (error) {
                 console.error('Error during authentication:', error);
+                document.querySelector('.callback-message').textContent = 'Authentication failed: ' + error.message;
+                document.querySelector('.callback-spinner').innerHTML = '<i class="fas fa-times" style="color: red;"></i>';
             }
             
             // Redirect back to leaderboard after a short delay
