@@ -6,7 +6,7 @@
 // X API Configuration
 const xConfig = {
     clientId: 'ZjBWSGMwTWwyai1UeXQwQlJhdFU6MTpjaQ', // X API client ID
-    redirectUri: 'https://www.avaxcoco.com/callback.html', // Callback URL registered with X
+    redirectUri: `${window.location.origin}/callback.html`, // Dynamically use current domain
     scope: 'tweet.read users.read offline.access', // Required permissions
     state: generateRandomState(), // Security measure to prevent CSRF attacks
 };
@@ -67,9 +67,9 @@ function connectToX() {
  */
 async function exchangeCodeForToken(code) {
     try {
-        // In a real implementation, this would be a server-side call
-        // Client-side token exchange is not secure for production
-        // This is a simplified example
+        // SECURITY WARNING: This approach exposes your client secret in client-side code
+        // For production, it's recommended to use a server-side endpoint to handle token exchange
+        // This simplified approach is used to avoid needing a separate server
         
         const tokenUrl = 'https://api.twitter.com/2/oauth2/token';
         const params = new URLSearchParams();
@@ -78,16 +78,23 @@ async function exchangeCodeForToken(code) {
         params.append('redirect_uri', xConfig.redirectUri);
         params.append('code_verifier', 'challenge'); // For PKCE
         
+        // Create Basic Auth header with client ID and secret
+        // SECURITY WARNING: This exposes your client secret
+        const clientSecret = 'NGN5jNMv2dUhEBzpKBtNWqHrTpRqNkH5Lo8TRcs21Ot0zKh5gg';
+        const auth = btoa(`${xConfig.clientId}:${clientSecret}`);
+        
         const response = await fetch(tokenUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': 'Basic ' + btoa(xConfig.clientId + ':' + 'NGN5jNMv2dUhEBzpKBtNWqHrTpRqNkH5Lo8TRcs21Ot0zKh5gg')
+                'Authorization': `Basic ${auth}`
             },
             body: params
         });
         
         if (!response.ok) {
+            const errorData = await response.json();
+            console.error('Token exchange error:', errorData);
             throw new Error('Token exchange failed');
         }
         
@@ -114,7 +121,7 @@ async function exchangeCodeForToken(code) {
  */
 async function fetchXUserData(token) {
     try {
-        // Fetch user profile data
+        // Fetch user profile data directly from X API
         const response = await fetch('https://api.twitter.com/2/users/me?user.fields=profile_image_url,username,name', {
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -122,6 +129,8 @@ async function fetchXUserData(token) {
         });
         
         if (!response.ok) {
+            const errorData = await response.json();
+            console.error('User data error:', errorData);
             throw new Error('Failed to fetch user data');
         }
         
@@ -129,7 +138,7 @@ async function fetchXUserData(token) {
         
         // Fetch user's $COCO engagement metrics
         // In a real implementation, this would be a call to your backend
-        // which would analyze the user's tweets for $COCO mentions
+        // For now, we'll simulate this with mock data
         const cocoEngagement = await fetchCocoEngagement(userData.data.id, token);
         
         // Combine user profile with engagement data
@@ -199,6 +208,7 @@ async function fetchCocoEngagement(userId, token) {
         }, 1000);
     });
 }
+
 
 /**
  * Determine user level based on points
