@@ -78,7 +78,7 @@ module.exports = async (req, res) => {
     // Check if any of the tweets contain the verification code and $COCO
     const verificationTweet = tweetsData.data?.find(tweet => 
       tweet.text.includes(verificationCode) && 
-      (tweet.text.includes('$COCO') || tweet.text.includes('#AVAXCOCO'))
+      (tweet.text.includes('$COCO') || tweet.text.includes('@AVAXCOCO'))
     );
     
     if (!verificationTweet) {
