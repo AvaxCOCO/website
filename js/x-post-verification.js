@@ -32,7 +32,7 @@ function initializeVerification() {
   const suggestedPostElement = document.getElementById('suggested-post');
   if (suggestedPostElement) {
     suggestedPostElement.textContent = 
-      `I'm joining the $COCO leaderboard! 🚀 Building my $COCO bag on #AVAX. Verification: ${verificationCode} #AVAXCOCO`;
+      `I'm joining the $COCO leaderboard! 🚀 Building my $COCO bag on $AVAX. Verification: ${verificationCode} @AVAXCOCO`;
   }
   
   // Set up the post button
