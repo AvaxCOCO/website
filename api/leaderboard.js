@@ -30,17 +30,7 @@ module.exports = async (req, res) => {
   } catch (error) {
     console.error('Error fetching leaderboard:', error);
     
-    // Return mock data if database fails
-    const mockLeaderboard = Array.from({ length: 10 }, (_, i) => ({
-      x_id: `user${i+1}`,
-      handle: `@user${i+1}`,
-      name: `User ${i+1}`,
-      profile_image_url: 'https://via.placeholder.com/50',
-      total_points: 10000 - (i * 1000),
-      rank: i + 1,
-      level: i < 3 ? 'Gold' : i < 6 ? 'Silver' : 'Bronze'
-    }));
-    
-    res.json(mockLeaderboard);
+    // Return a server error status and message
+    res.status(500).json({ error: 'Failed to fetch leaderboard data from database.' });
   }
 };

@@ -133,27 +133,56 @@
     </style>
 </head>
 <body>
+    <!-- Preloader (Optional - Add if desired, copying from leaderboard.html) -->
+    <!-- <div id="preloader"> ... </div> -->
+
+    <!-- Particles Background -->
+    <div id="particles-js"></div>
+
     <!-- Header -->
     <header>
         <div class="container">
             <div class="logo">
-                <a href="index.html">
-                    <img src="images/cocopfp.jpg" alt="$COCO Logo">
-                    <span>$COCO</span>
-                </a>
+                <img src="images/transparent images/cocoannounce-transparent.png" alt="COCO Logo" class="logo-img">
+                <span class="logo-text">$COCO</span>
             </div>
             <nav>
                 <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="leaderboard.html">Leaderboard</a></li>
+                    <!-- Adjust links as needed for this page context if different from leaderboard -->
+                    <li><a href="index.html#hero">Home</a></li>
+                    <li><a href="index.html#defi">DeFi</a></li>
+                    <li><a href="index.html#how-to-buy">How to Buy</a></li>
+                    <li><a href="index.html#community">Community</a></li>
+                    <li><a href="index.html#presale">Presale</a></li>
                     <li><a href="meme-gallery.html">Meme Gallery</a></li>
+                    <li><a href="leaderboard.html">Leaderboard</a></li>
                 </ul>
             </nav>
             <div class="connect-wallet">
-                <a href="#" class="btn">CONNECT WALLET</a>
+                <button id="connect-wallet-btn" class="btn btn-primary">Connect Wallet</button>
+            </div>
+            <div class="mobile-menu-toggle">
+                <i class="fas fa-bars"></i>
             </div>
         </div>
     </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu">
+        <div class="close-menu">
+            <i class="fas fa-times"></i>
+        </div>
+        <ul>
+            <li><a href="index.html#hero">Home</a></li>
+            <li><a href="index.html#defi">DeFi</a></li>
+            <li><a href="index.html#how-to-buy">How to Buy</a></li>
+            <li><a href="index.html#community">Community</a></li>
+            <li><a href="index.html#presale">Presale</a></li>
+            <li><a href="meme-gallery.html">Meme Gallery</a></li>
+            <li><a href="leaderboard.html">Leaderboard</a></li>
+            <li><button id="mobile-connect-wallet-btn" class="btn btn-primary">Connect Wallet</button></li>
+        </ul>
+    </div>
 
     <!-- Main Content -->
     <main>
@@ -203,27 +232,69 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-logo">
-                    <img src="images/cocopfp.jpg" alt="$COCO Logo">
-                    <span>$COCO</span>
+                    <img src="images/transparent images/cocoannounce-transparent.png" alt="COCO Logo" class="footer-logo-img">
+                    <span class="footer-logo-text">$COCO</span>
                 </div>
+                
                 <div class="footer-links">
-                    <a href="terms.html">Terms</a>
-                    <a href="privacy.html">Privacy</a>
-                </div>
-                <div class="social-links">
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-telegram"></i></a>
+                    <div class="footer-nav">
+                        <h4>Navigation</h4>
+                        <ul>
+                            <li><a href="index.html#hero">Home</a></li>
+                            <li><a href="index.html#defi">DeFi</a></li>
+                            <li><a href="index.html#how-to-buy">How to Buy</a></li>
+                            <li><a href="index.html#community">Community</a></li>
+                            <li><a href="index.html#presale">Presale</a></li>
+                            <li><a href="meme-gallery.html">Meme Gallery</a></li>
+                            <li><a href="leaderboard.html">Leaderboard</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-social">
+                        <h4>Social Media</h4>
+                        <div class="social-icons">
+                            <a href="#" target="_blank"><img src="images/Ecosystem/xiconwhite.png" alt="X" class="x-icon-small"></a>
+                            <a href="#" target="_blank"><i class="fab fa-telegram"></i></a>
+                            <a href="#" target="_blank"><i class="fab fa-discord"></i></a>
+                            <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+                            <a href="#" target="_blank"><i class="fab fa-youtube"></i></a>
+                        </div>
+                    </div>
+                    
+                    <div class="footer-ecosystem">
+                        <h4>Ecosystem</h4>
+                        <ul>
+                            <li><a href="https://crypto.com" target="_blank">Buy AVAX on Crypto.com</a></li>
+                            <li><a href="https://core.app" target="_blank">Core Wallet</a></li>
+                            <li><a href="https://pharaoh.exchange" target="_blank">Pharaoh Exchange</a></li>
+                            <li><a href="https://apexdefi.xyz" target="_blank">Apex DeFi</a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
-            <div class="copyright">
+            
+            <div class="footer-bottom">
+                <div class="powered-by">
+                    <img src="images/Ecosystem/Avax/Poweredbyavax.png" alt="Powered by Avalanche" class="powered-by-img">
+                </div>
                 <p>&copy; 2025 $COCO. All rights reserved.</p>
+                <p class="disclaimer">$COCO is a memecoin for entertainment purposes. Always do your own research before investing.</p>
             </div>
         </div>
     </footer>
 
-    <!-- Scripts -->
-    <script src="js/main.js"></script>
-    <script src="js/x-auth-server.js"></script>
-    <script src="js/x-post-verification.js"></script>
+    <!-- JavaScript Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="https://cdn.thirdweb.com/js/connect/dist/thirdweb-connect.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script src="js/main.js"></script> <!-- Common functions, mobile menu, header scroll -->
+    <script src="js/animations.js"></script> <!-- GSAP animations -->
+    <script src="js/wallet.js"></script> <!-- Wallet connection logic -->
+    <script src="js/particles-config.js"></script> <!-- Particles setup -->
+    <script src="js/x-auth-server.js"></script> <!-- X Auth logic (if needed here) -->
+    <script src="js/x-post-verification.js"></script> <!-- Page specific verification logic -->
 </body>
 </html>
