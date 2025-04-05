@@ -130,6 +130,83 @@
         .mt-4 {
             margin-top: 1.5rem;
         }
+
+        /* Force Header Layout - Attempt 2 */
+        header .container {
+            display: flex; /* Re-ensure flex display */
+            align-items: center; /* Keep vertical alignment */
+            width: 100%;
+        }
+        header .container .logo {
+            flex-shrink: 0; /* Prevent logo from shrinking */
+        }
+        header .container nav {
+            flex-grow: 1; /* Allow nav to expand and fill space */
+            display: flex; /* Needed for justify-content */
+            justify-content: center; /* Center nav links within the nav block */
+            padding: 0 20px; /* Add some padding around nav */
+        }
+        header .container .connect-wallet {
+            flex-shrink: 0; /* Prevent button from shrinking */
+        }
+        /* Ensure nav ul itself is also flex if needed */
+        header .container nav ul {
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Center links within the ul */
+            width: 100%; /* Allow ul to fill nav */
+        }
+
+        /* Adjust padding/margin for sections within main on this page */
+        main section {
+            padding-top: 150px; /* Remove top padding */
+            padding-bottom: 150; /* Remove bottom padding */
+            margin-bottom: 0; /* Remove margin between sections */
+        }
+
+        /* Ensure the first section (now .verification-section) clears the header */
+        main section:first-of-type {
+            padding-top: 150px; /* Remove padding entirely */
+            margin-bottom: 10px; /* Remove margin */
+        }
+
+        /* Prevent main element itself from causing horizontal scroll */
+        main {
+             width: 100%;
+             overflow-x: hidden;
+        }
+
+        /* Ensure containers within main are centered and prevent overflow */
+        main .container {
+            width: 100%;
+            max-width: 1200px; /* Use default container width */
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: var(--spacing-lg); /* Use standard padding */
+            padding-right: var(--spacing-lg);
+            box-sizing: border-box;
+            overflow-x: hidden; /* Add overflow hidden here too */
+        }
+
+        /* Override for the verification box container specifically */
+        .verification-container {
+            max-width: 800px; /* Keep this specific override */
+            margin: 20px auto; /* Keep some vertical margin for the box itself */
+            box-sizing: border-box; /* Ensure padding/border included in width */
+            overflow-x: hidden; /* Prevent internal overflow */
+            /* Other styles remain */
+        }
+
+        /* Ensure verification steps don't overflow */
+        .verification-step {
+            box-sizing: border-box;
+            overflow-wrap: break-word; /* Break long words if necessary */
+        }
+        .suggested-post {
+            overflow-wrap: break-word; /* Break long words */
+            word-break: break-all; /* Force breaks */
+        }
+
     </style>
 </head>
 <body>
@@ -186,12 +263,6 @@
 
     <!-- Main Content -->
     <main>
-        <section class="hero">
-            <div class="container">
-                <h1>X Account Verification</h1>
-                <p>Complete the verification process to earn your spot on the $COCO leaderboard!</p>
-            </div>
-        </section>
 
         <section class="verification-section">
             <div class="container">
