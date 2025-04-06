@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>$COCO Arcade - Play COCO Games</title> 
+    <meta name="description" content="Play exciting games like $COCO Run and Flappy $COCO in the $COCO Arcade on Avalanche (AVAX).">
+
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    
+    <style>
+        /* Basic styles */
+        body { 
+            width: 100%; 
+            max-width: 100%; 
+            overflow-x: hidden; 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Fredoka', sans-serif; 
+            background-color: #0d0221; 
+            color: #eee; 
+        }
+        .page-wrapper { width: 100%; max-width: 100%; overflow: hidden; position: relative; }
+        .container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 24px; box-sizing: border-box; }
+        
+        /* Header Styles */
+         header { 
+             position: sticky; 
+             top: 0; 
+             left: 0; 
+             width: 100%; 
+             z-index: 1000; 
+             background-color: rgba(13, 2, 33, 0.9); 
+             padding: 10px 0;
+             border-bottom: 1px solid #ff69b4;
+         }
+         header .container { display: flex; justify-content: space-between; align-items: center; }
+         .logo a { display: flex; align-items: center; text-decoration: none; color: #fff; }
+         .logo-img { height: 40px; margin-right: 10px; }
+         .logo-text { font-size: 1.5em; font-weight: bold; }
+         nav ul { 
+             list-style: none; 
+             padding: 0; 
+             margin: 0; 
+             display: flex; 
+             /* REMOVED gap: 15px; - Let external CSS handle spacing */
+         }
+         nav a { 
+             color: #fff; 
+             text-decoration: none; 
+             /* REMOVED padding: 5px 10px; - Let external CSS handle padding */
+             border-radius: 5px; /* Keep radius */
+             transition: background-color 0.3s; /* Keep transition */
+             display: inline-block; /* Ensure padding/margin applies correctly */
+         }
+         nav a:hover { background-color: #ff69b4; color: #0d0221; } 
+         .connect-wallet button, .mobile-menu button { 
+             background-color: #ff69b4; 
+             color: #0d0221; 
+             border: none; 
+             padding: 10px 15px; 
+             border-radius: 5px; 
+             cursor: pointer; 
+             font-weight: bold;
+         }
+         .mobile-menu-toggle { display: none; color: #fff; font-size: 1.5em; cursor: pointer; }
+         .mobile-menu { display: none; }
+
+        /* Arcade Section Styles */
+        .arcade-section { padding: 100px 0 80px; } 
+        .section-header { margin-bottom: 40px; text-align: center; }
+        .section-header h2 { color: #fff; font-size: 2.5em; margin-bottom: 10px; }
+        .section-header p { color: #ccc; font-size: 1.2em; }
+        .arcade-games { display: flex; justify-content: space-around; align-items: stretch; flex-wrap: wrap; gap: 30px; }
+        .game-card { 
+            text-align: center; 
+            padding: 30px; 
+            border: 2px solid #ff69b4; 
+            border-radius: 15px; 
+            background: rgba(255, 255, 255, 0.05); 
+            flex: 1; 
+            min-width: 250px; 
+            max-width: 350px; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between; 
+            transition: transform 0.3s ease, box-shadow 0.3s ease; 
+        }
+        .game-card:hover { 
+            transform: translateY(-5px); 
+            box-shadow: 0 10px 20px rgba(255, 105, 180, 0.2); 
+        }
+        .game-card h3 { color: #fff; margin-bottom: 15px; font-size: 1.8em; }
+        .game-card img { 
+            max-width: 100%; 
+            height: auto; 
+            max-height: 180px; 
+            object-fit: cover; 
+            border-radius: 10px; 
+            margin-bottom: 15px; 
+            border: 1px solid rgba(255, 105, 180, 0.5); 
+        }
+        .game-card p { color: #ccc; margin-bottom: 20px; flex-grow: 1; }
+        .game-card .btn { 
+            display: inline-block; 
+            padding: 12px 25px; 
+            text-decoration: none; 
+            margin-top: auto; 
+            background-color: #ff69b4; 
+            color: #0d0221; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            font-weight: bold;
+            transition: background-color 0.3s;
+         }
+         .game-card .btn:hover { background-color: #e05aa0; }
+
+         /* Footer Styles */
+         footer { background-color: rgba(13, 2, 33, 0.9); padding: 40px 0 20px; border-top: 1px solid #ff69b4; margin-top: 60px; }
+         .footer-content { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 30px; margin-bottom: 30px; }
+         .footer-logo { display: flex; align-items: center; color: #fff; }
+         .footer-logo-img { height: 40px; margin-right: 10px; }
+         .footer-logo-text { font-size: 1.5em; font-weight: bold; }
+         .footer-links { display: flex; gap: 40px; flex-wrap: wrap; }
+         .footer-nav h4, .footer-social h4, .footer-ecosystem h4 { color: #fff; margin-bottom: 15px; font-size: 1.2em; }
+         .footer-nav ul, .footer-ecosystem ul { list-style: none; padding: 0; margin: 0; }
+         .footer-nav li, .footer-ecosystem li { margin-bottom: 8px; }
+         .footer-nav a, .footer-ecosystem a { color: #ccc; text-decoration: none; transition: color 0.3s; }
+         .footer-nav a:hover, .footer-ecosystem a:hover { color: #ff69b4; }
+         .social-icons { display: flex; gap: 15px; }
+         .social-icons a { color: #ccc; text-decoration: none; font-size: 1.5em; transition: color 0.3s; }
+         .social-icons a:hover { color: #ff69b4; }
+         .x-icon-small { height: 1.2em; vertical-align: middle; } 
+         .footer-bottom { text-align: center; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+         .powered-by-img { height: 30px; margin-bottom: 10px; opacity: 0.7; }
+         .footer-bottom p { color: #aaa; font-size: 0.9em; margin: 5px 0; }
+         .disclaimer { font-style: italic; font-size: 0.8em; }
+
+         /* Responsive adjustments */
+         @media (max-width: 768px) {
+             header .container { flex-direction: column; }
+             nav ul { flex-direction: column; align-items: center; width: 100%; margin-top: 10px; }
+             .connect-wallet { margin-top: 10px; }
+             .footer-content { flex-direction: column; align-items: center; text-align: center; }
+             .footer-links { justify-content: center; }
+             .mobile-menu-toggle { display: block; } 
+             nav { display: none; }
+         }
+
+    </style>
+</head>
+<body>
+    <div class="page-wrapper">
+        <header>
+            <div class="container">
+                <div class="logo">
+                     <a href="index.html" style="display: flex; align-items: center; text-decoration: none;">
+                         <img src="images/transparent images/cocoannounce-transparent.png" alt="COCO Logo Img" class="logo-img">
+                         <span class="logo-text">$COCO</span>
+                     </a>
+                </div>
+                <nav>
+                     <ul>
+                         <li><a href="index.html#hero">Home</a></li>
+                         <li><a href="index.html#defi">DeFi</a></li>
+                         <li><a href="index.html#how-to-buy">How to Buy</a></li>
+                         <li><a href="index.html#community">Community</a></li>
+                         <li><a href="index.html#presale">Presale</a></li>
+                         <li><a href="meme-gallery.html">Meme Gallery</a></li>
+                         <li><a href="leaderboard.html">Leaderboard</a></li>
+                         <li><a href="arcade.html">Arcade</a></li> 
+                     </ul>
+                </nav>
+                <div class="connect-wallet">
+                    <button id="connect-wallet-btn" class="btn btn-primary">Connect Wallet</button>
+                </div>
+                <div class="mobile-menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </div>
+        </header>
+        
+        <div class="mobile-menu">
+             <div class="close-menu">
+                 <i class="fas fa-times"></i>
+             </div>
+             <ul>
+                 <li><a href="index.html#hero">Home</a></li>
+                 <li><a href="index.html#defi">DeFi</a></li>
+                 <li><a href="index.html#how-to-buy">How to Buy</a></li>
+                 <li><a href="index.html#community">Community</a></li>
+                 <li><a href="index.html#presale">Presale</a></li>
+                 <li><a href="meme-gallery.html">Meme Gallery</a></li>
+                 <li><a href="leaderboard.html">Leaderboard</a></li>
+                 <li><a href="arcade.html">Arcade</a></li> 
+                 <li><button id="mobile-connect-wallet-btn" class="btn btn-primary">Connect Wallet</button></li>
+             </ul>
+        </div>
+
+        <section id="arcade" class="arcade-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>$COCO Arcade</h2>
+                    <p>Play our fun COCO games!</p>
+                </div>
+                <div class="arcade-games">
+                    <div class="game-card">
+                        <div>
+                            <h3>$COCO Run</h3>
+                            <img src="COCORun_Game/ASSETS/cocorunnerthumb.png" alt="COCORUN Game Thumbnail"> 
+                            <p>Run with COCO, jump over obstacles, and collect points!</p>
+                        </div>
+                        <a href="COCORun_Game/index.html" class="btn btn-primary">Play $COCO Run</a> 
+                    </div>
+
+                    <div class="game-card">
+                         <div>
+                            <h3>Flappy $COCO</h3>
+                            <img src="FlappyCOCO_Game/COCOFLAP/flappycocothumb.png" alt="FlappyCOCO Game Thumbnail">
+                            <p>Help COCO flap through the trees! How far can you go?</p>
+                        </div>
+                        <a href="FlappyCOCO_Game/index.html" class="btn btn-primary">Play Flappy $COCO</a> 
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+             <div class="container">
+                 <div class="footer-content">
+                     <div class="footer-logo">
+                         <img src="images/transparent images/cocoannounce-transparent.png" alt="COCO Logo Img" class="footer-logo-img">
+                         <span class="footer-logo-text">$COCO</span>
+                     </div>
+                     <div class="footer-links">
+                          <div class="footer-nav">
+                             <h4>Navigation</h4>
+                             <ul>
+                                 <li><a href="index.html#hero">Home</a></li>
+                                 <li><a href="index.html#defi">DeFi</a></li>
+                                 <li><a href="index.html#how-to-buy">How to Buy</a></li>
+                                 <li><a href="index.html#community">Community</a></li>
+                                 <li><a href="index.html#presale">Presale</a></li>
+                                 <li><a href="meme-gallery.html">Meme Gallery</a></li>
+                                 <li><a href="leaderboard.html">Leaderboard</a></li>
+                                 <li><a href="arcade.html">Arcade</a></li>
+                             </ul>
+                         </div>
+                         <div class="footer-social">
+                             <h4>Social Media</h4>
+                             <div class="social-icons">
+                                 <a href="#" target="_blank"><img src="images/Ecosystem/xiconwhite.png" alt="X" class="x-icon-small"></a>
+                                 <a href="#" target="_blank"><i class="fab fa-telegram"></i></a>
+                                 <a href="#" target="_blank"><i class="fab fa-discord"></i></a>
+                                 <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+                                 <a href="#" target="_blank"><i class="fab fa-youtube"></i></a>
+                             </div>
+                         </div>
+                         <div class="footer-ecosystem">
+                             <h4>Ecosystem</h4>
+                             <ul>
+                                 <li><a href="https://crypto.com" target="_blank">Buy AVAX on Crypto.com</a></li>
+                                 <li><a href="https://core.app" target="_blank">Core Wallet</a></li>
+                                 <li><a href="https://pharaoh.exchange" target="_blank">Pharaoh Exchange</a></li>
+                                 <li><a href="https://apexdefi.xyz" target="_blank">Apex DeFi</a></li>
+                             </ul>
+                         </div>
+                     </div>
+                 </div>
+                 <div class="footer-bottom">
+                     <div class="powered-by">
+                         <img src="images/Ecosystem/Avax/Poweredbyavax.png" alt="Powered by Avalanche Img" class="powered-by-img">
+                     </div>
+                     <p>&copy; 2025 $COCO. All rights reserved.</p>
+                     <p class="disclaimer">$COCO is a memecoin for entertainment purposes. Always do your own research before investing.</p>
+                 </div>
+             </div>
+         </footer>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+        <script src="https://cdn.thirdweb.com/js/connect/dist/thirdweb-connect.js"></script>
+        
+        <script src="js/main.js"></script> 
+        <script src="js/animations.js"></script> 
+        <script src="js/wallet.js"></script>
+        </div></body>
+</html>

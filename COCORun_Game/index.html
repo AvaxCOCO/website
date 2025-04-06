@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COCORun Game - $COCO Arcade</title> 
+    <meta name="description" content="Play COCORun, the exciting platformer game in the $COCO Arcade.">
+
+    <link rel="icon" href="../favicon.ico" type="image/x-icon">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/animations.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    
+    <link rel="stylesheet" href="style.css"> <style>
+        /* Styles for game integration */
+        body {
+            padding-top: 70px; /* Adjust based on fixed header height */
+        }
+
+        .game-wrapper {
+            display: flex;
+            flex-direction: column; /* Stack canvas and button vertically */
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px; 
+            min-height: calc(100vh - 70px - 150px); /* Adjust calc if header/footer heights differ */
+            box-sizing: border-box;
+        }
+
+        #gameCanvas {
+            /* background-color: skyblue; /* Defined in style.css now */
+            display: block; 
+            border: 3px solid #ff69b4; 
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            max-width: 100%; 
+            height: auto; 
+            margin-bottom: 20px; /* Add space below canvas */
+        }
+        
+         /* Header styles */
+         header { 
+             position: fixed; 
+             top: 0; 
+             left: 0; 
+             width: 100%; 
+             z-index: 1000; 
+             background-color: rgba(13, 2, 33, 0.9); 
+             border-bottom: 1px solid #ff69b4;
+         }
+         /* REMOVED active class style: nav a.active { ... } */
+         
+         /* Footer width safeguard */
+         footer {
+             width: 100%;
+             display: block; 
+             box-sizing: border-box; 
+             clear: both; 
+         }
+         
+         /* Return button styling (using main site classes if possible) */
+         .return-button-container {
+             text-align: center; /* Center the button */
+             margin-top: 10px; /* Adjust spacing as needed */
+         }
+         /* Basic button style if .btn-secondary isn't defined */
+         .btn-secondary { 
+             background-color: #6c757d; /* Example secondary color */
+             color: white;
+             padding: 10px 20px;
+             border-radius: 5px;
+             text-decoration: none;
+             display: inline-block;
+             border: none;
+             cursor: pointer;
+             transition: background-color 0.3s;
+         }
+         .btn-secondary:hover {
+             background-color: #5a6268;
+         }
+
+    </style>
+</head>
+<body>
+    <div class="page-wrapper"> 
+
+        <header>
+            <div class="container">
+                <div class="logo">
+                    <a href="../index.html" style="display: flex; align-items: center; text-decoration: none;">
+                        <img src="../images/transparent images/cocoannounce-transparent.png" alt="COCO Logo" class="logo-img">
+                        <span class="logo-text">$COCO</span>
+                    </a>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="../index.html#hero">Home</a></li>
+                        <li><a href="../index.html#defi">DeFi</a></li>
+                        <li><a href="../index.html#how-to-buy">How to Buy</a></li>
+                        <li><a href="../index.html#community">Community</a></li>
+                        <li><a href="../index.html#presale">Presale</a></li>
+                        <li><a href="../meme-gallery.html">Meme Gallery</a></li>
+                        <li><a href="../leaderboard.html">Leaderboard</a></li>
+                        <li><a href="../arcade.html">Arcade</a></li> 
+                    </ul>
+                </nav>
+                <div class="connect-wallet">
+                    <button id="connect-wallet-btn" class="btn btn-primary">Connect Wallet</button>
+                </div>
+                <div class="mobile-menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </div>
+        </header>
+
+        <div class="mobile-menu">
+             <div class="close-menu">
+                 <i class="fas fa-times"></i>
+             </div>
+             <ul>
+                 <li><a href="../index.html#hero">Home</a></li>
+                 <li><a href="../index.html#defi">DeFi</a></li>
+                 <li><a href="../index.html#how-to-buy">How to Buy</a></li>
+                 <li><a href="../index.html#community">Community</a></li>
+                 <li><a href="../index.html#presale">Presale</a></li>
+                 <li><a href="../meme-gallery.html">Meme Gallery</a></li>
+                 <li><a href="../leaderboard.html">Leaderboard</a></li>
+                 <li><a href="../arcade.html">Arcade</a></li> 
+                 <li><button id="mobile-connect-wallet-btn" class="btn btn-primary">Connect Wallet</button></li>
+             </ul>
+        </div>
+
+        <main class="game-wrapper">
+             <canvas id="gameCanvas" width="480" height="640">
+                Your browser does not support the HTML canvas tag.
+            </canvas>
+            
+            <div class="return-button-container">
+                <a href="../arcade.html" class="btn btn-secondary">Return to Arcade</a>
+            </div>
+        </main>
+
+        <footer>
+             <div class="container">
+                 <div class="footer-content">
+                     <div class="footer-logo">
+                         <img src="../images/transparent images/cocoannounce-transparent.png" alt="COCO Logo" class="footer-logo-img">
+                         <span class="footer-logo-text">$COCO</span>
+                     </div>
+                     <div class="footer-links">
+                          <div class="footer-nav">
+                             <h4>Navigation</h4>
+                             <ul>
+                                 <li><a href="../index.html#hero">Home</a></li>
+                                 <li><a href="../index.html#defi">DeFi</a></li>
+                                 <li><a href="../index.html#how-to-buy">How to Buy</a></li>
+                                 <li><a href="../index.html#community">Community</a></li>
+                                 <li><a href="../index.html#presale">Presale</a></li>
+                                 <li><a href="../meme-gallery.html">Meme Gallery</a></li>
+                                 <li><a href="../leaderboard.html">Leaderboard</a></li>
+                                 <li><a href="../arcade.html">Arcade</a></li>
+                             </ul>
+                         </div>
+                         <div class="footer-social">
+                             <h4>Social Media</h4>
+                             <div class="social-icons">
+                                 <a href="#" target="_blank"><img src="../images/Ecosystem/xiconwhite.png" alt="X" class="x-icon-small"></a>
+                                 <a href="#" target="_blank"><i class="fab fa-telegram"></i></a>
+                                 <a href="#" target="_blank"><i class="fab fa-discord"></i></a>
+                                 <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+                                 <a href="#" target="_blank"><i class="fab fa-youtube"></i></a>
+                             </div>
+                         </div>
+                         <div class="footer-ecosystem">
+                             <h4>Ecosystem</h4>
+                             <ul>
+                                 <li><a href="https://crypto.com" target="_blank">Buy AVAX on Crypto.com</a></li>
+                                 <li><a href="https://core.app" target="_blank">Core Wallet</a></li>
+                                 <li><a href="https://pharaoh.exchange" target="_blank">Pharaoh Exchange</a></li>
+                                 <li><a href="https://apexdefi.xyz" target="_blank">Apex DeFi</a></li>
+                             </ul>
+                         </div>
+                     </div>
+                 </div>
+                 <div class="footer-bottom">
+                     <div class="powered-by">
+                         <img src="../images/Ecosystem/Avax/Poweredbyavax.png" alt="Powered by Avalanche" class="powered-by-img">
+                     </div>
+                     <p>&copy; 2025 $COCO. All rights reserved.</p>
+                     <p class="disclaimer">$COCO is a memecoin for entertainment purposes. Always do your own research before investing.</p>
+                 </div>
+             </div>
+         </footer>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+        <script src="https://cdn.thirdweb.com/js/connect/dist/thirdweb-connect.js"></script>
+        
+        <script src="../js/main.js"></script> 
+        <script src="../js/animations.js"></script> 
+        <script src="../js/wallet.js"></script>
+        <script src="../js/fix-layout.js"></script> 
+
+        <script src="game.js"></script>
+
+    </div></body>
+</html>
