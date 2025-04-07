@@ -16,8 +16,8 @@ const TILE_HEIGHT = 16;
 const TILES = { EMPTY: 0, GRASS: 1, DIRT: 2, COIN: 3 };
 // Coordinates based on image_d5301d.png
 const tileSpriteData = {
-    [TILES.GRASS]: { sx: 256, sy: 96 },
-    [TILES.DIRT]:  { sx: 256, sy: 112 },
+    [TILES.GRASS]: { sx: 224, sy: 64 },
+    [TILES.DIRT]:  { sx: 224, sy: 80 },
     [TILES.COIN]:  { sx: 64,  sy: 112 } // Using 'Coin full'
 };
 
