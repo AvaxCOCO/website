@@ -1,146 +1,98 @@
-const { Pool } = require('pg');
+/**
+ * Fetches and displays arcade leaderboard scores for a specific game.
+ * @param {string} gameName - The name of the game ('COCORUN' or 'FLAPPYCOCO').
+ * @param {string} tbodyId - The ID of the table body element to populate.
+ */
+async function fetchAndDisplayScores(gameName, tbodyId) {
+    const tbody = document.getElementById(tbodyId);
+    if (!tbody) {
+        console.error(`Leaderboard table body with ID "${tbodyId}" not found.`);
+        return;
+    }
 
-// Configure the connection pool using environment variables
-const pool = new Pool({
-  connectionString: process.env.NEON_DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false // Required for NeonDB connections
-  }
-});
+    // Set initial loading state
+    tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 15px;">Loading...</td></tr>';
 
-// Helper function to handle database queries
-async function query(text, params) {
-  const client = await pool.connect();
-  try {
-    const res = await client.query(text, params);
-    return res;
-  } finally {
-    client.release();
-  }
+    try {
+        // Construct the API URL - CORRECTED PATH
+        // Calls /api/arcade-leaderboard which is handled by api/arcade-leaderboard.js
+        const apiUrl = `/api/arcade-leaderboard?gameName=${encodeURIComponent(gameName)}&limit=10`; // Removed '/scores' from the path
+
+        const response = await fetch(apiUrl);
+
+        if (!response.ok) {
+            // Try to get more specific error info from the response body if possible
+            let errorDetails = '';
+            try {
+                const errorData = await response.json(); // Attempt to parse as JSON
+                errorDetails = errorData.error || JSON.stringify(errorData);
+            } catch (e) {
+                errorDetails = await response.text(); // Fallback to plain text
+            }
+            throw new Error(`Failed to fetch scores: ${response.status} ${response.statusText} - ${errorDetails}`);
+        }
+
+        const scores = await response.json();
+
+        // Clear loading state
+        tbody.innerHTML = '';
+
+        if (scores.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 15px;">No scores yet!</td></tr>';
+            return;
+        }
+
+        // Populate table rows
+        scores.forEach(score => {
+            const row = tbody.insertRow();
+            row.style.borderBottom = '1px solid rgba(255, 105, 180, 0.2)'; // Add style matching HTML
+
+            // Rank cell
+            const rankCell = row.insertCell();
+            rankCell.textContent = score.rank;
+            rankCell.style.padding = '8px';
+            rankCell.style.textAlign = 'left';
+
+            // Player cell (with image and username)
+            const playerCell = row.insertCell();
+            playerCell.style.padding = '8px';
+            playerCell.style.textAlign = 'left';
+            playerCell.style.display = 'flex'; // Use flex for alignment
+            playerCell.style.alignItems = 'center';
+
+            // Profile image
+            const img = document.createElement('img');
+            img.src = score.xprofilepicurl || 'images/transparent images/cocoannounce-transparent.png'; // Use placeholder if missing
+            img.alt = score.xusername || 'Player';
+            img.style.width = '24px';
+            img.style.height = '24px';
+            img.style.borderRadius = '50%';
+            img.style.marginRight = '8px';
+            img.onerror = () => { img.src = 'images/transparent images/cocoannounce-transparent.png'; }; // Fallback on error
+
+            playerCell.appendChild(img);
+            // Use text node for safety against potential HTML injection in usernames
+            playerCell.appendChild(document.createTextNode(score.xusername || 'Anonymous'));
+
+            // Score cell
+            const scoreCell = row.insertCell();
+             // Ensure score is treated as a number, handle potential nulls/undefined just in case
+            scoreCell.textContent = typeof score.score === 'number' ? score.score : 'N/A';
+            scoreCell.style.padding = '8px';
+            scoreCell.style.textAlign = 'right';
+        });
+
+    } catch (error) {
+        console.error(`Error loading leaderboard for ${gameName}:`, error);
+        // Display the actual error message if possible
+        const errorMessage = error.message || 'Error loading scores.';
+        tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; padding: 15px; color: #ff69b4;">${errorMessage}</td></tr>`;
+    }
 }
 
-module.exports = async (req, res) => {
-  // --- CORS Headers ---
-  res.setHeader('Access-Control-Allow-Origin', '*'); // Restrict in production
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  );
-
-  // Handle OPTIONS preflight request
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
-  // --- GET Request: Fetch Scores ---
-  if (req.method === 'GET') {
-    try {
-      const { gameName, limit: limitStr } = req.query;
-
-      // Validate gameName
-      if (!gameName || (gameName !== 'COCORUN' && gameName !== 'FLAPPYCOCO')) {
-        return res.status(400).json({ error: 'Missing or invalid gameName query parameter. Must be COCORUN or FLAPPYCOCO.' });
-      }
-
-      // Validate and parse limit
-      const limit = parseInt(limitStr) || 10; // Default to 10
-      if (isNaN(limit) || limit <= 0 || limit > 100) {
-         return res.status(400).json({ error: 'Invalid limit query parameter. Must be a positive integer (max 100).' });
-      }
-
-      // Fetch scores from DB, including username and profile pic
-      // Uses RANK() window function to calculate rank based on score
-      const sqlQuery = `
-        SELECT
-            xUserId,
-            score,
-            xUsername,         -- Fetch username
-            xProfilePicUrl,    -- Fetch profile pic URL
-            RANK() OVER (ORDER BY score DESC) as rank
-        FROM
-            ArcadeScores       -- Query the correct table
-        WHERE
-            gameName = $1
-        ORDER BY
-            score DESC
-        LIMIT $2;
-      `;
-      const result = await query(sqlQuery, [gameName, limit]);
-
-      res.status(200).json(result.rows);
-
-    } catch (error) {
-      console.error('Error fetching arcade leaderboard:', error);
-      // Check if the error is due to the table not existing (helpful during setup)
-      if (error.code === '42P01') { // '42P01' is PostgreSQL code for undefined_table
-           return res.status(500).json({ error: 'Database table "ArcadeScores" not found. Please ensure the schema is applied.' });
-      }
-      res.status(500).json({ error: 'Failed to fetch arcade leaderboard data.' });
-    }
-  }
-  // --- POST Request: Submit Score ---
-  else if (req.method === 'POST') {
-    try {
-      const { gameName, score, xUserId, xUsername, xProfilePicUrl } = req.body;
-
-      // --- Input Validation ---
-      if (!gameName || (gameName !== 'COCORUN' && gameName !== 'FLAPPYCOCO')) {
-        return res.status(400).json({ error: 'Invalid or missing gameName.' });
-      }
-      if (typeof score !== 'number' || !Number.isInteger(score) || score < 0) {
-        return res.status(400).json({ error: 'Invalid or missing score. Must be a non-negative integer.' });
-      }
-      if (!xUserId || typeof xUserId !== 'string' || xUserId.trim() === '') {
-        return res.status(400).json({ error: 'Invalid or missing xUserId.' });
-      }
-       // Basic validation for potentially missing username/profile pic (allow null/empty strings for now)
-       if (typeof xUsername !== 'string') {
-           // Could default or error, let's allow empty for now
-           console.warn('Missing or invalid xUsername in score submission for user:', xUserId);
-       }
-       if (typeof xProfilePicUrl !== 'string') {
-           // Could default or error, let's allow empty for now
-           console.warn('Missing or invalid xProfilePicUrl in score submission for user:', xUserId);
-       }
-      // --- End Validation ---
-
-
-      // UPSERT score into DB, now including username and profile pic
-      const sqlQuery = `
-        INSERT INTO ArcadeScores (xUserId, gameName, score, xUsername, xProfilePicUrl, playedAt)
-        VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP)
-        ON CONFLICT (xUserId, gameName)
-        DO UPDATE SET
-          score = GREATEST(ArcadeScores.score, EXCLUDED.score), -- Only update if new score is higher
-          -- Optionally update username/pic if they changed, or keep the original
-          xUsername = EXCLUDED.xUsername,                      -- Update username
-          xProfilePicUrl = EXCLUDED.xProfilePicUrl,            -- Update profile pic
-          playedAt = CURRENT_TIMESTAMP                     -- Always update timestamp
-        WHERE ArcadeScores.score < EXCLUDED.score;            -- Condition to only update if score is higher
-      `;
-
-      // Pass all parameters to the query
-      await query(sqlQuery, [xUserId, gameName, score, xUsername || 'Anonymous', xProfilePicUrl || null]); // Provide defaults if needed
-
-      res.status(200).json({ message: 'Score submitted successfully.' });
-
-    } catch (error) {
-      console.error('Error submitting arcade score:', error);
-       // Check if the error is due to the table not existing (helpful during setup)
-      if (error.code === '42P01') { // '42P01' is PostgreSQL code for undefined_table
-           return res.status(500).json({ error: 'Database table "ArcadeScores" not found. Please ensure the schema is applied.' });
-      }
-      // Check for potential foreign key constraint errors if xUserId needs to exist in 'users' table first
-      // if (error.code === '23503') { // foreign_key_violation
-      //    return res.status(400).json({ error: 'User associated with xUserId not found.' });
-      // }
-      res.status(500).json({ error: 'Failed to submit arcade score.' });
-    }
-  }
-  // --- Method Not Allowed ---
-  else {
-    res.setHeader('Allow', ['GET', 'POST', 'OPTIONS']);
-    res.status(405).json({ error: `Method ${req.method} not allowed.` });
-  }
-};
+// Add event listener to load leaderboards when the DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    // Make sure the IDs match the tbody elements in arcade.html
+    fetchAndDisplayScores('COCORUN', 'cocorun-leaderboard-body');
+    fetchAndDisplayScores('FLAPPYCOCO', 'flappycoco-leaderboard-body');
+});
