@@ -340,14 +340,15 @@ function initializeGame() {
     const requiredImages = ['p_idle', 'p_jump', 'p_fall', 'p_run1', 'p_run2', 'p_run3', 'p_run4', 'p_run5', 'gameOverBanner', 'startButton', 'tryAgainButton', 'sky', 'landscape', 'numbers', 'titleLogo', 'levelCompleteBanner', 'nextLevelButton']; // Added nextLevelButton
     let allLoadedAndValid = true; for (let name of requiredImages) { if (!images[name] || !(images[name].naturalWidth > 0 && images[name].naturalHeight > 0)) { console.error(`Initialization Error: Image "${name}" invalid!`); allLoadedAndValid = false; } } if (!allLoadedAndValid) { gameState = 'criticalError'; if(ctx){ ctx.fillStyle='red'; ctx.font='12px sans-serif'; ctx.textAlign='center'; ctx.fillText('ERROR: Invalid image assets. Check console.', canvas.width/2, canvas.height/2); } console.error("Initialization failed: Invalid image assets."); return; } console.log("All required image objects seem valid.");
 
-    // --- Start Level 1 ---
-    startLevel(1); // Start the first level
-    // console.log("Initial level chunks generated."); // Log moved into generator
-    // Set Initial State
-    // gameState = 'start'; // startLevel now sets the state to 'playing'
-    playerX = canvas.width / 4; playerY = (MAP_ROWS - 5) * TILE_HEIGHT;
-    playerVx = 0; playerVy = 0; onGround = false; facingRight = true;
-    currentRunFrame = 0; runFrameTimer = 0; score = 0; frame = 0; currentDifficulty = 0; // Reset difficulty on game start/retry
+    // --- Don't start level 1 here, wait for user input ---
+    // startLevel(1); // Removed initial call
+
+    // Set Initial Game State to show Start Screen
+    gameState = 'start';
+    // Initialize variables that might be needed before level starts (score maybe?)
+    score = 0; // Initialize score
+    currentLevelNumber = 1; // Start at level 1
+    // Other player/level variables will be set by startLevel when the button is clicked
 
     // Read Dimensions (using 50x50 based on user info)
     playerWidth = PLAYER_DRAW_WIDTH;
@@ -412,15 +413,8 @@ function handleInput(event) {
         // const clickRect = {x: clickX, y: clickY, width:1, height:1}; // Remove DEBUG LOG related vars
         // const collisionResult = checkCollision(clickRect, startButtonArea); // Remove DEBUG LOG related vars
         // console.log(`Click: (${clickX}, ${clickY}), ButtonArea:`, startButtonArea, `Collision: ${collisionResult}`); // Remove DEBUG LOG
-        if (checkCollision({x: clickX, y: clickY, width:1, height:1}, startButtonArea)) { // Use original check
-             // gameState = 'playing'; // startLevel handles this
-             // score=0; frame=0; // startLevel handles score reset for level 1
-             // // Reset player position/state
-             // playerY = canvas.height/2; // startLevel handles this
-             // playerVy=0;
-             // onGround=false;
-             // playerX = canvas.width / 4; // startLevel handles this
-             startLevel(1); // Directly start level 1 when start button is clicked
+        if (checkCollision({x: clickX, y: clickY, width:1, height:1}, startButtonArea)) {
+             startLevel(1); // Start level 1 when the button is clicked
         }
     } // Start Game
     else if (gameState === 'gameOver' && tryAgainButtonArea) { if (checkCollision({x: clickX, y: clickY, width:1, height:1}, tryAgainButtonArea)) { startLevel(1); } } // Retry: Restart level 1
@@ -696,13 +690,16 @@ function startLevel(levelNum) {
 
     // Reset player state
     playerX = canvas.width / 4; // Reset X position
-    // Always drop player from the middle-top for consistency
-    playerY = canvas.height / 2; // Drop in from middle
+    // Reset player state consistently for every level start
+    playerX = canvas.width / 4;       // Reset X position
+    playerY = canvas.height / 2;      // Drop in from middle
     playerVx = 0;
     playerVy = 0;
     onGround = false;
     facingRight = true;
-    cameraX = 0; // Reset camera
+    cameraX = 0;                      // Reset camera
+    currentRunFrame = 0;              // Reset animation frame
+    runFrameTimer = 0;
 
     // Reset level timer and frame count
     levelTimer = LEVEL_TIME_LIMIT;
