@@ -36,7 +36,6 @@ let imagesToLoad = [
 let imagesLoaded = 0;
 
 // --- Number Sprite Data & Settings ---
-// Using h: 149 based on user input from previous step
 const numberSpriteData = [
     { x: 32,   y: 6, w: 103, h: 149 }, { x: 145,  y: 6, w: 68,  h: 149 },
     { x: 234,  y: 5, w: 87,  h: 149 }, { x: 337,  y: 6, w: 87,  h: 149 },
@@ -44,7 +43,7 @@ const numberSpriteData = [
     { x: 643,  y: 3, w: 98,  h: 149 }, { x: 744,  y: 6, w: 87,  h: 149 },
     { x: 844,  y: 4, w: 96,  h: 149 }, { x: 948,  y: 4, w: 97,  h: 149 }
 ];
-const numberDrawHeight = 72; // Draw height for score digits
+const numberDrawHeight = 72;
 const numberSpacing = 4;
 // --- End Number Sprite Data ---
 
@@ -54,13 +53,13 @@ function imageLoaded() {
     if (imagesLoaded === imagesToLoad.length) { console.log("All images loaded!"); initializeGame(); }
 }
 
-imagesToLoad.forEach(imgData => { /* ... Image loading loop ... */
+imagesToLoad.forEach(imgData => {
     let img = new Image(); img.onload = imageLoaded;
     img.onerror = () => console.error(`Failed to load image: ${imgData.src}`);
     img.src = imgData.src; images[imgData.name] = img;
 });
 
-// --- Game Variables --- (Declarations remain same)
+// --- Game Variables ---
 let playerY, playerVy, playerWidth, playerHeight;
 let gameState; let frame = 0, score; let obstacles = [], groundX = 0;
 let groundImageWidth = 0, obstacleWidth = 0, obstacleNaturalHeight = 0;
@@ -68,11 +67,11 @@ let startButtonArea = null, tryAgainButtonArea = null;
 let gameOverBannerPos = { x:0, y:0, w:0, h:0 }; let gameOverScorePos = { x:0, y:0 };
 
 // --- Utility Functions ---
-function checkCollision(rect1, rect2) { /* ... Same checkCollision ... */
+function checkCollision(rect1, rect2) {
     if (!rect1 || !rect2 || rect1.width <= 0 || rect1.height <= 0 || rect2.width <= 0 || rect2.height <= 0) { return false; }
     return rect1.x < rect2.x + rect2.width && rect1.x + rect1.width > rect2.x && rect1.y < rect2.y + rect2.height && rect1.y + rect1.height > rect2.y;
 }
-function drawScore(scoreValue, drawX, drawY, align = 'left') { /* ... Same drawScore logic ... */
+function drawScore(scoreValue, drawX, drawY, align = 'left') {
     if (!images.numbers) return; let scoreStr = scoreValue.toString(); let currentDrawX = drawX; let digitDrawInfo = []; let totalScoreWidth = 0;
     for (let i = 0; i < scoreStr.length; i++) { let digit = parseInt(scoreStr[i]); let drawWidth = 0; if (digit >= 0 && digit <= 9) { let sprite = numberSpriteData[digit]; if (sprite && sprite.h > 0) { let aspectRatio = sprite.w / sprite.h; drawWidth = numberDrawHeight * aspectRatio; } } digitDrawInfo.push(drawWidth); totalScoreWidth += drawWidth; } totalScoreWidth += Math.max(0, scoreStr.length - 1) * numberSpacing;
     if (align === 'center') { currentDrawX = drawX - totalScoreWidth / 2; } else if (align === 'right') { currentDrawX = drawX - totalScoreWidth; }
@@ -101,26 +100,24 @@ function initializeGame() {
          gameOverBannerPos.y = Math.max(10, (canvas.height / 4) - gameOverBannerPos.h / 2);
     } else { /* Fallback */ }
 
-    // *** FIX: Calculate Score position BELOW banner ***
+    // Calculate Score position BELOW banner
     gameOverScorePos.x = canvas.width / 2; // Centered horizontally
     gameOverScorePos.y = gameOverBannerPos.y + gameOverBannerPos.h + 5; // Below banner + 5px gap
 
-    // *** FIX: Calculate Try Again Button position BELOW score ***
+    // Calculate Try Again Button position BELOW score
     tryAgainButtonArea = {
         x: canvas.width / 2 - images.tryAgainButton.naturalWidth / 2,
-        // Position below score, accounting for score draw height
         y: gameOverScorePos.y + numberDrawHeight + 5, // Below score + 5px gap
         width: images.tryAgainButton.naturalWidth,
         height: images.tryAgainButton.naturalHeight
     };
 
-    // Start Button position (will be calculated in draw loop for 'start' state)
+    // Start Button position
     startButtonArea = { x: 0, y: 0, width: images.startButton.naturalWidth, height: images.startButton.naturalHeight };
 
 
     if (!canvas.hasInputListener) { canvas.addEventListener('mousedown', handleInput); canvas.hasInputListener = true; }
 
-    // Check dimensions before starting loop
     if (playerHeight > 0 && effectiveGroundHeight > 0 && obstacleWidth > 0 && obstacleNaturalHeight > 0) {
          if(gameState !== 'criticalError' && !canvas.gameLoopRunning) { console.log("Starting game loop..."); gameLoop(); canvas.gameLoopRunning = true; }
     } else { /* Error handling */ }
@@ -128,7 +125,7 @@ function initializeGame() {
 
 
 // --- Input Handling ---
-function handleInput(event) { /* ... Same handleInput logic ... */
+function handleInput(event) {
     const rect = canvas.getBoundingClientRect(); const clickX = event.clientX - rect.left; const clickY = event.clientY - rect.top;
     if (gameState === 'playing') { playerVy = flapStrength; }
     else if (gameState === 'start' && startButtonArea) { if (checkCollision({x: clickX, y: clickY, width:1, height:1}, startButtonArea)) { obstacles = []; playerY = canvas.height / 2.5; playerVy = flapStrength; score = 0; frame = 0; gameState = 'playing'; if (!canvas.gameLoopRunning) { gameLoop(); canvas.gameLoopRunning = true;} } }
@@ -138,7 +135,7 @@ function handleInput(event) { /* ... Same handleInput logic ... */
 // --- Game Loop ---
 let lastFrameTime = 0;
 
-function gameLoop(currentTime) { /* ... Most of gameLoop remains the same ... */
+function gameLoop(currentTime) {
      if (gameState === 'criticalError'){ canvas.gameLoopRunning = false; return; }
      canvas.gameLoopRunning = true;
      ctx.clearRect(0, 0, canvas.width, canvas.height); if (images.sky) { ctx.drawImage(images.sky, 0, 0, canvas.width, canvas.height); } else { ctx.fillStyle = '#afeeee'; ctx.fillRect(0, 0, canvas.width, canvas.height); }
@@ -160,9 +157,7 @@ function gameLoop(currentTime) { /* ... Most of gameLoop remains the same ... */
          if (playerY < 0) {
              playerY = 0;
              playerVy = 0;
-             // Optional: Make hitting ceiling game over?
-             // isGameOver = true;
-             // console.log("Game Over! Hit ceiling. Final Score:", score);
+             // isGameOver = true; // Optional
          }
 
          // Spawn obstacles
@@ -201,14 +196,11 @@ function gameLoop(currentTime) { /* ... Most of gameLoop remains the same ... */
              let topPipeRect = { x: obs.x, y: 0, width: obstacleWidth, height: requiredTopPipeHeight };
              let bottomPipeRect = { x: obs.x, y: bottomPipeTopY, width: obstacleWidth, height: requiredBottomPipeHeight };
 
-             // Check collision only if not already game over from ground hit
              if (!isGameOver && (checkCollision(playerRect, topPipeRect) || checkCollision(playerRect, bottomPipeRect))) {
                  console.log("Game Over! Obstacle Collision Detected! Final Score:", score);
                  isGameOver = true;
-                 // Don't break here, let score check run for the current frame
              }
 
-             // Check score increment
              if (!obs.passed && birdStartX > obs.x + obstacleWidth / 2) {
                  score++;
                  obs.passed = true;
@@ -222,7 +214,7 @@ function gameLoop(currentTime) { /* ... Most of gameLoop remains the same ... */
          }
      } // End (gameState === 'playing')
 
-     // --- NEW: Score Submission Function ---
+     // --- Score Submission Function ---
      function submitScore() {
          if (typeof score !== 'number') {
              console.error("Invalid score type for submission:", score);
@@ -233,14 +225,14 @@ function gameLoop(currentTime) { /* ... Most of gameLoop remains the same ... */
              if (cocoXUserString) {
                  console.log("X User found in localStorage, attempting score submission...");
                  const user = JSON.parse(cocoXUserString);
-                 // Validate parsed user data
                  if (user && user.id && user.handle && user.profileImage) {
-                     fetch('/api/arcade-leaderboard/submit', {
+                     // *** CORRECTED URL ***
+                     fetch('/api/arcade-leaderboard', { // Removed /submit
                          method: 'POST',
                          headers: { 'Content-Type': 'application/json' },
                          body: JSON.stringify({
-                             gameName: 'FLAPPYCOCO', // Correct game name
-                             score: score, // Use the global score variable
+                             gameName: 'FLAPPYCOCO',
+                             score: score,
                              xUserId: user.id,
                              xUsername: user.handle,
                              xProfilePicUrl: user.profileImage
@@ -248,11 +240,15 @@ function gameLoop(currentTime) { /* ... Most of gameLoop remains the same ... */
                      })
                      .then(response => {
                          if (!response.ok) {
+                             // Log detailed error
                              response.text().then(text => {
-                                 console.error('Failed to submit score:', response.status, response.statusText, text);
+                                 console.error(`Failed to submit score: ${response.status} ${response.statusText}. Response: ${text}`);
+                             }).catch(() => {
+                                 console.error(`Failed to submit score: ${response.status} ${response.statusText}. Could not read response body.`);
                              });
                          } else {
                              console.log('Score submitted successfully.');
+                             // Optionally update UI or provide feedback
                          }
                      })
                      .catch(error => {
@@ -269,38 +265,40 @@ function gameLoop(currentTime) { /* ... Most of gameLoop remains the same ... */
          }
      }
      // --- End Score Submission Function ---
-     if (images.obstacle && obstacleWidth > 0) { /* ... Obstacle drawing logic remains same ... */
+
+     // --- Draw Obstacles ---
+     if (images.obstacle && obstacleWidth > 0) {
          obstacles.forEach((obs, index) => { let bottomPipeTopY = obs.gapY + gapSize / 2; let topPipeBottomY = obs.gapY - gapSize / 2; let requiredBottomPipeHeight = Math.max(0, (canvas.height - effectiveGroundHeight) - bottomPipeTopY); let requiredTopPipeHeight = Math.max(0, topPipeBottomY); if (requiredBottomPipeHeight > 0) { ctx.drawImage(images.obstacle, obs.x, bottomPipeTopY, obstacleWidth, requiredBottomPipeHeight); } if (requiredTopPipeHeight > 0) { ctx.save(); ctx.translate(obs.x + obstacleWidth / 2, topPipeBottomY); ctx.scale(1, -1); ctx.drawImage(images.obstacle, -obstacleWidth / 2, 0, obstacleWidth, requiredTopPipeHeight); ctx.restore(); } });
      }
-     if (images.ground && groundImageWidth > 0 && effectiveGroundHeight > 0) { /* ... Ground drawing logic remains same ... */
+
+     // --- Draw Ground ---
+     if (images.ground && groundImageWidth > 0 && effectiveGroundHeight > 0) {
          ctx.drawImage(images.ground, 0, 0, groundImageWidth, effectiveGroundHeight, groundX, canvas.height - effectiveGroundHeight, groundImageWidth, effectiveGroundHeight); ctx.drawImage(images.ground, 0, 0, groundImageWidth, effectiveGroundHeight, groundX + groundImageWidth, canvas.height - effectiveGroundHeight, groundImageWidth, effectiveGroundHeight);
      } else { ctx.fillStyle = '#8B4513'; ctx.fillRect(0, canvas.height - effectiveGroundHeight, canvas.width, effectiveGroundHeight); }
-     let currentBirdImage = images.idle; /* ... Player drawing logic remains same ... */
+
+     // --- Draw Player ---
+     let currentBirdImage = images.idle;
      if (gameState === 'playing') { if (playerVy < -1) currentBirdImage = images.flap; else if (playerVy > 1) currentBirdImage = images.fall; } else if (gameState === 'gameOver') { currentBirdImage = images.crash; } else if (gameState === 'start') { currentBirdImage = images.idle; } if (currentBirdImage && playerWidth > 0 && playerHeight > 0) { ctx.drawImage(currentBirdImage, birdStartX, playerY, playerWidth, playerHeight); }
+
      // --- Draw UI ---
-     if (gameState === 'start') { /* ... Start screen UI remains same ... */
+     if (gameState === 'start') {
          if (images.title && images.title.naturalWidth > 0) { let titleDrawWidth = canvas.width * 0.75; let titleAspectRatio = images.title.naturalHeight > 0 ? images.title.naturalHeight / images.title.naturalWidth : 1; let titleDrawHeight = titleDrawWidth * titleAspectRatio; let titleX = canvas.width / 2 - titleDrawWidth / 2; let titleY = canvas.height * 0.15; ctx.drawImage(images.title, titleX, titleY, titleDrawWidth, titleDrawHeight); if (images.startButton && startButtonArea) { startButtonArea.x = canvas.width / 2 - images.startButton.naturalWidth / 2; startButtonArea.y = titleY + titleDrawHeight + 40; ctx.drawImage(images.startButton, startButtonArea.x, startButtonArea.y); } } else { /* Fallback text */ }
      } else if (gameState === 'gameOver') {
-         // Draw Banner, Score, Button - using pre-calculated positions from initializeGame
-         // Order depends on calculation order in initializeGame now
          if (images.gameOverBanner && gameOverBannerPos.w > 0) {
-             ctx.drawImage(images.gameOverBanner, gameOverBannerPos.x, gameOverBannerPos.y, gameOverBannerPos.w, gameOverBannerPos.h); // Draw Banner
-
-             // *** Draw Score ABOVE Button using calculated positions ***
+             ctx.drawImage(images.gameOverBanner, gameOverBannerPos.x, gameOverBannerPos.y, gameOverBannerPos.w, gameOverBannerPos.h);
              drawScore(score, gameOverScorePos.x, gameOverScorePos.y, 'center');
-
              if (images.tryAgainButton && tryAgainButtonArea) {
-                  // Draw Button using calculated position
                   ctx.drawImage(images.tryAgainButton, tryAgainButtonArea.x, tryAgainButtonArea.y);
              }
          } else { /* Fallback text */ }
      }
-     if (gameState === 'playing') { drawScore(score, 20, 20, 'left'); } // Draw score using sprites
+     if (gameState === 'playing') { drawScore(score, 20, 20, 'left'); }
+
      requestAnimationFrame(gameLoop);
 }
 
 // --- Initial message while loading ---
-if (ctx) { /* ... Loading message ... */
+if (ctx) {
      ctx.fillStyle = 'black'; ctx.font = '20px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('Loading assets...', canvas.width / 2, canvas.height / 2);
 } else { console.error("Canvas context not available for initial loading message."); }
 
