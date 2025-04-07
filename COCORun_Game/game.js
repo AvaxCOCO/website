@@ -551,9 +551,11 @@ function gameLoop() {
 
         // --- Update Level Timer ---
         levelTimer -= 1 / 60; // Assuming 60 FPS, decrement timer each frame
-        if (levelTimer <= 0) {
+        if (levelTimer <= 0 && gameState === 'playing') { // Check if already game over
             levelTimer = 0;
             gameState = 'gameOver'; // Timer running out is Game Over
+            console.log("Game Over! Timer ran out. Final Score:", score);
+            submitScore(); // Call submission function
         }
 
         // --- Difficulty is now set per level, not continuously calculated ---
@@ -585,16 +587,67 @@ function gameLoop() {
         }
 
         // --- Level End Check (Reaching Right Edge) ---
-        if (playerX >= MAP_COLS * TILE_WIDTH) {
+        if (playerX >= MAP_COLS * TILE_WIDTH && gameState === 'playing') {
             gameState = 'levelComplete';
             levelTimer = 0; // Ensure timer shows 0 on complete screen
         }
-        // --- Fall off screen check (Only if level not complete) ---
-        else if (playerY > canvas.height + playerHeight) { gameState = 'gameOver'; } // Allow falling slightly off before game over
-        if (playerY > canvas.height + playerHeight) { gameState = 'gameOver'; } // Allow falling slightly off before game over
-        // TODO: Level Complete Check
+        // --- Fall off screen check (Only if level not complete and not already game over) ---
+        else if (playerY > canvas.height + playerHeight && gameState === 'playing') {
+            gameState = 'gameOver'; // Player fell off
+            console.log("Game Over! Player fell off. Final Score:", score);
+            submitScore(); // Call submission function
+        }
+        // Removed duplicate fall check and TODO
 
      } // End update playing state
+
+     // --- NEW: Score Submission Function ---
+     function submitScore() {
+         if (typeof score !== 'number') {
+             console.error("Invalid score type for submission:", score);
+             return;
+         }
+         try {
+             const cocoXUserString = localStorage.getItem('cocoXUser');
+             if (cocoXUserString) {
+                 console.log("X User found in localStorage, attempting score submission...");
+                 const user = JSON.parse(cocoXUserString);
+                 // Validate parsed user data
+                 if (user && user.id && user.handle && user.profileImage) {
+                     fetch('/api/arcade-leaderboard/submit', {
+                         method: 'POST',
+                         headers: { 'Content-Type': 'application/json' },
+                         body: JSON.stringify({
+                             gameName: 'COCORUN',
+                             score: score, // Use the global score variable
+                             xUserId: user.id,
+                             xUsername: user.handle,
+                             xProfilePicUrl: user.profileImage
+                         })
+                     })
+                     .then(response => {
+                         if (!response.ok) {
+                             response.text().then(text => {
+                                 console.error('Failed to submit score:', response.status, response.statusText, text);
+                             });
+                         } else {
+                             console.log('Score submitted successfully.');
+                         }
+                     })
+                     .catch(error => {
+                         console.error('Network or fetch error submitting score:', error);
+                     });
+                 } else {
+                     console.warn("Parsed X User data is incomplete or invalid. Cannot submit score.", user);
+                 }
+             } else {
+                 console.log("No X User found in localStorage. Score not submitted.");
+             }
+         } catch (error) {
+             console.error("Error during score submission logic:", error);
+         }
+     }
+     // --- End Score Submission Function ---
 
      // --- Draw ---
      // --- Clear Canvas ---

@@ -142,9 +142,133 @@ function gameLoop(currentTime) { /* ... Most of gameLoop remains the same ... */
      if (gameState === 'criticalError'){ canvas.gameLoopRunning = false; return; }
      canvas.gameLoopRunning = true;
      ctx.clearRect(0, 0, canvas.width, canvas.height); if (images.sky) { ctx.drawImage(images.sky, 0, 0, canvas.width, canvas.height); } else { ctx.fillStyle = '#afeeee'; ctx.fillRect(0, 0, canvas.width, canvas.height); }
-     if (gameState === 'playing') { /* ... Update logic remains the same ... */
-         frame++; playerVy += gravity; playerY += playerVy; if (playerY + playerHeight > canvas.height - effectiveGroundHeight) { playerY = canvas.height - effectiveGroundHeight - playerHeight; playerVy = 0; gameState = 'gameOver'; } if (playerY < 0) { playerY = 0; playerVy = 0; } if (frame % obstacleSpawnRate === 0) { let minGapY = gapSize / 2 + minDistanceFromTop; let maxGapY = canvas.height - effectiveGroundHeight - gapSize / 2 - 50; if (maxGapY <= minGapY) { maxGapY = minGapY + 50; } let gapCenterY = Math.random() * (maxGapY - minGapY) + minGapY; obstacles.push({ x: canvas.width, gapY: gapCenterY, passed: false }); } for (let i = obstacles.length - 1; i >= 0; i--) { obstacles[i].x -= obstacleSpeed; if (obstacles[i].x + obstacleWidth < 0) { obstacles.splice(i, 1); } } groundX -= groundSpeed; if (images.ground && groundImageWidth > 0 && groundX <= -groundImageWidth) { groundX = 0; } let playerRect = { x: birdStartX, y: playerY, width: playerWidth, height: playerHeight }; for (let i = 0; i < obstacles.length; i++) { let obs = obstacles[i]; if (obstacleWidth <= 0 || effectiveGroundHeight <= 0) continue; let topPipeBottomY = obs.gapY - gapSize / 2; let bottomPipeTopY = obs.gapY + gapSize / 2; let requiredBottomPipeHeight = Math.max(0, (canvas.height - effectiveGroundHeight) - bottomPipeTopY); let requiredTopPipeHeight = Math.max(0, topPipeBottomY); let topPipeRect = { x: obs.x, y: 0, width: obstacleWidth, height: requiredTopPipeHeight }; let bottomPipeRect = { x: obs.x, y: bottomPipeTopY, width: obstacleWidth, height: requiredBottomPipeHeight }; if (checkCollision(playerRect, topPipeRect) || checkCollision(playerRect, bottomPipeRect)) { console.log("Obstacle Collision Detected!"); gameState = 'gameOver'; break; } if (!obs.passed && birdStartX > obs.x + obstacleWidth / 2) { score++; obs.passed = true; } }
+     if (gameState === 'playing') {
+         frame++;
+         playerVy += gravity;
+         playerY += playerVy;
+
+         let isGameOver = false;
+
+         // Check ground collision
+         if (playerY + playerHeight > canvas.height - effectiveGroundHeight) {
+             playerY = canvas.height - effectiveGroundHeight - playerHeight;
+             playerVy = 0;
+             isGameOver = true;
+             console.log("Game Over! Hit ground. Final Score:", score);
+         }
+         // Check ceiling collision
+         if (playerY < 0) {
+             playerY = 0;
+             playerVy = 0;
+             // Optional: Make hitting ceiling game over?
+             // isGameOver = true;
+             // console.log("Game Over! Hit ceiling. Final Score:", score);
+         }
+
+         // Spawn obstacles
+         if (frame % obstacleSpawnRate === 0) {
+             let minGapY = gapSize / 2 + minDistanceFromTop;
+             let maxGapY = canvas.height - effectiveGroundHeight - gapSize / 2 - 50;
+             if (maxGapY <= minGapY) { maxGapY = minGapY + 50; }
+             let gapCenterY = Math.random() * (maxGapY - minGapY) + minGapY;
+             obstacles.push({ x: canvas.width, gapY: gapCenterY, passed: false });
+         }
+
+         // Move obstacles
+         for (let i = obstacles.length - 1; i >= 0; i--) {
+             obstacles[i].x -= obstacleSpeed;
+             if (obstacles[i].x + obstacleWidth < 0) {
+                 obstacles.splice(i, 1);
+             }
+         }
+
+         // Move ground
+         groundX -= groundSpeed;
+         if (images.ground && groundImageWidth > 0 && groundX <= -groundImageWidth) {
+             groundX = 0;
+         }
+
+         // Check obstacle collision and score
+         let playerRect = { x: birdStartX, y: playerY, width: playerWidth, height: playerHeight };
+         for (let i = 0; i < obstacles.length; i++) {
+             let obs = obstacles[i];
+             if (obstacleWidth <= 0 || effectiveGroundHeight <= 0) continue;
+
+             let topPipeBottomY = obs.gapY - gapSize / 2;
+             let bottomPipeTopY = obs.gapY + gapSize / 2;
+             let requiredBottomPipeHeight = Math.max(0, (canvas.height - effectiveGroundHeight) - bottomPipeTopY);
+             let requiredTopPipeHeight = Math.max(0, topPipeBottomY);
+             let topPipeRect = { x: obs.x, y: 0, width: obstacleWidth, height: requiredTopPipeHeight };
+             let bottomPipeRect = { x: obs.x, y: bottomPipeTopY, width: obstacleWidth, height: requiredBottomPipeHeight };
+
+             // Check collision only if not already game over from ground hit
+             if (!isGameOver && (checkCollision(playerRect, topPipeRect) || checkCollision(playerRect, bottomPipeRect))) {
+                 console.log("Game Over! Obstacle Collision Detected! Final Score:", score);
+                 isGameOver = true;
+                 // Don't break here, let score check run for the current frame
+             }
+
+             // Check score increment
+             if (!obs.passed && birdStartX > obs.x + obstacleWidth / 2) {
+                 score++;
+                 obs.passed = true;
+             }
+         }
+
+         // Set game state and submit score if game over occurred in this frame
+         if (isGameOver) {
+             gameState = 'gameOver';
+             submitScore(); // Call submission function
+         }
      } // End (gameState === 'playing')
+
+     // --- NEW: Score Submission Function ---
+     function submitScore() {
+         if (typeof score !== 'number') {
+             console.error("Invalid score type for submission:", score);
+             return;
+         }
+         try {
+             const cocoXUserString = localStorage.getItem('cocoXUser');
+             if (cocoXUserString) {
+                 console.log("X User found in localStorage, attempting score submission...");
+                 const user = JSON.parse(cocoXUserString);
+                 // Validate parsed user data
+                 if (user && user.id && user.handle && user.profileImage) {
+                     fetch('/api/arcade-leaderboard/submit', {
+                         method: 'POST',
+                         headers: { 'Content-Type': 'application/json' },
+                         body: JSON.stringify({
+                             gameName: 'FLAPPYCOCO', // Correct game name
+                             score: score, // Use the global score variable
+                             xUserId: user.id,
+                             xUsername: user.handle,
+                             xProfilePicUrl: user.profileImage
+                         })
+                     })
+                     .then(response => {
+                         if (!response.ok) {
+                             response.text().then(text => {
+                                 console.error('Failed to submit score:', response.status, response.statusText, text);
+                             });
+                         } else {
+                             console.log('Score submitted successfully.');
+                         }
+                     })
+                     .catch(error => {
+                         console.error('Network or fetch error submitting score:', error);
+                     });
+                 } else {
+                     console.warn("Parsed X User data is incomplete or invalid. Cannot submit score.", user);
+                 }
+             } else {
+                 console.log("No X User found in localStorage. Score not submitted.");
+             }
+         } catch (error) {
+             console.error("Error during score submission logic:", error);
+         }
+     }
+     // --- End Score Submission Function ---
      if (images.obstacle && obstacleWidth > 0) { /* ... Obstacle drawing logic remains same ... */
          obstacles.forEach((obs, index) => { let bottomPipeTopY = obs.gapY + gapSize / 2; let topPipeBottomY = obs.gapY - gapSize / 2; let requiredBottomPipeHeight = Math.max(0, (canvas.height - effectiveGroundHeight) - bottomPipeTopY); let requiredTopPipeHeight = Math.max(0, topPipeBottomY); if (requiredBottomPipeHeight > 0) { ctx.drawImage(images.obstacle, obs.x, bottomPipeTopY, obstacleWidth, requiredBottomPipeHeight); } if (requiredTopPipeHeight > 0) { ctx.save(); ctx.translate(obs.x + obstacleWidth / 2, topPipeBottomY); ctx.scale(1, -1); ctx.drawImage(images.obstacle, -obstacleWidth / 2, 0, obstacleWidth, requiredTopPipeHeight); ctx.restore(); } });
      }

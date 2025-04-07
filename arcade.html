@@ -236,6 +236,52 @@
             </div>
         </section>
 
+        <!-- Arcade Leaderboard Section -->
+        <section id="leaderboard-display" class="leaderboard-section" style="padding: 60px 0;">
+            <div class="container">
+                <div class="section-header" style="margin-bottom: 30px;">
+                    <h2 style="font-size: 2em;">Arcade High Scores</h2>
+                </div>
+                <div class="leaderboard-tables" style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 20px;">
+                    <!-- COCORun Leaderboard -->
+                    <div class="leaderboard-table" style="flex: 1; min-width: 300px; max-width: 450px; background: rgba(255, 255, 255, 0.05); border: 1px solid #ff69b4; border-radius: 10px; padding: 20px;">
+                        <h3 style="text-align: center; color: #fff; margin-bottom: 15px;">$COCO Run</h3>
+                        <table id="cocorun-leaderboard-body" style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="border-bottom: 1px solid rgba(255, 105, 180, 0.5);">
+                                    <th style="padding: 8px; text-align: left;">Rank</th>
+                                    <th style="padding: 8px; text-align: left;">Player</th>
+                                    <th style="padding: 8px; text-align: right;">Score</th>
+                                </tr>
+                            </thead>
+                            <tbody style="color: #ccc;">
+                                <!-- Scores loaded via JS -->
+                                <tr><td colspan="3" style="text-align: center; padding: 15px;">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- FlappyCOCO Leaderboard -->
+                    <div class="leaderboard-table" style="flex: 1; min-width: 300px; max-width: 450px; background: rgba(255, 255, 255, 0.05); border: 1px solid #ff69b4; border-radius: 10px; padding: 20px;">
+                        <h3 style="text-align: center; color: #fff; margin-bottom: 15px;">Flappy $COCO</h3>
+                        <table id="flappycoco-leaderboard-body" style="width: 100%; border-collapse: collapse;">
+                             <thead>
+                                <tr style="border-bottom: 1px solid rgba(255, 105, 180, 0.5);">
+                                    <th style="padding: 8px; text-align: left;">Rank</th>
+                                    <th style="padding: 8px; text-align: left;">Player</th>
+                                    <th style="padding: 8px; text-align: right;">Score</th>
+                                </tr>
+                            </thead>
+                            <tbody style="color: #ccc;">
+                                <!-- Scores loaded via JS -->
+                                <tr><td colspan="3" style="text-align: center; padding: 15px;">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- End Arcade Leaderboard Section -->
+
         <footer>
              <div class="container">
                  <div class="footer-content">
@@ -294,7 +340,8 @@
         <script src="https://cdn.thirdweb.com/js/connect/dist/thirdweb-connect.js"></script>
         
         <script src="js/main.js"></script> 
-        <script src="js/animations.js"></script> 
+        <script src="js/animations.js"></script>
         <script src="js/wallet.js"></script>
+        <script src="js/arcade-leaderboard.js" defer></script> <!-- Added leaderboard script -->
         </div></body>
 </html>
