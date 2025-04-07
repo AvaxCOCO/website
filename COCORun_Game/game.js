@@ -1,4 +1,4 @@
- // --- Get Canvas and Context ---
+// --- Get Canvas and Context ---
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas ? canvas.getContext('2d') : null; // Check canvas exists
 console.log("game.js script executing...");
@@ -429,6 +429,10 @@ function handleKeyDown(event) {
     } else if (key === 'd' || key === 'arrowright') {
         keyRightPressed = true;
     }
+    else if ((key === ' ' || key === 'w' || key === 'arrowup') && gameState === 'playing' && onGround) { // Jump with Space, W, or ArrowUp
+        playerVy = jumpStrength;
+        onGround = false;
+    }
     // Optional: Prevent default browser behavior for arrow keys/space if needed
     // if (['arrowleft', 'arrowright', 'arrowup', 'arrowdown', ' '].includes(key)) {
     //     event.preventDefault();
@@ -601,7 +605,7 @@ function gameLoop() {
 
      } // End update playing state
 
-     // --- NEW: Score Submission Function ---
+     // --- Score Submission Function ---
      function submitScore() {
          if (typeof score !== 'number') {
              console.error("Invalid score type for submission:", score);
@@ -614,11 +618,12 @@ function gameLoop() {
                  const user = JSON.parse(cocoXUserString);
                  // Validate parsed user data
                  if (user && user.id && user.handle && user.profileImage) {
-                     fetch('/api/arcade-leaderboard/submit', {
+                     // *** CORRECTED URL ***
+                     fetch('/api/arcade-leaderboard', { // Removed /submit
                          method: 'POST',
                          headers: { 'Content-Type': 'application/json' },
                          body: JSON.stringify({
-                             gameName: 'COCORUN',
+                             gameName: 'COCORUN', // Correct game name for this file
                              score: score, // Use the global score variable
                              xUserId: user.id,
                              xUsername: user.handle,
@@ -627,11 +632,15 @@ function gameLoop() {
                      })
                      .then(response => {
                          if (!response.ok) {
+                            // Log detailed error
                              response.text().then(text => {
-                                 console.error('Failed to submit score:', response.status, response.statusText, text);
+                                 console.error(`Failed to submit score: ${response.status} ${response.statusText}. Response: ${text}`);
+                             }).catch(() => {
+                                 console.error(`Failed to submit score: ${response.status} ${response.statusText}. Could not read response body.`);
                              });
                          } else {
                              console.log('Score submitted successfully.');
+                             // Optionally update UI or provide feedback
                          }
                      })
                      .catch(error => {
