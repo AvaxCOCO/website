@@ -108,13 +108,13 @@
     display: flex;
     justify-content: center; /* Keep space-around for the tables themselves */
     flex-wrap: wrap;
-    gap: 30px;
+    gap: 20px;
 }
 
 .leaderboard-table-wrapper {
-    flex: 1 1 350px;
-    min-width: 300px;
-    max-width: 400px;
+    flex: 1;
+    min-width: 250px;
+    max-width: 350px;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid #ff69b4;
     border-radius: 10px;
