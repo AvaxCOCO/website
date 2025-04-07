@@ -1,0 +1,258 @@
+/* Arcade Section Styles (Moved from arcade.html <style> block) */
+.arcade-section {
+    padding: 100px 0 80px;
+}
+
+.arcade-section .section-header { /* Target section-header specifically within arcade */
+    margin-bottom: 40px;
+    text-align: center;
+}
+.arcade-section .section-header h2 {
+    color: #fff;
+    font-size: 2.5em; /* From original style */
+    margin-bottom: 10px;
+}
+.arcade-section .section-header p {
+    color: #ccc;
+    font-size: 1.2em; /* From original style */
+}
+
+.arcade-games {
+    display: flex;
+    /* justify-content: space-around; /* CHANGED */
+    justify-content: center; /* CHANGE: Center the cards */
+    align-items: stretch;
+    flex-wrap: wrap;
+    /* gap: 30px; */ /* CHANGED */
+    gap: 20px; /* CHANGE: Reduced the gap */
+}
+
+.game-card {
+    text-align: center;
+    padding: 30px;
+    border: 2px solid #ff69b4;
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    flex: 1; /* Keep flex properties */
+    min-width: 250px;
+    max-width: 350px; /* Keep max-width */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.game-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(255, 105, 180, 0.2);
+}
+
+.game-card h3 {
+    color: #fff;
+    margin-bottom: 15px;
+    font-size: 1.8em;
+}
+
+.game-card img {
+    max-width: 100%;
+    height: auto;
+    max-height: 180px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    border: 1px solid rgba(255, 105, 180, 0.5);
+}
+
+.game-card p {
+    color: #ccc;
+    margin-bottom: 20px;
+    flex-grow: 1;
+}
+
+.game-card .btn { /* Targets buttons specifically within game-card */
+    display: inline-block;
+    padding: 12px 25px;
+    text-decoration: none;
+    margin-top: auto;
+    background-color: #ff69b4;
+    color: #0d0221;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+ }
+
+ .game-card .btn:hover {
+    background-color: #e05aa0;
+ }
+
+
+/* --- Arcade Leaderboard Styles --- */
+.leaderboard-section {
+    padding: 60px 0;
+}
+
+.leaderboard-section .section-header { /* Target section-header specifically within leaderboard */
+    margin-bottom: 30px;
+}
+
+.leaderboard-section .section-header h2 {
+     font-size: 2em;
+     color: #fff;
+     margin-bottom: 10px;
+     text-align: center;
+}
+
+.leaderboard-tables-container {
+    display: flex;
+    justify-content: center; /* Keep space-around for the tables themselves */
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+.leaderboard-table-wrapper {
+    flex: 1 1 350px;
+    min-width: 300px;
+    max-width: 400px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid #ff69b4;
+    border-radius: 10px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.leaderboard-table-wrapper h3 {
+    text-align: center;
+    color: #fff;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.5em;
+}
+
+.highscore-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed; /* ADDED: Force table to use defined widths */
+}
+
+.highscore-table thead tr {
+    border-bottom: 1px solid rgba(255, 105, 180, 0.5);
+}
+
+.highscore-table th,
+.highscore-table td {
+    padding: 10px 8px;
+    vertical-align: middle;
+    /* ADDED: Prevent long unbroken strings from overflowing */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.highscore-table th {
+     font-weight: 600;
+     color: #eee;
+}
+
+/* --- Column Widths and Alignment (ADJUSTED) --- */
+.highscore-table .rank-col {
+    /* width: 15%; */ /* REMOVED % width */
+    width: 4rem; /* FIXED width */
+    text-align: left;
+}
+
+.highscore-table .player-col {
+    /* width: 55%; */ /* REMOVED % width */
+    width: auto; /* Let it take remaining space */
+    text-align: left;
+}
+
+.highscore-table .player-col img {
+    height: 24px;
+    width: 24px;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+    object-fit: cover;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.highscore-table .player-col span {
+    vertical-align: middle;
+}
+
+.highscore-table .score-col {
+    /* width: 30%; */ /* REMOVED % width */
+    width: 6rem;  /* FIXED width */
+    text-align: right;
+}
+/* --- End Column Widths --- */
+
+
+.highscore-table tbody {
+    color: #ccc;
+}
+
+.highscore-table .loading-row td {
+    text-align: center;
+    padding: 15px;
+    font-style: italic;
+    color: #aaa;
+}
+
+.highscore-table tbody tr:not(.loading-row):hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+    .leaderboard-table-wrapper {
+         max-width: 49%;
+    }
+}
+
+@media (max-width: 768px) {
+    .arcade-games {
+        gap: 30px; /* Maybe slightly more gap when stacked */
+    }
+
+    .leaderboard-tables-container {
+        flex-direction: column;
+        align-items: center;
+    }
+    .leaderboard-table-wrapper {
+        max-width: 90%;
+        flex-basis: auto;
+    }
+    /* Adjust fixed widths slightly if needed */
+    .highscore-table .rank-col { width: 3.5rem; }
+    .highscore-table .score-col { width: 5rem; }
+}
+
+@media (max-width: 480px) {
+     /* Game cards */
+    .game-card {
+        padding: 20px; /* Less padding */
+    }
+    .game-card h3 {
+        font-size: 1.6em;
+    }
+
+    /* Leaderboards */
+    .leaderboard-table-wrapper {
+        padding: 15px;
+    }
+    .highscore-table th,
+    .highscore-table td {
+        padding: 8px 5px;
+    }
+    .highscore-table .player-col img {
+        height: 20px;
+        width: 20px;
+        margin-right: 5px;
+    }
+    .leaderboard-table-wrapper h3 {
+        font-size: 1.3em;
+    }
+    .highscore-table .rank-col { width: 3rem; }
+    .highscore-table .score-col { width: 4.5rem; }
+}

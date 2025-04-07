@@ -3,44 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>$COCO Arcade - Play COCO Games</title> 
+    <title>$COCO Arcade - Play COCO Games</title>
     <meta name="description" content="Play exciting games like $COCO Run and Flappy $COCO in the $COCO Arcade on Avalanche (AVAX).">
 
     <link rel="icon" href="favicon.ico" type="image/x-icon">
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/animations.css">
     <link rel="stylesheet" href="css/responsive.css">
-    
-    <style>
-        /* Basic styles */
-        body { 
-            width: 100%; 
-            max-width: 100%; 
-            overflow-x: hidden; 
-            margin: 0; 
-            padding: 0; 
-            font-family: 'Fredoka', sans-serif; 
-            background-color: #0d0221; 
-            color: #eee; 
+    <link rel="stylesheet" href="css/arcade.css"> <style>
+        /* Basic styles - Consider moving these to style.css eventually */
+        body {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+            font-family: 'Fredoka', sans-serif;
+            background-color: #0d0221;
+            color: #eee;
         }
         .page-wrapper { width: 100%; max-width: 100%; overflow: hidden; position: relative; }
         .container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 24px; box-sizing: border-box; }
-        
-        /* Header Styles */
-         header { 
-             position: sticky; 
-             top: 0; 
-             left: 0; 
-             width: 100%; 
-             z-index: 1000; 
-             background-color: rgba(13, 2, 33, 0.9); 
+
+        /* Header Styles - Consider moving these to style.css eventually */
+         header {
+             position: sticky;
+             top: 0;
+             left: 0;
+             width: 100%;
+             z-index: 1000;
+             background-color: rgba(13, 2, 33, 0.9);
              padding: 10px 0;
              border-bottom: 1px solid #ff69b4;
          }
@@ -48,85 +47,35 @@
          .logo a { display: flex; align-items: center; text-decoration: none; color: #fff; }
          .logo-img { height: 40px; margin-right: 10px; }
          .logo-text { font-size: 1.5em; font-weight: bold; }
-         nav ul { 
-             list-style: none; 
-             padding: 0; 
-             margin: 0; 
-             display: flex; 
+         nav ul {
+             list-style: none;
+             padding: 0;
+             margin: 0;
+             display: flex;
              /* REMOVED gap: 15px; - Let external CSS handle spacing */
          }
-         nav a { 
-             color: #fff; 
-             text-decoration: none; 
+         nav a {
+             color: #fff;
+             text-decoration: none;
              /* REMOVED padding: 5px 10px; - Let external CSS handle padding */
              border-radius: 5px; /* Keep radius */
              transition: background-color 0.3s; /* Keep transition */
              display: inline-block; /* Ensure padding/margin applies correctly */
          }
-         nav a:hover { background-color: #ff69b4; color: #0d0221; } 
-         .connect-wallet button, .mobile-menu button { 
-             background-color: #ff69b4; 
-             color: #0d0221; 
-             border: none; 
-             padding: 10px 15px; 
-             border-radius: 5px; 
-             cursor: pointer; 
+         nav a:hover { background-color: #ff69b4; color: #0d0221; }
+         .connect-wallet button, .mobile-menu button {
+             background-color: #ff69b4;
+             color: #0d0221;
+             border: none;
+             padding: 10px 15px;
+             border-radius: 5px;
+             cursor: pointer;
              font-weight: bold;
          }
          .mobile-menu-toggle { display: none; color: #fff; font-size: 1.5em; cursor: pointer; }
          .mobile-menu { display: none; }
 
-        /* Arcade Section Styles */
-        .arcade-section { padding: 100px 0 80px; } 
-        .section-header { margin-bottom: 40px; text-align: center; }
-        .section-header h2 { color: #fff; font-size: 2.5em; margin-bottom: 10px; }
-        .section-header p { color: #ccc; font-size: 1.2em; }
-        .arcade-games { display: flex; justify-content: space-around; align-items: stretch; flex-wrap: wrap; gap: 30px; }
-        .game-card { 
-            text-align: center; 
-            padding: 30px; 
-            border: 2px solid #ff69b4; 
-            border-radius: 15px; 
-            background: rgba(255, 255, 255, 0.05); 
-            flex: 1; 
-            min-width: 250px; 
-            max-width: 350px; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: space-between; 
-            transition: transform 0.3s ease, box-shadow 0.3s ease; 
-        }
-        .game-card:hover { 
-            transform: translateY(-5px); 
-            box-shadow: 0 10px 20px rgba(255, 105, 180, 0.2); 
-        }
-        .game-card h3 { color: #fff; margin-bottom: 15px; font-size: 1.8em; }
-        .game-card img { 
-            max-width: 100%; 
-            height: auto; 
-            max-height: 180px; 
-            object-fit: cover; 
-            border-radius: 10px; 
-            margin-bottom: 15px; 
-            border: 1px solid rgba(255, 105, 180, 0.5); 
-        }
-        .game-card p { color: #ccc; margin-bottom: 20px; flex-grow: 1; }
-        .game-card .btn { 
-            display: inline-block; 
-            padding: 12px 25px; 
-            text-decoration: none; 
-            margin-top: auto; 
-            background-color: #ff69b4; 
-            color: #0d0221; 
-            border: none; 
-            border-radius: 5px; 
-            cursor: pointer; 
-            font-weight: bold;
-            transition: background-color 0.3s;
-         }
-         .game-card .btn:hover { background-color: #e05aa0; }
-
-         /* Footer Styles */
+         /* Footer Styles - Consider moving these to style.css eventually */
          footer { background-color: rgba(13, 2, 33, 0.9); padding: 40px 0 20px; border-top: 1px solid #ff69b4; margin-top: 60px; }
          .footer-content { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 30px; margin-bottom: 30px; }
          .footer-logo { display: flex; align-items: center; color: #fff; }
@@ -141,21 +90,18 @@
          .social-icons { display: flex; gap: 15px; }
          .social-icons a { color: #ccc; text-decoration: none; font-size: 1.5em; transition: color 0.3s; }
          .social-icons a:hover { color: #ff69b4; }
-         .x-icon-small { height: 1.2em; vertical-align: middle; } 
+         .x-icon-small { height: 1.2em; vertical-align: middle; }
          .footer-bottom { text-align: center; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
          .powered-by-img { height: 30px; margin-bottom: 10px; opacity: 0.7; }
          .footer-bottom p { color: #aaa; font-size: 0.9em; margin: 5px 0; }
          .disclaimer { font-style: italic; font-size: 0.8em; }
 
-         /* Responsive adjustments */
+         /* Responsive adjustments - Already handled in responsive.css? */
          @media (max-width: 768px) {
-             header .container { flex-direction: column; }
-             nav ul { flex-direction: column; align-items: center; width: 100%; margin-top: 10px; }
-             .connect-wallet { margin-top: 10px; }
-             .footer-content { flex-direction: column; align-items: center; text-align: center; }
-             .footer-links { justify-content: center; }
-             .mobile-menu-toggle { display: block; } 
+             /* Keep mobile menu toggle logic if not in external css */
+             .mobile-menu-toggle { display: block; }
              nav { display: none; }
+             /* Other potential overrides if needed */
          }
 
     </style>
@@ -165,8 +111,7 @@
         <header>
             <div class="container">
                 <div class="logo">
-                     <a href="index.html" style="display: flex; align-items: center; text-decoration: none;">
-                         <img src="images/transparent images/cocoannounce-transparent.png" alt="COCO Logo Img" class="logo-img">
+                     <a href="index.html" style="display: flex; align-items: center; text-decoration: none;"> <img src="images/transparent images/cocoannounce-transparent.png" alt="COCO Logo Img" class="logo-img">
                          <span class="logo-text">$COCO</span>
                      </a>
                 </div>
@@ -179,7 +124,7 @@
                          <li><a href="index.html#presale">Presale</a></li>
                          <li><a href="meme-gallery.html">Meme Gallery</a></li>
                          <li><a href="leaderboard.html">Leaderboard</a></li>
-                         <li><a href="arcade.html">Arcade</a></li> 
+                         <li><a href="arcade.html">Arcade</a></li>
                      </ul>
                 </nav>
                 <div class="connect-wallet">
@@ -190,7 +135,7 @@
                 </div>
             </div>
         </header>
-        
+
         <div class="mobile-menu">
              <div class="close-menu">
                  <i class="fas fa-times"></i>
@@ -203,7 +148,7 @@
                  <li><a href="index.html#presale">Presale</a></li>
                  <li><a href="meme-gallery.html">Meme Gallery</a></li>
                  <li><a href="leaderboard.html">Leaderboard</a></li>
-                 <li><a href="arcade.html">Arcade</a></li> 
+                 <li><a href="arcade.html">Arcade</a></li>
                  <li><button id="mobile-connect-wallet-btn" class="btn btn-primary">Connect Wallet</button></li>
              </ul>
         </div>
@@ -218,10 +163,10 @@
                     <div class="game-card">
                         <div>
                             <h3>$COCO Run</h3>
-                            <img src="COCORun_Game/ASSETS/cocorunnerthumb.png" alt="COCORUN Game Thumbnail"> 
+                            <img src="COCORun_Game/ASSETS/cocorunnerthumb.png" alt="COCORUN Game Thumbnail">
                             <p>Run with COCO, jump over obstacles, and collect points!</p>
                         </div>
-                        <a href="COCORun_Game/index.html" class="btn btn-primary">Play $COCO Run</a> 
+                        <a href="COCORun_Game/index.html" class="btn btn-primary">Play $COCO Run</a>
                     </div>
 
                     <div class="game-card">
@@ -230,58 +175,51 @@
                             <img src="FlappyCOCO_Game/COCOFLAP/flappycocothumb.png" alt="FlappyCOCO Game Thumbnail">
                             <p>Help COCO flap through the trees! How far can you go?</p>
                         </div>
-                        <a href="FlappyCOCO_Game/index.html" class="btn btn-primary">Play Flappy $COCO</a> 
+                        <a href="FlappyCOCO_Game/index.html" class="btn btn-primary">Play Flappy $COCO</a>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Arcade Leaderboard Section -->
-        <section id="leaderboard-display" class="leaderboard-section" style="padding: 60px 0;">
+        <section id="leaderboard-display" class="leaderboard-section">
             <div class="container">
-                <div class="section-header" style="margin-bottom: 30px;">
-                    <h2 style="font-size: 2em;">Arcade High Scores</h2>
+                <div class="section-header">
+                    <h2>Arcade High Scores</h2>
                 </div>
-                <div class="leaderboard-tables" style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 20px;">
-                    <!-- COCORun Leaderboard -->
-                    <div class="leaderboard-table" style="flex: 1; min-width: 300px; max-width: 450px; background: rgba(255, 255, 255, 0.05); border: 1px solid #ff69b4; border-radius: 10px; padding: 20px;">
-                        <h3 style="text-align: center; color: #fff; margin-bottom: 15px;">$COCO Run</h3>
-                        <table id="cocorun-leaderboard-body" style="width: 100%; border-collapse: collapse;">
+                <div class="leaderboard-tables-container">
+                    <div class="leaderboard-table-wrapper">
+                        <h3>$COCO Run</h3>
+                        <table id="cocorun-leaderboard-body" class="highscore-table">
                             <thead>
-                                <tr style="border-bottom: 1px solid rgba(255, 105, 180, 0.5);">
-                                    <th style="padding: 8px; text-align: left;">Rank</th>
-                                    <th style="padding: 8px; text-align: left;">Player</th>
-                                    <th style="padding: 8px; text-align: right;">Score</th>
+                                <tr>
+                                    <th class="rank-col">Rank</th>
+                                    <th class="player-col">Player</th>
+                                    <th class="score-col">Score</th>
                                 </tr>
                             </thead>
-                            <tbody style="color: #ccc;">
-                                <!-- Scores loaded via JS -->
-                                <tr><td colspan="3" style="text-align: center; padding: 15px;">Loading...</td></tr>
+                            <tbody>
+                                <tr class="loading-row"><td colspan="3">Loading...</td></tr>
                             </tbody>
                         </table>
                     </div>
-                    <!-- FlappyCOCO Leaderboard -->
-                    <div class="leaderboard-table" style="flex: 1; min-width: 300px; max-width: 450px; background: rgba(255, 255, 255, 0.05); border: 1px solid #ff69b4; border-radius: 10px; padding: 20px;">
-                        <h3 style="text-align: center; color: #fff; margin-bottom: 15px;">Flappy $COCO</h3>
-                        <table id="flappycoco-leaderboard-body" style="width: 100%; border-collapse: collapse;">
+                    <div class="leaderboard-table-wrapper">
+                        <h3>Flappy $COCO</h3>
+                        <table id="flappycoco-leaderboard-body" class="highscore-table">
                              <thead>
-                                <tr style="border-bottom: 1px solid rgba(255, 105, 180, 0.5);">
-                                    <th style="padding: 8px; text-align: left;">Rank</th>
-                                    <th style="padding: 8px; text-align: left;">Player</th>
-                                    <th style="padding: 8px; text-align: right;">Score</th>
+                                <tr>
+                                    <th class="rank-col">Rank</th>
+                                    <th class="player-col">Player</th>
+                                    <th class="score-col">Score</th>
                                 </tr>
                             </thead>
-                            <tbody style="color: #ccc;">
-                                <!-- Scores loaded via JS -->
-                                <tr><td colspan="3" style="text-align: center; padding: 15px;">Loading...</td></tr>
+                            <tbody>
+                                <tr class="loading-row"><td colspan="3">Loading...</td></tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
         </section>
-        <!-- End Arcade Leaderboard Section -->
-
         <footer>
              <div class="container">
                  <div class="footer-content">
@@ -338,10 +276,9 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
         <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
         <script src="https://cdn.thirdweb.com/js/connect/dist/thirdweb-connect.js"></script>
-        
-        <script src="js/main.js"></script> 
+
+        <script src="js/main.js"></script>
         <script src="js/animations.js"></script>
         <script src="js/wallet.js"></script>
-        <script src="js/arcade-leaderboard.js" defer></script> <!-- Added leaderboard script -->
-        </div></body>
+        <script src="js/arcade-leaderboard.js" defer></script> </div></body>
 </html>
