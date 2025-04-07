@@ -1,7 +1,6 @@
 const { Pool } = require('pg');
 
 // Configure the connection pool using environment variables
-// Ensure NEON_DATABASE_URL is set in your Vercel project environment variables
 const pool = new Pool({
   connectionString: process.env.NEON_DATABASE_URL,
   ssl: {
@@ -22,8 +21,6 @@ async function query(text, params) {
 
 module.exports = async (req, res) => {
   // --- CORS Headers ---
-  // Allow requests from any origin for simplicity in development/testing.
-  // For production, restrict this to your actual frontend domain(s).
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader(
@@ -52,12 +49,14 @@ module.exports = async (req, res) => {
          return res.status(400).json({ error: 'Invalid limit query parameter. Must be a positive integer (max 100).' });
       }
 
-      // Fetch scores from DB
-      // Select only columns that exist in the user's table
+      // *** CORRECTED SELECT STATEMENT ***
+      // Fetch scores from DB, including username and profile pic
       const sqlQuery = `
         SELECT
             xUserId,
             score,
+            xUsername,         -- Added xUsername
+            xProfilePicUrl,    -- Added xProfilePicUrl
             RANK() OVER (ORDER BY score DESC) as rank
         FROM
             ArcadeScores
@@ -72,15 +71,20 @@ module.exports = async (req, res) => {
       res.status(200).json(result.rows);
 
     } catch (error) {
-      console.error('Error fetching arcade leaderboard:', error);
+      console.error('[API GET Error] Error fetching arcade leaderboard:', error);
+      if (error.code === '42P01') {
+           return res.status(500).json({ error: 'Database table "ArcadeScores" not found. Please ensure the schema is applied.' });
+      }
       res.status(500).json({ error: 'Failed to fetch arcade leaderboard data.' });
     }
   }
   // --- POST Request: Submit Score ---
   else if (req.method === 'POST') {
     try {
-      // Only expect fields present in the user's table schema
-      const { gameName, score, xUserId, xUsername, xProfilePicUrl } = req.body; // Keep receiving username/pic from game
+      // Add logging
+      console.log('[API POST] Received Request Body:', JSON.stringify(req.body));
+
+      const { gameName, score, xUserId, xUsername, xProfilePicUrl } = req.body;
 
       // --- Input Validation ---
       if (!gameName || (gameName !== 'COCORUN' && gameName !== 'FLAPPYCOCO')) {
@@ -92,34 +96,50 @@ module.exports = async (req, res) => {
       if (!xUserId || typeof xUserId !== 'string' || xUserId.trim() === '') {
         return res.status(400).json({ error: 'Invalid or missing xUserId.' });
       }
-      // NOTE: We still receive xUsername and xProfilePicUrl from the game,
-      // but we won't use them in the database query below as the columns don't exist.
-      // We could add validation for them here if desired, but it's not strictly necessary.
+       if (typeof xUsername !== 'string') {
+           console.warn('[API POST Warning] Missing or invalid xUsername in score submission for user:', xUserId);
+       }
+       if (typeof xProfilePicUrl !== 'string') {
+           console.warn('[API POST Warning] Missing or invalid xProfilePicUrl in score submission for user:', xUserId);
+       }
       // --- End Validation ---
 
-
-      // UPSERT score into DB
-      // Use 'playedAt' to match the user's column name
-      // Only insert/update columns that exist in the user's table definition
+      // *** CORRECTED INSERT/UPDATE STATEMENT ***
+      // Include xUsername and xProfilePicUrl in INSERT and UPDATE
       const sqlQuery = `
-        INSERT INTO ArcadeScores (xUserId, gameName, score, playedAt) -- Use playedAt column name
-        VALUES ($1, $2, $3, CURRENT_TIMESTAMP)
+        INSERT INTO ArcadeScores (xUserId, gameName, score, xUsername, xProfilePicUrl, playedAt)
+        VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP)
         ON CONFLICT (xUserId, gameName)
         DO UPDATE SET
-          score = GREATEST(ArcadeScores.score, EXCLUDED.score), -- Only update if new score is higher
-          playedAt = CURRENT_TIMESTAMP                     -- Update timestamp
-        WHERE ArcadeScores.score < EXCLUDED.score;            -- Condition to only update if score is higher
+          score = GREATEST(ArcadeScores.score, EXCLUDED.score),
+          xUsername = EXCLUDED.xUsername,          -- Added xUsername update
+          xProfilePicUrl = EXCLUDED.xProfilePicUrl, -- Added xProfilePicUrl update
+          playedAt = CURRENT_TIMESTAMP
+        WHERE ArcadeScores.score < EXCLUDED.score;
       `;
 
+      const queryParams = [
+          xUserId,
+          gameName,
+          score,
+          xUsername || null, // Pass username (or null if missing)
+          xProfilePicUrl || null // Pass profile pic url (or null if missing)
+      ];
 
-      await query(sqlQuery, [xUserId, gameName, score]); // Pass only the used parameters
+      // Add logging
+      console.log('[API POST] Executing Query With Params:', JSON.stringify(queryParams));
+
+      await query(sqlQuery, queryParams); // Pass all 5 parameters
 
       res.status(200).json({ message: 'Score submitted successfully.' });
 
     } catch (error) {
-      console.error('Error submitting arcade score:', error);
-      // Check for specific DB errors if needed (e.g., constraint violations)
-      res.status(500).json({ error: 'Failed to submit arcade score.' });
+      console.error('[API POST Error] Error submitting arcade score:', error);
+      if (error.code === '42P01') {
+           return res.status(500).json({ error: 'Database table "ArcadeScores" not found. Please ensure the schema is applied.' });
+      }
+      // Log the full error for more details
+      res.status(500).json({ error: 'Failed to submit arcade score.', details: error.message });
     }
   }
   // --- Method Not Allowed ---
