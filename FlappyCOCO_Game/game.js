@@ -226,6 +226,7 @@ function gameLoop(currentTime) {
                  console.log("X User found in localStorage, attempting score submission...");
                  const user = JSON.parse(cocoXUserString);
                  if (user && user.id && user.handle && user.profileImage) {
+                    console.log('Submitting Username:', user.handle, 'UserId:', user.id);
                      // *** CORRECTED URL ***
                      fetch('/api/arcade-leaderboard', { // Removed /submit
                          method: 'POST',
