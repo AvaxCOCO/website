@@ -8,8 +8,30 @@ console.log("Canvas context:", ctx);
 // --- Game Settings ---
 const gravity = 0.5;
 const jumpStrength = -10;
-const playerRunSpeed = 3; // Placeholder - movement not implemented yet
+const playerRunSpeed = 3;
+const PLAYER_DRAW_WIDTH = 50;
+const PLAYER_DRAW_HEIGHT = 50;
+const PLAYER_COLLISION_WIDTH_FACTOR = 1.8; // Multiplier for TILE_WIDTH
+const CAMERA_X_OFFSET_FACTOR = 1/3; // Player position from left edge
+const SCORE_X_POS = 20;
+const SCORE_Y_POS = 20;
+const LEVEL_TIME_LIMIT = 60; // Seconds per level
+const LEVEL_INDICATOR_X_POS = canvas ? canvas.width - 20 : 620; // Position from right
+const LEVEL_INDICATOR_Y_POS = 20;
+const TIMER_X_POS = canvas ? canvas.width / 2 : 320; // Center
+const TIMER_Y_POS = 20;
 
+// UI Layout Constants
+const UI_TITLE_LOGO_SCALE_WIDTH_FACTOR = 0.8;
+const UI_TITLE_LOGO_Y_POS_FACTOR = 0.1;
+const UI_BUTTON_TARGET_WIDTH = 120;
+const UI_START_BUTTON_Y_SPACING = 30;
+const UI_BANNER_SCALE_WIDTH_FACTOR = 0.7;
+const UI_GAME_OVER_BANNER_MIN_Y_POS = 10;
+const UI_GAME_OVER_BANNER_Y_POS_FACTOR = 0.25; // Relative to canvas height
+const UI_LEVEL_COMPLETE_BANNER_Y_POS_FACTOR = 0.25; // Relative to canvas height
+const UI_TRY_AGAIN_BUTTON_Y_SPACING = 15;
+const UI_GAME_OVER_SCORE_Y_SPACING = 15;
 // --- Tile Settings ---
 const TILE_WIDTH = 16;
 const TILE_HEIGHT = 16;
@@ -24,122 +46,222 @@ const tileSpriteData = {
 // --- Level Map ---
 const levelMap = [];
 const TILES_PER_SCREEN_X = canvas ? Math.floor(canvas.width / TILE_WIDTH) : 30; // Approx tiles horizontally visible
-const MAP_COLS = TILES_PER_SCREEN_X * 10; // Make map 10 screens wide
-const MAP_ROWS = canvas ? canvas.height / TILE_HEIGHT : 40;
-// --- Advanced Procedural Level Generation ---
+const MAP_COLS = TILES_PER_SCREEN_X * 8; // Define fixed level width (e.g., 8 screens)
+const MAP_ROWS = canvas ? Math.ceil(canvas.height / TILE_HEIGHT) : 40; // Use ceil for rows
+// --- Level Generator Object ---
+const LevelGenerator = {
+    config: {
+        // Removed chunk logic
+        BASE_MIN_GROUND_ROW_OFFSET: 8,    // Base offset from bottom (higher on screen)
+        BASE_MAX_GROUND_ROW_OFFSET: 3,    // Base offset from bottom (lower on screen)
+        VERTICAL_SHIFT_PER_LEVEL: 0.5,    // How many rows the ground shifts up per level
+        START_AREA_COLS: 15,
+        MIN_PLATFORM_LENGTH: 3,
+        MAX_PLATFORM_LENGTH: 8,
+        MIN_GAP_WIDTH: 3,            // Updated minimum gap width to 3 tiles (48px)
+        MAX_GAP_WIDTH: 5,            // Max jumpable gap? Needs testing.
+        PLATFORM_SPAWN_CHANCE: 0.15,
+        GAP_CHANCE: 0.1,
+        ELEVATION_CHANGE_CHANCE: 0.02,
+        COIN_CHANCE_GROUND: 0.1,
+        COIN_CHANCE_PLATFORM: 0.3,
+        // Derived values will be calculated in init
+        MIN_GROUND_ROW: 0,
+        MAX_GROUND_ROW: 0,
+    },
+    state: {
+        currentGroundRow: 0,
+        inGap: false,
+        gapWidth: 0,
+        platformSegmentLength: 0,
+        initialStartingGroundRow: 0, // Store the ground row used for the very start
+        // Removed chunk logic
+    },
 
-// --- Config ---
-const MIN_GROUND_ROW = MAP_ROWS - 8; // Highest possible ground
-const MAX_GROUND_ROW = MAP_ROWS - 3; // Lowest possible ground
-const START_AREA_COLS = 15;          // Safe flat area at the beginning
-const MIN_PLATFORM_LENGTH = 3;
-const MAX_PLATFORM_LENGTH = 8;
-const MIN_GAP_WIDTH = 2;
-const MAX_GAP_WIDTH = 5; // Max jumpable gap? Needs testing.
-const PLATFORM_SPAWN_CHANCE = 0.15; // Chance to spawn a platform cluster per column check
-const GAP_CHANCE = 0.1;           // Chance to start a gap per column check
-const ELEVATION_CHANGE_CHANCE = 0.02;// Chance to change base elevation per column check
-const COIN_CHANCE_GROUND = 0.1;    // Chance for coin above ground tile
-const COIN_CHANCE_PLATFORM = 0.3;  // Chance for coin above platform tile
+    // Initialize config and state for a specific level
+    initializeForLevel: function(mapRows, levelNumber) {
+        // Calculate vertical shift based on level
+        const verticalShift = Math.floor((levelNumber - 1) * this.config.VERTICAL_SHIFT_PER_LEVEL);
 
-// --- Initialization ---
-for (let r = 0; r < MAP_ROWS; r++) {
-    levelMap[r] = [];
-    for (let c = 0; c < MAP_COLS; c++) {
-        levelMap[r][c] = TILES.EMPTY; // Initialize empty
-    }
-}
+        // Adjust ground offsets, ensuring they don't go too high or cross over
+        let currentMinOffset = Math.max(1, this.config.BASE_MIN_GROUND_ROW_OFFSET - verticalShift);
+        let currentMaxOffset = Math.max(1, this.config.BASE_MAX_GROUND_ROW_OFFSET - verticalShift);
 
-// --- Generation Logic ---
-let currentGroundRow = Math.floor((MIN_GROUND_ROW + MAX_GROUND_ROW) / 2); // Start mid-elevation
-let inGap = false;
-let gapWidth = 0;
-let platformSegmentLength = 0;
-
-for (let c = 0; c < MAP_COLS; c++) {
-    // --- Ensure Safe Start Area ---
-    if (c < START_AREA_COLS) {
-        levelMap[currentGroundRow][c] = TILES.GRASS;
-        levelMap[currentGroundRow + 1][c] = TILES.DIRT;
-        levelMap[currentGroundRow + 2][c] = TILES.DIRT; // Extra dirt layer
-        // Add some coins in start area
-         if (c > 5 && c % 2 === 0 && currentGroundRow -1 > 0) levelMap[currentGroundRow - 1][c] = TILES.COIN;
-        continue; // Skip other generation for start area
-    }
-
-    // --- Handle Platform Segments (Overrides ground/gaps temporarily) ---
-    if (platformSegmentLength > 0) {
-        platformSegmentLength--;
-        // Platform tiles already placed when segment started
-        continue; // Move to next column
-    }
-
-    // --- Decide Elevation Change ---
-    if (Math.random() < ELEVATION_CHANGE_CHANCE && !inGap) {
-        let change = (Math.random() < 0.5) ? -1 : 1; // Go up or down
-        let nextGroundRow = currentGroundRow + change * Math.floor(1 + Math.random() * 2); // Change by 1 or 2 rows
-        currentGroundRow = Math.max(MIN_GROUND_ROW, Math.min(MAX_GROUND_ROW, nextGroundRow));
-        // Simple transition: just end previous ground, player has to jump/drop
-    }
-
-    // --- Decide Gaps ---
-    if (inGap) {
-        gapWidth--;
-        if (gapWidth <= 0) {
-            inGap = false;
+        // Ensure min offset remains greater than max offset (higher on screen)
+        if (currentMinOffset <= currentMaxOffset) {
+            currentMinOffset = currentMaxOffset + 1; // Keep at least 1 row difference
+            console.warn(`Vertical shift limited for Level ${levelNumber} to prevent ground range inversion.`);
         }
-    } else { // Not currently in a gap
-        if (Math.random() < GAP_CHANCE) {
-            inGap = true;
-            gapWidth = MIN_GAP_WIDTH + Math.floor(Math.random() * (MAX_GAP_WIDTH - MIN_GAP_WIDTH + 1));
-            gapWidth--; // Account for current column being the first gap tile
+
+        // Calculate ground rows based on adjusted offsets
+        this.config.MIN_GROUND_ROW = mapRows - currentMinOffset; // Higher row number = lower on screen
+        this.config.MAX_GROUND_ROW = mapRows - currentMaxOffset; // Lower row number = higher on screen
+
+        // Clamp ground rows to valid map bounds (leaving space top/bottom)
+        this.config.MIN_GROUND_ROW = Math.max(1, this.config.MIN_GROUND_ROW);
+        this.config.MAX_GROUND_ROW = Math.min(mapRows - 2, this.config.MAX_GROUND_ROW);
+
+        // Final check to ensure min is still above max after clamping
+        if (this.config.MIN_GROUND_ROW >= this.config.MAX_GROUND_ROW) {
+             this.config.MIN_GROUND_ROW = this.config.MAX_GROUND_ROW - 1;
+             this.config.MIN_GROUND_ROW = Math.max(1, this.config.MIN_GROUND_ROW); // Re-clamp after adjustment
         }
-    }
 
-    // --- Place Ground Tiles (if not in a gap) ---
-    if (!inGap) {
-        levelMap[currentGroundRow][c] = TILES.GRASS;
-        if (currentGroundRow + 1 < MAP_ROWS) levelMap[currentGroundRow + 1][c] = TILES.DIRT;
-        if (currentGroundRow + 2 < MAP_ROWS) levelMap[currentGroundRow + 2][c] = TILES.DIRT; // Extra dirt
+        // Initialize state ground row based on the calculated bounds for this level
+        this.state.currentGroundRow = Math.floor((this.config.MIN_GROUND_ROW + this.config.MAX_GROUND_ROW) / 2);
+        this.state.inGap = false;
+        this.state.gapWidth = 0;
+        this.state.platformSegmentLength = 0;
+        this.state.initialStartingGroundRow = this.state.currentGroundRow; // Store the specific starting row
+        console.log(`Level ${levelNumber}: Ground Range [${this.config.MIN_GROUND_ROW} - ${this.config.MAX_GROUND_ROW}] (Offsets: Min=${currentMinOffset}, Max=${currentMaxOffset}), StartRow: ${this.state.initialStartingGroundRow}`);
+    },
 
-        // Place Coins above ground
-        if (Math.random() < COIN_CHANCE_GROUND && currentGroundRow - 1 > 0) {
-            levelMap[currentGroundRow - 1][c] = TILES.COIN;
-        }
-    } else {
-         // Optional: Place coins over gaps? Maybe in an arc? (More complex)
-    }
+    // Generates the entire map for a given level
+    generateLevelMap: function(map, mapRows, mapCols, difficulty = 0, levelNumber = 1) {
+        this.initializeForLevel(mapRows, levelNumber); // Set up config & state for this level
 
-
-    // --- Decide Floating Platforms ---
-    // Check slightly ahead to prevent platforms right at column start
-    if (c > START_AREA_COLS + 5 && platformSegmentLength <= 0 && Math.random() < PLATFORM_SPAWN_CHANCE) {
-        let platformLength = MIN_PLATFORM_LENGTH + Math.floor(Math.random() * (MAX_PLATFORM_LENGTH - MIN_PLATFORM_LENGTH + 1));
-        // Place higher than current ground, or lower if ground is high
-        let basePlatformRow = currentGroundRow - 4 - Math.floor(Math.random() * 4);
-        if (currentGroundRow <= MIN_GROUND_ROW + 2) { // If ground is high, place below
-             basePlatformRow = currentGroundRow + 3 + Math.floor(Math.random() * 2);
-        }
-        basePlatformRow = Math.max(1, Math.min(MAP_ROWS - 2, basePlatformRow)); // Clamp within bounds
-
-        for (let pc = 0; pc < platformLength && (c + pc) < MAP_COLS; pc++) {
-            levelMap[basePlatformRow][c + pc] = TILES.GRASS;
-            if (basePlatformRow + 1 < MAP_ROWS) levelMap[basePlatformRow + 1][c + pc] = TILES.DIRT;
-
-            // Place coins above platform
-            if (Math.random() < COIN_CHANCE_PLATFORM && basePlatformRow - 1 > 0) {
-                levelMap[basePlatformRow - 1][c + pc] = TILES.COIN;
+        // Initialize map array
+        for (let r = 0; r < mapRows; r++) {
+            map[r] = [];
+            for (let c = 0; c < mapCols; c++) {
+                map[r][c] = TILES.EMPTY;
             }
         }
-        platformSegmentLength = platformLength -1; // Set counter for columns this platform occupies
-    }
-}
 
-// --- Final Pass / Cleanup (Optional) ---
-// Could add checks here to ensure goal is reachable, etc.
+        // Use local references for easier access inside the loop
+        let config = this.config; // Config is now level-specific via initializeForLevel
+        let state = this.state;   // State is reset via initializeForLevel
 
-// --- End Advanced Generation ---
-// --- End Level Map ---
+        console.log(`Generating Level ${levelNumber} (Cols: ${mapCols}, Difficulty: ${difficulty.toFixed(3)})`);
+
+        for (let c = 0; c < mapCols; c++) { // Loop through all columns for the level
+            // No need to initialize columns here, done at the start of the function
+
+            // --- Ensure Safe Start Area ---
+            if (c < config.START_AREA_COLS) {
+                // Ensure ground row exists
+                 if (!map[state.currentGroundRow]) map[state.currentGroundRow] = [];
+                 map[state.currentGroundRow][c] = TILES.GRASS;
+
+                if (state.currentGroundRow + 1 < mapRows) {
+                     if (!map[state.currentGroundRow + 1]) map[state.currentGroundRow + 1] = [];
+                     map[state.currentGroundRow + 1][c] = TILES.DIRT;
+                }
+                if (state.currentGroundRow + 2 < mapRows) {
+                     if (!map[state.currentGroundRow + 2]) map[state.currentGroundRow + 2] = [];
+                     map[state.currentGroundRow + 2][c] = TILES.DIRT;
+                }
+                // Add some coins in start area
+                if (c > 5 && c % 2 === 0 && state.currentGroundRow - 1 > 0) {
+                     if (!map[state.currentGroundRow - 1]) map[state.currentGroundRow - 1] = [];
+                     map[state.currentGroundRow - 1][c] = TILES.COIN;
+                }
+                continue; // Skip other generation for start area columns
+            }
+
+            // --- Handle Platform Segments ---
+            if (state.platformSegmentLength > 0) {
+                state.platformSegmentLength--;
+                // Tiles were placed when the platform started, just continue
+                continue;
+            }
+
+            // --- Decide Elevation Change ---
+            // Difficulty scaling uses the 'difficulty' parameter passed to the function
+            // Apply difficulty scaling: Increase chance slightly
+            const currentElevationChangeChance = Math.min(0.1, config.ELEVATION_CHANGE_CHANCE + difficulty * 0.05); // Cap at 10%
+            if (Math.random() < currentElevationChangeChance && !state.inGap) {
+                let change = (Math.random() < 0.5) ? -1 : 1;
+                let nextGroundRow = state.currentGroundRow + change * Math.floor(1 + Math.random() * 2);
+                state.currentGroundRow = Math.max(config.MIN_GROUND_ROW, Math.min(config.MAX_GROUND_ROW, nextGroundRow));
+            }
+
+            // --- Decide Gaps ---
+            // Difficulty scaling uses the 'difficulty' parameter passed to the function
+            if (state.inGap) {
+                state.gapWidth--;
+                if (state.gapWidth <= 0) {
+                    state.inGap = false;
+                }
+            } else {
+                // Apply difficulty scaling: Increase gap chance and max width slightly
+                const currentGapChance = Math.min(0.3, config.GAP_CHANCE + difficulty * 0.1); // Cap chance at 30%
+                if (Math.random() < currentGapChance) {
+                    state.inGap = true;
+                    const currentMaxGapWidth = Math.min(8, Math.floor(config.MAX_GAP_WIDTH + difficulty * 3)); // Cap max width at 8 tiles
+                    const currentMinGapWidth = Math.min(currentMaxGapWidth - 1, Math.floor(config.MIN_GAP_WIDTH + difficulty * 1)); // Ensure min < max, cap min increase
+                    state.gapWidth = currentMinGapWidth + Math.floor(Math.random() * (currentMaxGapWidth - currentMinGapWidth + 1));
+                    state.gapWidth = Math.max(1, state.gapWidth); // Ensure gap is at least 1
+                    state.gapWidth--; // Account for current column being the first gap tile
+                }
+            }
+
+            // --- Place Ground Tiles ---
+            if (!state.inGap) {
+                 if (!map[state.currentGroundRow]) map[state.currentGroundRow] = [];
+                 map[state.currentGroundRow][c] = TILES.GRASS;
+
+                if (state.currentGroundRow + 1 < mapRows) {
+                     if (!map[state.currentGroundRow + 1]) map[state.currentGroundRow + 1] = [];
+                     map[state.currentGroundRow + 1][c] = TILES.DIRT;
+                }
+                 if (state.currentGroundRow + 2 < mapRows) {
+                     if (!map[state.currentGroundRow + 2]) map[state.currentGroundRow + 2] = [];
+                     map[state.currentGroundRow + 2][c] = TILES.DIRT;
+                 }
+
+                // Place Coins above ground
+                // Difficulty scaling uses the 'difficulty' parameter passed to the function
+                // Apply difficulty scaling: Decrease coin chance slightly
+                const currentCoinChanceGround = Math.max(0.02, config.COIN_CHANCE_GROUND - difficulty * 0.05); // Floor at 2%
+                if (Math.random() < currentCoinChanceGround && state.currentGroundRow - 1 > 0) {
+                     if (!map[state.currentGroundRow - 1]) map[state.currentGroundRow - 1] = [];
+                     map[state.currentGroundRow - 1][c] = TILES.COIN;
+                }
+            }
+
+            // --- Decide Floating Platforms ---
+            // Difficulty scaling uses the 'difficulty' parameter passed to the function
+            // Apply difficulty scaling: Decrease platform spawn chance slightly
+            const currentPlatformSpawnChance = Math.max(0.05, config.PLATFORM_SPAWN_CHANCE - difficulty * 0.1); // Floor at 5%
+            if (c > config.START_AREA_COLS + 5 && state.platformSegmentLength <= 0 && Math.random() < currentPlatformSpawnChance) {
+                // Apply difficulty scaling: Slightly shorter platforms at high difficulty? (Optional)
+                const currentMaxPlatformLength = Math.max(config.MIN_PLATFORM_LENGTH + 1, Math.floor(config.MAX_PLATFORM_LENGTH - difficulty * 2));
+                const currentMinPlatformLength = config.MIN_PLATFORM_LENGTH;
+                let platformLength = currentMinPlatformLength + Math.floor(Math.random() * (currentMaxPlatformLength - currentMinPlatformLength + 1));
+                platformLength = Math.max(currentMinPlatformLength, platformLength); // Ensure min length
+                let basePlatformRow = state.currentGroundRow - 4 - Math.floor(Math.random() * 4); // Try placing above
+                if (state.currentGroundRow <= config.MIN_GROUND_ROW + 2) { // If ground is high, place below
+                     basePlatformRow = state.currentGroundRow + 3 + Math.floor(Math.random() * 2);
+                }
+                basePlatformRow = Math.max(1, Math.min(mapRows - 2, basePlatformRow)); // Clamp within bounds
+
+                for (let pc = 0; pc < platformLength; pc++) {
+                    let platformCol = c + pc;
+                    // Ensure rows exist before placing tiles
+                    if (!map[basePlatformRow]) map[basePlatformRow] = [];
+                    map[basePlatformRow][platformCol] = TILES.GRASS;
+
+                    if (basePlatformRow + 1 < mapRows) {
+                         if (!map[basePlatformRow + 1]) map[basePlatformRow + 1] = [];
+                         map[basePlatformRow + 1][platformCol] = TILES.DIRT;
+                    }
+
+                    // Place coins above platform
+                    // Apply difficulty scaling: Decrease coin chance slightly
+                    const currentCoinChancePlatform = Math.max(0.1, config.COIN_CHANCE_PLATFORM - difficulty * 0.15); // Floor at 10%
+                    if (Math.random() < currentCoinChancePlatform && basePlatformRow - 1 > 0) {
+                         if (!map[basePlatformRow - 1]) map[basePlatformRow - 1] = [];
+                         map[basePlatformRow - 1][platformCol] = TILES.COIN; // Place coin
+                    }
+                }
+                state.platformSegmentLength = platformLength - 1; // Set counter
+            }
+        }
+        // this.state.generatedCols = endCol; // Removed chunk logic
+    } // End of generateLevelMap method
+};
+// --- End Level Generator ---
 
 // --- Image Loading ---
 let images = {};
@@ -154,7 +276,8 @@ let imagesToLoad = [
     { name: 'gameOverBanner', src: assetFolder + 'game_over_banner.png' }, { name: 'levelCompleteBanner', src: assetFolder + 'level_complete_banner.png'},
     { name: 'startButton', src: assetFolder + 'start_button.png' }, { name: 'tryAgainButton', src: assetFolder + 'try_again_button.png' },
     { name: 'titleLogo', src: assetFolder + 'title_logo_platformer.png' }, { name: 'sky', src: assetFolder + 'sky_image.png' },
-    { name: 'landscape', src: assetFolder + 'coco_landscape_sprites.png' }, { name: 'numbers', src: assetFolder + 'number_sprites.png' }
+    { name: 'landscape', src: assetFolder + 'coco_landscape_sprites.png' }, { name: 'numbers', src: assetFolder + 'number_sprites.png' },
+    { name: 'nextLevelButton', src: assetFolder + 'next_level_button.png' } // Added next level button
 ];
 let imagesLoaded = 0;
 let imageLoadErrorOccurred = false;
@@ -185,20 +308,28 @@ let playerWidth, playerHeight; let onGround = false; let facingRight = true;
 let playerCollisionWidth = 0; // Will be calculated in initializeGame
 let playerCollisionXOffset = 0; // Will be calculated in initializeGame
 let currentRunFrame = 0; const runFrameCount = 5; const runFrameDelay = 6; let runFrameTimer = 0;
-let gameState = 'loading'; let frame = 0, score = 0;
-let startButtonArea = null, tryAgainButtonArea = null;
-let titleLogoPos = {}, gameOverBannerPos = {}, levelCompleteBannerPos = {}, gameOverScorePos = {};
+let gameState = 'loading'; let frame = 0, score = 0, currentDifficulty = 0, currentLevelNumber = 1, levelTimer = LEVEL_TIME_LIMIT;
+let startButtonArea = null, tryAgainButtonArea = null, nextLevelButtonArea = null; // Added nextLevelButtonArea
+let titleLogoPos = {}, gameOverBannerPos = {}, levelCompleteBannerPos = {}, gameOverScorePos = {}, levelCompleteScorePos = {}, levelCompleteLevelPos = {}; // Added positions for level complete screen
 let keyLeftPressed = false;
 let keyRightPressed = false; // Keep the original declaration
 let cameraX = 0;
 let cameraY = 0; // Keep Y at 0 for now (no vertical scroll)
-let goalX = (MAP_COLS - 5) * TILE_WIDTH; // Update level goal X coordinate (5 tiles from end)
+// let goalX = (MAP_COLS - 5) * TILE_WIDTH; // Removed fixed goal
 // Removed duplicate declaration of keyRightPressed on the next line
 
 // --- Utility Functions ---
 function checkCollision(rect1, rect2) { if (!rect1 || !rect2 || rect1.width <= 0 || rect1.height <= 0 || rect2.width <= 0 || rect2.height <= 0) { return false; } return rect1.x < rect2.x + rect2.width && rect1.x + rect1.width > rect2.x && rect1.y < rect2.y + rect2.height && rect1.y + rect1.height > rect2.y; }
 function drawScore(scoreValue, drawX, drawY, align = 'left') { if (!images.numbers) return; let scoreStr = scoreValue.toString(); let currentDrawX = drawX; let digitDrawInfo = []; let totalScoreWidth = 0; for (let i = 0; i < scoreStr.length; i++) { let digit = parseInt(scoreStr[i]); let drawWidth = 0; if (digit >= 0 && digit <= 9) { let sprite = numberSpriteData[digit]; if (sprite && sprite.h > 0) { let aspectRatio = sprite.w / sprite.h; drawWidth = numberDrawHeight * aspectRatio; } } digitDrawInfo.push(drawWidth); totalScoreWidth += drawWidth; } totalScoreWidth += Math.max(0, scoreStr.length - 1) * numberSpacing; if (align === 'center') { currentDrawX = drawX - totalScoreWidth / 2; } else if (align === 'right') { currentDrawX = drawX - totalScoreWidth; } for (let i = 0; i < scoreStr.length; i++) { let digit = parseInt(scoreStr[i]); if (digit >= 0 && digit <= 9) { let sprite = numberSpriteData[digit]; let drawWidth = digitDrawInfo[i]; if (sprite && drawWidth > 0) { ctx.drawImage(images.numbers, sprite.x, sprite.y, sprite.w, sprite.h, currentDrawX, drawY, drawWidth, numberDrawHeight); currentDrawX += drawWidth + numberSpacing; } } } }
-function getTile(col, row) { if (row >= 0 && row < MAP_ROWS && col >= 0 && col < MAP_COLS) { return levelMap[row][col]; } return TILES.EMPTY; }
+function getTile(col, row) {
+    // Check row bounds first
+    if (row < 0 || row >= MAP_ROWS) { return TILES.EMPTY; }
+    // Check if the column exists in the row array and is within generated bounds
+    if (col >= 0 && col < MAP_COLS && levelMap[row] && levelMap[row][col] !== undefined) { // Use MAP_COLS for boundary check
+        return levelMap[row][col];
+    }
+    return TILES.EMPTY; // Return empty for ungenerated or out-of-bounds columns
+}
 function isSolidTile(tileType) { return tileType === TILES.GRASS || tileType === TILES.DIRT; }
 // --- End Tile Collision Helper ---
 
@@ -206,21 +337,24 @@ function isSolidTile(tileType) { return tileType === TILES.GRASS || tileType ===
 function initializeGame() {
     console.log("Inside initializeGame()...");
     // Robust Image Check
-    const requiredImages = ['p_idle', 'p_jump', 'p_fall', 'p_run1', 'p_run2', 'p_run3', 'p_run4', 'p_run5', 'gameOverBanner', 'startButton', 'tryAgainButton', 'sky', 'landscape', 'numbers', 'titleLogo', 'levelCompleteBanner'];
+    const requiredImages = ['p_idle', 'p_jump', 'p_fall', 'p_run1', 'p_run2', 'p_run3', 'p_run4', 'p_run5', 'gameOverBanner', 'startButton', 'tryAgainButton', 'sky', 'landscape', 'numbers', 'titleLogo', 'levelCompleteBanner', 'nextLevelButton']; // Added nextLevelButton
     let allLoadedAndValid = true; for (let name of requiredImages) { if (!images[name] || !(images[name].naturalWidth > 0 && images[name].naturalHeight > 0)) { console.error(`Initialization Error: Image "${name}" invalid!`); allLoadedAndValid = false; } } if (!allLoadedAndValid) { gameState = 'criticalError'; if(ctx){ ctx.fillStyle='red'; ctx.font='12px sans-serif'; ctx.textAlign='center'; ctx.fillText('ERROR: Invalid image assets. Check console.', canvas.width/2, canvas.height/2); } console.error("Initialization failed: Invalid image assets."); return; } console.log("All required image objects seem valid.");
 
+    // --- Start Level 1 ---
+    startLevel(1); // Start the first level
+    // console.log("Initial level chunks generated."); // Log moved into generator
     // Set Initial State
-    gameState = 'start';
+    // gameState = 'start'; // startLevel now sets the state to 'playing'
     playerX = canvas.width / 4; playerY = (MAP_ROWS - 5) * TILE_HEIGHT;
     playerVx = 0; playerVy = 0; onGround = false; facingRight = true;
-    currentRunFrame = 0; runFrameTimer = 0; score = 0; frame = 0;
+    currentRunFrame = 0; runFrameTimer = 0; score = 0; frame = 0; currentDifficulty = 0; // Reset difficulty on game start/retry
 
     // Read Dimensions (using 50x50 based on user info)
-    playerWidth = 50;
-    playerHeight = 50;
+    playerWidth = PLAYER_DRAW_WIDTH;
+    playerHeight = PLAYER_DRAW_HEIGHT;
     obstacleWidth = TILE_WIDTH; obstacleNaturalHeight = TILE_HEIGHT; // Use tile size
     // Calculate and assign collision hitbox dimensions (now using global vars)
-    playerCollisionWidth = TILE_WIDTH * 1.8; // Approx 28.8px
+    playerCollisionWidth = TILE_WIDTH * PLAYER_COLLISION_WIDTH_FACTOR;
     playerCollisionXOffset = (playerWidth - playerCollisionWidth) / 2; // Center hitbox
     console.log(`Player dimensions set: ${playerWidth}x${playerHeight}, Collision Box Width: ${playerCollisionWidth}`);
 
@@ -228,18 +362,30 @@ function initializeGame() {
     console.log("Calculating UI positions...");
     try {
         // Title Logo (Scaled)
-        let titleScaleWidth = canvas.width * 0.8; let titleAspect = images.titleLogo.naturalHeight / images.titleLogo.naturalWidth; titleLogoPos = { w: titleScaleWidth, h: titleScaleWidth * titleAspect, x: canvas.width / 2 - titleScaleWidth / 2, y: canvas.height * 0.1 };
+        let titleScaleWidth = canvas.width * UI_TITLE_LOGO_SCALE_WIDTH_FACTOR; let titleAspect = images.titleLogo.naturalHeight / images.titleLogo.naturalWidth; titleLogoPos = { w: titleScaleWidth, h: titleScaleWidth * titleAspect, x: canvas.width / 2 - titleScaleWidth / 2, y: canvas.height * UI_TITLE_LOGO_Y_POS_FACTOR };
         // Start Button (Scaled, assume square aspect if needed)
-        let buttonTargetWidth = 120; let startAspect = images.startButton.naturalHeight > 0 ? images.startButton.naturalHeight / images.startButton.naturalWidth : 1; let startDrawWidth = buttonTargetWidth; let startDrawHeight = buttonTargetWidth * startAspect; startButtonArea = { x: canvas.width / 2 - startDrawWidth / 2, y: titleLogoPos.y + titleLogoPos.h + 30, width: startDrawWidth, height: startDrawHeight };
+        let buttonTargetWidth = UI_BUTTON_TARGET_WIDTH; let startAspect = images.startButton.naturalHeight > 0 ? images.startButton.naturalHeight / images.startButton.naturalWidth : 1; let startDrawWidth = buttonTargetWidth; let startDrawHeight = buttonTargetWidth * startAspect; startButtonArea = { x: canvas.width / 2 - startDrawWidth / 2, y: titleLogoPos.y + titleLogoPos.h + UI_START_BUTTON_Y_SPACING, width: startDrawWidth, height: startDrawHeight };
         // console.log("Calculated startButtonArea:", startButtonArea); // Remove DEBUG LOG
         // Game Over Banner (Scaled)
-        let bannerScaleWidth = canvas.width * 0.7; let bannerAspect = images.gameOverBanner.naturalHeight / images.gameOverBanner.naturalWidth; gameOverBannerPos = { w: bannerScaleWidth, h: bannerScaleWidth * bannerAspect, x: canvas.width / 2 - bannerScaleWidth / 2, y: Math.max(10, (canvas.height / 4) - (bannerScaleWidth * bannerAspect) / 2) };
+        let bannerScaleWidth = canvas.width * UI_BANNER_SCALE_WIDTH_FACTOR; let bannerAspect = images.gameOverBanner.naturalHeight / images.gameOverBanner.naturalWidth; gameOverBannerPos = { w: bannerScaleWidth, h: bannerScaleWidth * bannerAspect, x: canvas.width / 2 - bannerScaleWidth / 2, y: Math.max(UI_GAME_OVER_BANNER_MIN_Y_POS, (canvas.height * UI_GAME_OVER_BANNER_Y_POS_FACTOR) - (bannerScaleWidth * bannerAspect) / 2) };
         // Level Complete Banner (Scaled)
-        let completeScaleWidth = canvas.width * 0.7; let completeAspect = images.levelCompleteBanner.naturalHeight / images.levelCompleteBanner.naturalWidth; levelCompleteBannerPos = { w: completeScaleWidth, h: completeScaleWidth * completeAspect, x: canvas.width / 2 - completeScaleWidth / 2, y: canvas.height * 0.25 };
+        let completeScaleWidth = canvas.width * UI_BANNER_SCALE_WIDTH_FACTOR; let completeAspect = images.levelCompleteBanner.naturalHeight / images.levelCompleteBanner.naturalWidth; levelCompleteBannerPos = { w: completeScaleWidth, h: completeScaleWidth * completeAspect, x: canvas.width / 2 - completeScaleWidth / 2, y: canvas.height * UI_LEVEL_COMPLETE_BANNER_Y_POS_FACTOR };
         // Try Again Button (Scaled, assume square aspect if needed)
-        let tryAgainAspect = images.tryAgainButton.naturalHeight > 0 ? images.tryAgainButton.naturalHeight / images.tryAgainButton.naturalWidth : 1; let tryAgainDrawWidth = buttonTargetWidth; let tryAgainDrawHeight = buttonTargetWidth * tryAgainAspect; tryAgainButtonArea = { x: canvas.width / 2 - tryAgainDrawWidth / 2, y: gameOverBannerPos.y + gameOverBannerPos.h + 15, width: tryAgainDrawWidth, height: tryAgainDrawHeight };
+        let tryAgainAspect = images.tryAgainButton.naturalHeight > 0 ? images.tryAgainButton.naturalHeight / images.tryAgainButton.naturalWidth : 1; let tryAgainDrawWidth = UI_BUTTON_TARGET_WIDTH; let tryAgainDrawHeight = UI_BUTTON_TARGET_WIDTH * tryAgainAspect; tryAgainButtonArea = { x: canvas.width / 2 - tryAgainDrawWidth / 2, y: gameOverBannerPos.y + gameOverBannerPos.h + UI_TRY_AGAIN_BUTTON_Y_SPACING, width: tryAgainDrawWidth, height: tryAgainDrawHeight };
         // Game Over Score Position
-        gameOverScorePos.x = canvas.width / 2; gameOverScorePos.y = tryAgainButtonArea.y + tryAgainButtonArea.height + 15;
+        gameOverScorePos.x = canvas.width / 2; gameOverScorePos.y = tryAgainButtonArea.y + tryAgainButtonArea.height + UI_GAME_OVER_SCORE_Y_SPACING;
+        // Next Level Button (similar position to try again)
+        let nextLevelAspect = images.nextLevelButton.naturalHeight > 0 ? images.nextLevelButton.naturalHeight / images.nextLevelButton.naturalWidth : 1;
+        let nextLevelDrawWidth = UI_BUTTON_TARGET_WIDTH;
+        let nextLevelDrawHeight = UI_BUTTON_TARGET_WIDTH * nextLevelAspect;
+        // Position it below the level complete banner
+        nextLevelButtonArea = { x: canvas.width / 2 - nextLevelDrawWidth / 2, y: levelCompleteBannerPos.y + levelCompleteBannerPos.h + UI_TRY_AGAIN_BUTTON_Y_SPACING, width: nextLevelDrawWidth, height: nextLevelDrawHeight };
+        // Level Complete Score/Level Position (below next level button)
+        levelCompleteScorePos.x = canvas.width / 2;
+        levelCompleteScorePos.y = nextLevelButtonArea.y + nextLevelButtonArea.height + UI_GAME_OVER_SCORE_Y_SPACING;
+        levelCompleteLevelPos.x = canvas.width / 2;
+        levelCompleteLevelPos.y = levelCompleteScorePos.y + numberDrawHeight + 5; // Place level below score
+
         console.log("UI positions calculated successfully.");
     } catch (e) { console.error("ERROR during UI Position Calculation:", e); gameState = 'criticalError'; if(ctx) { /* Draw error */ } return; }
 
@@ -267,16 +413,18 @@ function handleInput(event) {
         // const collisionResult = checkCollision(clickRect, startButtonArea); // Remove DEBUG LOG related vars
         // console.log(`Click: (${clickX}, ${clickY}), ButtonArea:`, startButtonArea, `Collision: ${collisionResult}`); // Remove DEBUG LOG
         if (checkCollision({x: clickX, y: clickY, width:1, height:1}, startButtonArea)) { // Use original check
-             gameState = 'playing';
-             score=0; frame=0;
-             // Reset player position/state
-             playerY = canvas.height/2; // Drop in from middle
-             playerVy=0;
-             onGround=false;
-             playerX = canvas.width / 4; // Reset X pos
+             // gameState = 'playing'; // startLevel handles this
+             // score=0; frame=0; // startLevel handles score reset for level 1
+             // // Reset player position/state
+             // playerY = canvas.height/2; // startLevel handles this
+             // playerVy=0;
+             // onGround=false;
+             // playerX = canvas.width / 4; // startLevel handles this
+             startLevel(1); // Directly start level 1 when start button is clicked
         }
     } // Start Game
-    else if (gameState === 'gameOver' && tryAgainButtonArea) { if (checkCollision({x: clickX, y: clickY, width:1, height:1}, tryAgainButtonArea)) { gameState = 'start'; playerX = canvas.width / 4; playerY = (MAP_ROWS - 5) * TILE_HEIGHT; playerVy = 0; onGround = false; score=0; frame=0; } } // Retry
+    else if (gameState === 'gameOver' && tryAgainButtonArea) { if (checkCollision({x: clickX, y: clickY, width:1, height:1}, tryAgainButtonArea)) { startLevel(1); } } // Retry: Restart level 1
+    else if (gameState === 'levelComplete' && nextLevelButtonArea) { if (checkCollision({x: clickX, y: clickY, width:1, height:1}, nextLevelButtonArea)) { startLevel(currentLevelNumber + 1); } } // Next Level
 }
 
 // --- NEW: Keyboard Handlers ---
@@ -345,6 +493,20 @@ function gameLoop() {
                  }
             }
         }
+        // --- Ceiling Collision ---
+        else if (playerVy < 0) { // Check ceiling only if moving up
+            let checkCeilingTileRow = Math.floor(nextY / TILE_HEIGHT);
+            let tileAboveLeft = getTile(playerLeftTile, checkCeilingTileRow);
+            let tileAboveRight = getTile(playerRightTile, checkCeilingTileRow);
+
+            if (isSolidTile(tileAboveLeft) || isSolidTile(tileAboveRight)) {
+                let ceilingLevelY = (checkCeilingTileRow + 1) * TILE_HEIGHT;
+                if (playerY >= ceilingLevelY && nextY < ceilingLevelY) { // Check if moving into ceiling
+                    nextY = ceilingLevelY; // Align bottom of ceiling tile
+                    playerVy = 0; // Stop upward movement
+                }
+            }
+        }
         // --- Wall Collision ---
         // Use collision hitbox for wall checks
         let nextCollisionBoxX = nextX + playerCollisionXOffset;
@@ -372,26 +534,45 @@ function gameLoop() {
                 }
             }
         }
-        // TODO: Add Ceiling collision checks here using nextY
+        // Ceiling collision check added above, before wall checks
 
         // Update position
         playerY = nextY; // Update Y first (handles gravity/jump/ground collision)
         playerX = nextX; // Update X after wall collision checks
 
-        // --- Level Complete Check ---
-        if (playerX + playerWidth / 2 > goalX) {
-            gameState = 'levelComplete';
-        }
+        // --- Level Complete Check (REMOVED for continuous play) ---
+        // if (playerX + playerWidth / 2 > goalX) {
+        //     gameState = 'levelComplete';
+        // }
 
         // Animation Frame Update (Basic cycle, not linked to movement yet)
         runFrameTimer++; if (runFrameTimer >= runFrameDelay) { runFrameTimer = 0; currentRunFrame++; if (currentRunFrame >= runFrameCount) { currentRunFrame = 0; } }
 
         // Collectibles
         // --- Update Camera ---
-        let targetCameraX = playerX - canvas.width / 3; // Keep player 1/3rd from left
+        let targetCameraX = playerX - canvas.width * CAMERA_X_OFFSET_FACTOR; // Keep player offset from left
         // Clamp camera within map boundaries
-        cameraX = Math.max(0, Math.min(targetCameraX, MAP_COLS * TILE_WIDTH - canvas.width));
+        cameraX = Math.max(0, Math.min(targetCameraX, MAP_COLS * TILE_WIDTH - canvas.width)); // Re-clamp camera to map bounds
         // cameraY = ... // Add vertical clamping if needed later
+
+        // --- Update Level Timer ---
+        levelTimer -= 1 / 60; // Assuming 60 FPS, decrement timer each frame
+        if (levelTimer <= 0) {
+            levelTimer = 0;
+            gameState = 'gameOver'; // Timer running out is Game Over
+        }
+
+        // --- Difficulty is now set per level, not continuously calculated ---
+        // const difficultyIncreaseRate = 0.00005;
+        // const maxDifficulty = 0.9;
+        // currentDifficulty = Math.min(maxDifficulty, playerX * difficultyIncreaseRate);
+
+        // --- Chunk Generation Removed ---
+        // const generationThreshold = (LevelGenerator.state.generatedCols - LevelGenerator.config.CHUNK_WIDTH) * TILE_WIDTH;
+        // if (cameraX > generationThreshold) {
+        //      console.log(`Generating new chunk. Current Difficulty: ${currentDifficulty.toFixed(3)}`);
+        //      LevelGenerator.generateChunk(levelMap, MAP_ROWS, LevelGenerator.state.generatedCols, currentDifficulty);
+        // }
 
         // Check all tiles the player overlaps for coins
         let startCol = Math.floor(playerX / TILE_WIDTH);
@@ -409,8 +590,14 @@ function gameLoop() {
             }
         }
 
-        // Fall off screen check
-        if (playerY > canvas.height) { gameState = 'gameOver'; }
+        // --- Level End Check (Reaching Right Edge) ---
+        if (playerX >= MAP_COLS * TILE_WIDTH) {
+            gameState = 'levelComplete';
+            levelTimer = 0; // Ensure timer shows 0 on complete screen
+        }
+        // --- Fall off screen check (Only if level not complete) ---
+        else if (playerY > canvas.height + playerHeight) { gameState = 'gameOver'; } // Allow falling slightly off before game over
+        if (playerY > canvas.height + playerHeight) { gameState = 'gameOver'; } // Allow falling slightly off before game over
         // TODO: Level Complete Check
 
      } // End update playing state
@@ -460,19 +647,29 @@ function gameLoop() {
          ctx.restore(); // Restore from camera translation
 
          // --- Draw Playing UI (Score) ---
-         drawScore(score, 20, 20, 'left'); // Draw score fixed on screen
+         // Draw Score, Level, and Timer
+         drawScore(score, SCORE_X_POS, SCORE_Y_POS, 'left');
+         drawText(`Level: ${currentLevelNumber}`, LEVEL_INDICATOR_X_POS, LEVEL_INDICATOR_Y_POS, 'right', '16px sans-serif', 'white');
+         drawText(`Time: ${Math.ceil(levelTimer)}`, TIMER_X_POS, TIMER_Y_POS, 'center', '16px sans-serif', 'white');
 
      } else {
          // --- Draw Static UI (Start, Game Over, Level Complete, Loading, Error) ---
          if (gameState === 'start') {
              if (images.titleLogo && titleLogoPos.w > 0) { ctx.drawImage(images.titleLogo, titleLogoPos.x, titleLogoPos.y, titleLogoPos.w, titleLogoPos.h); }
              if (images.startButton && startButtonArea) { ctx.drawImage(images.startButton, startButtonArea.x, startButtonArea.y, startButtonArea.width, startButtonArea.height); }
-         } else if (gameState === 'gameOver') {
+         } else if (gameState === 'gameOver') { // Game Over Screen
              if (images.gameOverBanner && gameOverBannerPos.w > 0) { ctx.drawImage(images.gameOverBanner, gameOverBannerPos.x, gameOverBannerPos.y, gameOverBannerPos.w, gameOverBannerPos.h); }
-             if (images.tryAgainButton && tryAgainButtonArea) { drawScore(score, gameOverScorePos.x, gameOverScorePos.y, 'center'); ctx.drawImage(images.tryAgainButton, tryAgainButtonArea.x, tryAgainButtonArea.y, tryAgainButtonArea.width, tryAgainButtonArea.height); }
-         } else if (gameState === 'levelComplete') {
-              if (images.levelCompleteBanner && levelCompleteBannerPos.w > 0) { ctx.drawImage(images.levelCompleteBanner, levelCompleteBannerPos.x, levelCompleteBannerPos.y, levelCompleteBannerPos.w, levelCompleteBannerPos.h); }
-              drawScore(score, canvas.width / 2, levelCompleteBannerPos.y + levelCompleteBannerPos.h + 20, 'center');
+             if (images.tryAgainButton && tryAgainButtonArea) {
+                 drawScore(score, gameOverScorePos.x, gameOverScorePos.y, 'center'); // Show final score
+                 ctx.drawImage(images.tryAgainButton, tryAgainButtonArea.x, tryAgainButtonArea.y, tryAgainButtonArea.width, tryAgainButtonArea.height);
+             }
+         } else if (gameState === 'levelComplete') { // Level Complete Screen
+                    if (images.levelCompleteBanner && levelCompleteBannerPos.w > 0) { ctx.drawImage(images.levelCompleteBanner, levelCompleteBannerPos.x, levelCompleteBannerPos.y, levelCompleteBannerPos.w, levelCompleteBannerPos.h); }
+                    if (images.nextLevelButton && nextLevelButtonArea) {
+                        drawScore(score, levelCompleteScorePos.x, levelCompleteScorePos.y, 'center'); // Show score
+                        drawText(`Level ${currentLevelNumber} Complete!`, levelCompleteLevelPos.x, levelCompleteLevelPos.y, 'center', '20px sans-serif', 'white'); // Show level completed
+                        ctx.drawImage(images.nextLevelButton, nextLevelButtonArea.x, nextLevelButtonArea.y, nextLevelButtonArea.width, nextLevelButtonArea.height); // Show next level button
+                    }
          } else if (gameState === 'loading') {
               ctx.fillStyle = 'black'; ctx.font = '20px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('Loading assets...', canvas.width / 2, canvas.height / 2);
          } else if (gameState === 'criticalError') {
@@ -483,20 +680,85 @@ function gameLoop() {
      requestAnimationFrame(gameLoop);
 }
 
+// --- NEW: Function to Start/Restart a Level ---
+function startLevel(levelNum) {
+    console.log(`Starting Level ${levelNum}...`);
+    currentLevelNumber = levelNum;
+    gameState = 'playing'; // Set state to playing
+
+    // Calculate difficulty for this level (e.g., linear increase, capped)
+    const difficultyIncreasePerLevel = 0.08; // How much harder each level gets
+    const maxLevelDifficulty = 0.9;
+    currentDifficulty = Math.min(maxLevelDifficulty, (levelNum - 1) * difficultyIncreasePerLevel);
+
+    // Generate the map for the current level
+    LevelGenerator.generateLevelMap(levelMap, MAP_ROWS, MAP_COLS, currentDifficulty, levelNum);
+
+    // Reset player state
+    playerX = canvas.width / 4; // Reset X position
+    // Always drop player from the middle-top for consistency
+    playerY = canvas.height / 2; // Drop in from middle
+    playerVx = 0;
+    playerVy = 0;
+    onGround = false;
+    facingRight = true;
+    cameraX = 0; // Reset camera
+
+    // Reset level timer and frame count
+    levelTimer = LEVEL_TIME_LIMIT;
+    frame = 0;
+    // Reset score only if starting level 1
+    if (levelNum === 1) {
+        score = 0;
+    }
+
+    console.log(`Level ${levelNum} started. Difficulty: ${currentDifficulty.toFixed(3)}`);
+}
+
+// --- NEW: Helper to draw text ---
+function drawText(text, x, y, align = 'left', font = '16px sans-serif', color = 'black') {
+    ctx.fillStyle = color;
+    ctx.font = font;
+    ctx.textAlign = align;
+    ctx.fillText(text, x, y);
+}
+
 // --- Function to Draw Level from Map ---
 function drawLevel() {
     if (!images.landscape) { console.error("drawLevel Error: Landscape image not loaded."); return; }
+
+    // Calculate visible column range based on camera
+    const startCol = Math.floor(cameraX / TILE_WIDTH);
+    const endCol = Math.min( // Use fixed MAP_COLS for drawing bounds now
+        startCol + Math.ceil(canvas.width / TILE_WIDTH) + 1,
+        MAP_COLS // Draw up to the end of the fixed map
+    );
+
     for (let r = 0; r < MAP_ROWS; r++) {
-        for (let c = 0; c < MAP_COLS; c++) {
-            let tileType = levelMap[r][c];
+        for (let c = startCol; c < endCol; c++) {
+            // Use getTile which handles checks for undefined columns/rows (though less critical with fixed map)
+            let tileType = getTile(c, r);
             if (tileType === TILES.EMPTY) continue;
+
             let spriteInfo = tileSpriteData[tileType];
-            if (!spriteInfo) continue;
-            let destX = c * TILE_WIDTH; let destY = r * TILE_HEIGHT;
+            if (!spriteInfo) continue; // Should not happen if TILES enum is correct
+
+            let destX = c * TILE_WIDTH;
+            let destY = r * TILE_HEIGHT;
+
             try {
-                ctx.drawImage( images.landscape, spriteInfo.sx, spriteInfo.sy, TILE_WIDTH, TILE_HEIGHT, destX, destY, TILE_WIDTH, TILE_HEIGHT );
-            } catch (e) { console.error(`RUNTIME Error drawing tile type ${tileType} at ${destX}, ${destY}`, e); gameState = 'criticalError'; break; }
-        } if (gameState === 'criticalError') break;
+                // Draw the tile
+                ctx.drawImage(
+                    images.landscape,
+                    spriteInfo.sx, spriteInfo.sy, TILE_WIDTH, TILE_HEIGHT, // Source rect
+                    destX, destY, TILE_WIDTH, TILE_HEIGHT                  // Destination rect
+                );
+            } catch (e) {
+                console.error(`RUNTIME Error drawing tile type ${tileType} at col ${c}, row ${r}`, e);
+                gameState = 'criticalError'; // Stop the game on drawing error
+                return; // Exit drawLevel immediately
+            }
+        }
     }
 }
 
