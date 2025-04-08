@@ -34,9 +34,9 @@
     border-radius: 15px;
     background: rgba(255, 255, 255, 0.05);
     /* flex: 1; */      /* REMOVED flex-grow */
-    width: 350px;       /* ADDED fixed width matching max-width */
-    min-width: 250px;   /* Match leaderboard item min-width */
-    max-width: 350px;   /* Match leaderboard item max-width */
+    width: 350px;       /* Game cards remain 350px */
+    min-width: 250px;
+    max-width: 350px;   /* Game cards remain 350px */
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -119,18 +119,18 @@
 
 .leaderboard-table-wrapper {
     /* flex: 1; */      /* REMOVED flex-grow */
-    width: 350px;       /* ADDED fixed width matching max-width */
-    min-width: 250px;   /* Match game card min-width */
-    max-width: 350px;   /* Match game card max-width */
+    width: 450px;       /* CHANGED - Make leaderboard wider */
+    min-width: 250px;   /* Keep a minimum */
+    max-width: 450px;   /* CHANGED - Make leaderboard wider */
     background: rgba(255, 255, 255, 0.05);
     border: 2px solid #ff69b4; /* Match game-card border */
     border-radius: 15px; /* Match game-card */
     padding: 30px; /* Match game-card padding */
     box-sizing: border-box;
-    transition: transform 0.3s ease, box-shadow 0.3s ease; /* ADDED */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Keep hover transition */
 }
 
-/* ADDED HOVER EFFECT FOR LEADERBOARD */
+/* Keep HOVER EFFECT FOR LEADERBOARD */
 .leaderboard-table-wrapper:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 20px rgba(255, 105, 180, 0.2);
@@ -229,6 +229,14 @@
     .highscore-table .score-col { width: 5rem; }
 }
 
+/* Adjust breakpoint for wider leaderboard cards */
+@media (max-width: 950px) { /* Increased from 768px to handle two 450px cards + gap */
+     .leaderboard-table-wrapper {
+        max-width: 90%; /* Allow single table to take more width when stacking */
+     }
+}
+
+
 @media (max-width: 480px) {
      /* Game cards */
     .game-card {
@@ -242,8 +250,9 @@
     /* Leaderboards */
      .leaderboard-table-wrapper {
         padding: 15px;
-        max-width: 90%; /* Allow single table to take more width */
-    }
+        max-width: 90%; /* Already set above, kept for clarity */
+        width: auto; /* Let max-width control on smallest screens */
+     }
     .highscore-table th,
     .highscore-table td {
         padding: 8px 5px;
