@@ -19,13 +19,12 @@
 
 .arcade-games {
     display: flex;
-    justify-content: center; /* Center the cards within this container */
-    align-items: stretch;
-    flex-wrap: wrap;
+    justify-content: center; /* Center items */
+    align-items: flex-start; /* Align items to the start (top) */
+    flex-wrap: wrap; /* Allow wrapping */
     gap: 20px;
-    /* ADDED: Constrain and center this container */
-    max-width: 800px;
-    margin: 0 auto;
+    /* REMOVED max-width: 800px; */
+    /* REMOVED margin: 0 auto; */
 }
 
 .game-card {
@@ -34,13 +33,15 @@
     border: 2px solid #ff69b4;
     border-radius: 15px;
     background: rgba(255, 255, 255, 0.05);
-    flex: 1;            /* Match leaderboard item flex */
+    /* flex: 1; */      /* REMOVED flex-grow */
+    width: 350px;       /* ADDED fixed width matching max-width */
     min-width: 250px;   /* Match leaderboard item min-width */
     max-width: 350px;   /* Match leaderboard item max-width */
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-sizing: border-box; /* Add for consistency */
 }
 
 .game-card:hover {
@@ -96,6 +97,7 @@
 
 .leaderboard-section .section-header { /* Target section-header specifically within leaderboard */
     margin-bottom: 30px;
+    text-align: center; /* Add for consistency */
 }
 
 .leaderboard-section .section-header h2 {
@@ -107,23 +109,31 @@
 
 .leaderboard-tables-container {
     display: flex;
-    justify-content: center; /* Center the tables within this container */
-    flex-wrap: wrap;
+    justify-content: center; /* Center items */
+    align-items: flex-start; /* Align items to the start (top) */
+    flex-wrap: wrap; /* Allow wrapping */
     gap: 20px; /* Match game cards gap */
-    /* ADDED: Constrain and center this container */
-    max-width: 800px; /* Match game cards container */
-    margin: 0 auto;
+    /* REMOVED max-width: 800px; */
+    /* REMOVED margin: 0 auto; */
 }
 
 .leaderboard-table-wrapper {
-    flex: 1;            /* Match game card flex */
+    /* flex: 1; */      /* REMOVED flex-grow */
+    width: 350px;       /* ADDED fixed width matching max-width */
     min-width: 250px;   /* Match game card min-width */
     max-width: 350px;   /* Match game card max-width */
     background: rgba(255, 255, 255, 0.05);
-    border: 1px solid #ff69b4;
-    border-radius: 10px;
-    padding: 20px;
+    border: 2px solid #ff69b4; /* Match game-card border */
+    border-radius: 15px; /* Match game-card */
+    padding: 30px; /* Match game-card padding */
     box-sizing: border-box;
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* ADDED */
+}
+
+/* ADDED HOVER EFFECT FOR LEADERBOARD */
+.leaderboard-table-wrapper:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(255, 105, 180, 0.2);
 }
 
 .leaderboard-table-wrapper h3 {
@@ -204,17 +214,12 @@
 
 /* === Responsive Adjustments === */
 @media (max-width: 900px) {
-    /* Adjust container max-width if needed when screen is smaller */
-    .arcade-games,
-    .leaderboard-tables-container {
-        max-width: 95%; /* Allow slightly more width relative to screen */
-    }
+    /* No longer need max-width: 95% rule for containers */
 }
 
 @media (max-width: 768px) {
     .arcade-games,
     .leaderboard-tables-container {
-       /* Keep max-width or adjust if needed */
        /* Items inside will wrap naturally due to flex-wrap */
        gap: 30px; /* Maybe slightly more gap when stacked */
     }

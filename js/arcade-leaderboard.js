@@ -60,8 +60,7 @@ async function fetchAndDisplayScores(gameName, tbodyId) {
             const playerCell = row.insertCell();
             playerCell.style.padding = '8px';
             playerCell.style.textAlign = 'left';
-            playerCell.style.display = 'flex';
-            playerCell.style.alignItems = 'center';
+            // Removed inline display:flex and align-items:center to avoid layout shifts
 
             // Check both cases, prioritize lowercase as seen in Network response
             const profilePicUrl = score.xprofilepicurl || score.xProfilePicUrl || 'images/transparent images/cocoannounce-transparent.png';
