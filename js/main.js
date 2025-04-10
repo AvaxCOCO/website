@@ -6,14 +6,18 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM Content Loaded');
 
-    // Initialize components
+    // Dynamically load header and footer first
+    loadHeaderAndMobileMenu();
+    loadFooter();
+
+    // Initialize components (ensure these run AFTER header/footer are loaded)
     initPreloader(); // Call preloader logic first
-    initScrollEvents();
-    initMobileMenu();
+    initScrollEvents(); // Relies on nav links
+    initMobileMenu(); // Relies on menu elements
     initCountdown();
     initScrollReveal();
     addFloatingCharacters();
-    initSocialIconEffects();
+    initSocialIconEffects(); // Relies on footer icons
     initStepCardAnimations();
 
     // Debug logs to check if elements exist (can be removed later)
@@ -373,6 +377,197 @@ function initSocialIconEffects() {
             });
         }
     });
+}
+
+
+/**
+ * Dynamically loads the header and mobile menu HTML structure.
+ * Handles variations like active links and button visibility based on the current page.
+ */
+function loadHeaderAndMobileMenu() {
+    const headerContainer = document.createElement('div'); // Temporary container
+    const currentPage = window.location.pathname.split('/').pop() || 'index.html'; // Get current HTML file name
+
+    // Determine if it's a main page (needs wallet) or a legal page
+    const isMainPage = ['index.html', 'arcade.html', 'leaderboard.html', 'meme-gallery.html', ''].includes(currentPage); // '' for root path
+
+    // Function to generate nav links, marking the active one
+    const generateNavLinks = (isMobile = false) => {
+        const links = [
+            { href: '#hero', text: 'Home', page: 'index.html' }, // Use #hero for index internal link
+            { href: '#defi', text: 'DeFi', page: 'index.html' },
+            { href: '#how-to-buy', text: 'How to Buy', page: 'index.html' },
+            { href: '#community', text: 'Community', page: 'index.html' },
+            { href: '#presale', text: 'Presale', page: 'index.html' },
+            { href: 'meme-gallery.html', text: 'Meme Gallery', page: 'meme-gallery.html' },
+            { href: 'leaderboard.html', text: 'Leaderboard', page: 'leaderboard.html' },
+            // Only include Arcade link on main pages
+            ...(isMainPage ? [{ href: 'arcade.html', text: 'Arcade', page: 'arcade.html' }] : [])
+        ];
+
+        // Adjust href for internal links if not on index.html
+        if (currentPage !== 'index.html' && currentPage !== '') {
+            links.forEach(link => {
+                if (link.href.startsWith('#')) {
+                    link.href = `index.html${link.href}`;
+                }
+            });
+        }
+
+        return links.map(link => {
+            const isActive = link.page === currentPage || (currentPage === '' && link.page === 'index.html' && link.href === '#hero'); // Special case for root path matching Home
+            // Special case for index internal links when already on index.html
+             const isIndexInternalActive = (currentPage === 'index.html' || currentPage === '') && window.location.hash === link.href && link.href.startsWith('#');
+             const activeClass = (isActive || isIndexInternalActive) ? ' class="active"' : '';
+            return `<li><a href="${link.href}"${activeClass}>${link.text}</a></li>`;
+        }).join('');
+    };
+
+    const headerHTML = `
+    <header>
+        <div class="container">
+            <div class="logo">
+                 <a href="index.html" style="display: flex; align-items: center; text-decoration: none; color: white;"> <img src="images/transparent images/cocoannounce-transparent.png" alt="COCO Logo" class="logo-img">
+                     <span class="logo-text">$COCO</span>
+                 </a>
+            </div>
+            <nav>
+                <ul>
+                    ${generateNavLinks()}
+                </ul>
+            </nav>
+            ${isMainPage ? `
+            <div class="connect-wallet">
+                <button id="connect-wallet-btn" class="btn btn-primary">Connect Wallet</button>
+            </div>` : ''}
+            <div class="mobile-menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+    `;
+
+    const mobileMenuHTML = `
+    <div class="mobile-menu">
+        <div class="close-menu">
+            <i class="fas fa-times"></i>
+        </div>
+        <ul>
+           ${generateNavLinks(true)}
+           ${isMainPage ? `<li><button id="mobile-connect-wallet-btn" class="btn btn-primary">Connect Wallet</button></li>` : ''}
+        </ul>
+    </div>
+    `;
+
+    headerContainer.innerHTML = headerHTML + mobileMenuHTML;
+    // Insert header and mobile menu at the beginning of the body
+    // Use document.body.prepend if available, otherwise insertBefore
+    if (document.body.prepend) {
+        document.body.prepend(...headerContainer.childNodes);
+    } else {
+        // Fallback for older browsers
+        const firstChild = document.body.firstChild;
+        [...headerContainer.childNodes].reverse().forEach(node => {
+            document.body.insertBefore(node, firstChild);
+        });
+    }
+     console.log('Header and Mobile Menu loaded dynamically.');
+}
+
+
+/**
+ * Dynamically loads the footer HTML structure.
+ * Handles variations like active links based on the current page.
+ */
+function loadFooter() {
+    const footerContainer = document.createElement('div'); // Temporary container
+    const currentPage = window.location.pathname.split('/').pop() || 'index.html'; // Get current HTML file name
+    const isMainPage = ['index.html', 'arcade.html', 'leaderboard.html', 'meme-gallery.html', ''].includes(currentPage);
+
+     // Function to generate nav links, marking the active one
+    const generateFooterNavLinks = () => {
+        const links = [
+            { href: '#hero', text: 'Home', page: 'index.html' },
+            { href: '#defi', text: 'DeFi', page: 'index.html' },
+            { href: '#how-to-buy', text: 'How to Buy', page: 'index.html' },
+            { href: '#community', text: 'Community', page: 'index.html' },
+            { href: '#presale', text: 'Presale', page: 'index.html' },
+            { href: 'meme-gallery.html', text: 'Meme Gallery', page: 'meme-gallery.html' },
+            { href: 'leaderboard.html', text: 'Leaderboard', page: 'leaderboard.html' },
+             // Only include Arcade link on main pages
+            ...(isMainPage ? [{ href: 'arcade.html', text: 'Arcade', page: 'arcade.html' }] : [])
+        ];
+
+         // Adjust href for internal links if not on index.html
+        if (currentPage !== 'index.html' && currentPage !== '') {
+            links.forEach(link => {
+                if (link.href.startsWith('#')) {
+                    link.href = `index.html${link.href}`;
+                }
+            });
+        }
+
+        return links.map(link => {
+             const isActive = link.page === currentPage || (currentPage === '' && link.page === 'index.html' && link.href === '#hero');
+             // Special case for index internal links
+             const isIndexInternalActive = (currentPage === 'index.html' || currentPage === '') && window.location.hash === link.href && link.href.startsWith('#');
+             const activeClass = (isActive || isIndexInternalActive) ? ' class="active"' : '';
+            return `<li><a href="${link.href}"${activeClass}>${link.text}</a></li>`;
+        }).join('');
+    };
+
+
+    const footerHTML = `
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                     <a href="index.html" style="display: flex; align-items: center; text-decoration: none; color: white;"> <img src="images/transparent images/cocoannounce-transparent.png" alt="COCO Logo" class="footer-logo-img">
+                         <span class="footer-logo-text">$COCO</span>
+                     </a>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-nav">
+                        <h4>Navigation</h4>
+                        <ul>
+                           ${generateFooterNavLinks()}
+                        </ul>
+                    </div>
+                    <div class="footer-social">
+                        <h4>Social Media</h4>
+                        <div class="social-icons">
+                            <a href="#" target="_blank" class="x"><img src="images/Ecosystem/xiconwhite.png" alt="X" class="x-icon-small"></a>
+                            <a href="#" target="_blank"><i class="fab fa-telegram"></i></a>
+                            <a href="#" target="_blank"><i class="fab fa-discord"></i></a>
+                            <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+                            <a href="#" target="_blank"><i class="fab fa-youtube"></i></a>
+                        </div>
+                    </div>
+                    <div class="footer-ecosystem">
+                        <h4>Ecosystem</h4>
+                        <ul>
+                            <li><a href="https://crypto.com" target="_blank">Buy AVAX on Crypto.com</a></li>
+                            <li><a href="https://core.app" target="_blank">Core Wallet</a></li>
+                            <li><a href="https://pharaoh.exchange" target="_blank">Pharaoh Exchange</a></li>
+                            <li><a href="https://apexdefi.xyz" target="_blank">Apex DeFi</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="powered-by">
+                    <img src="images/Ecosystem/Avax/Poweredbyavax.png" alt="Powered by Avalanche" class="powered-by-img">
+                </div>
+                <p>&copy; 2025 $COCO. All rights reserved.</p>
+                <p class="disclaimer">$COCO is a memecoin for entertainment purposes. Always do your own research before investing.</p>
+            </div>
+        </div>
+    </footer>
+    `;
+    footerContainer.innerHTML = footerHTML;
+    // Append footer at the end of the body
+    document.body.append(...footerContainer.childNodes);
+     console.log('Footer loaded dynamically.');
 }
 
 

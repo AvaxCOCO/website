@@ -1,0 +1,68 @@
+/* Styles for Privacy Policy and Terms of Service pages */
+
+.privacy-container,
+.terms-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    color: white; /* Assuming this should be var(--text-light) */
+}
+
+.privacy-section,
+.terms-section {
+    margin-bottom: 30px;
+}
+
+.privacy-section h2,
+.terms-section h2 {
+    color: #FF1493; /* Assuming this should be var(--primary-color) */
+    margin-bottom: 15px; /* Assuming this should be var(--spacing-md) */
+}
+
+.privacy-section p,
+.terms-section p {
+    margin-bottom: 15px; /* Assuming this should be var(--spacing-md) */
+    line-height: 1.6;
+}
+
+.privacy-section ul,
+.terms-section ul {
+    margin-left: 20px; /* Assuming this should be var(--spacing-lg) */
+    margin-bottom: 15px; /* Assuming this should be var(--spacing-md) */
+    list-style: disc; /* Added default list style */
+}
+
+.privacy-section li,
+.terms-section li {
+    margin-bottom: 10px; /* Assuming this should be var(--spacing-sm) */
+    line-height: 1.6;
+}
+
+.privacy-header,
+.terms-header {
+    text-align: center;
+    margin-bottom: 40px; /* Assuming this should be var(--spacing-xl) */
+}
+
+.privacy-header h1,
+.terms-header h1 {
+    color: #FF1493; /* Assuming this should be var(--primary-color) */
+    font-size: 36px; /* Assuming this should be var(--font-size-3xl) or similar */
+    margin-bottom: 10px; /* Assuming this should be var(--spacing-sm) */
+}
+
+.privacy-header p,
+.terms-header p {
+    font-size: 18px; /* Assuming this should be var(--font-size-lg) */
+    opacity: 0.8;
+}
+
+.privacy-date,
+.terms-date {
+    text-align: center;
+    margin-top: 40px; /* Assuming this should be var(--spacing-xl) */
+    opacity: 0.7;
+    font-style: italic;
+}
+
+/* TODO: Consider replacing hardcoded values with CSS variables from style.css */
