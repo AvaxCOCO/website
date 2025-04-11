@@ -44,24 +44,21 @@ module.exports = async (req, res) => {
  * @returns {Array} - Array of tweet objects
  */
 async function searchXForCoco(bearerToken) {
-  // Define search queries
-  const queries = [
-    '$COCO',
-    '#COCO',
-    'AVAXCOCO',
-    '$COCO AVAX'
-  ];
+  // Combine search queries using OR operator
+  // Note: Phrases with spaces need quotes within the query
+  const combinedQuery = '($COCO OR #COCO OR AVAXCOCO OR "$COCO AVAX") -is:retweet'; // Added -is:retweet to exclude retweets
   
   let allResults = [];
   
-  for (const query of queries) {
+  // Remove the loop, make a single request
+  // for (const query of queries) { // Removed loop
     try {
-      // Get current time minus 1 hour (to avoid duplicates with webhook)
+      // Get current time minus 1 hour (adjust if cron frequency changes)
       const oneHourAgo = new Date(Date.now() - 3600000).toISOString();
       
-      // Search URL with parameters
+      // Search URL with parameters using the combined query
       const searchUrl = new URL('https://api.twitter.com/2/tweets/search/recent');
-      searchUrl.searchParams.append('query', query);
+      searchUrl.searchParams.append('query', combinedQuery); // Use combined query
       searchUrl.searchParams.append('start_time', oneHourAgo);
       searchUrl.searchParams.append('max_results', '100');
       searchUrl.searchParams.append('tweet.fields', 'created_at,author_id,text');
@@ -94,9 +91,9 @@ async function searchXForCoco(bearerToken) {
         allResults = [...allResults, ...tweets];
       }
     } catch (error) {
-      console.error(`Error searching for "${query}":`, error);
+      console.error(`Error searching X:`, error);
     }
-  }
+  // } // Removed loop closing bracket
   
   // Remove duplicates based on tweet ID
   const uniqueTweets = Array.from(

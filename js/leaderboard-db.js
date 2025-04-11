@@ -68,8 +68,8 @@ async function fetchLeaderboard() {
  */
 function renderLeaderboard(data, topUsersContainer, leaderboardTableBody) {
   // Clear existing content / loading states
-  topUsersContainer.innerHTML = '';
-  leaderboardTableBody.innerHTML = '';
+  topUsersContainer.innerHTML = ''; // Clear top users container
+  leaderboardTableBody.innerHTML = ''; // Clear table body
   
   if (!data || data.length === 0) {
     leaderboardTableBody.innerHTML = '<tr><td colspan="4" class="empty">No leaderboard data available</td></tr>';
@@ -77,10 +77,10 @@ function renderLeaderboard(data, topUsersContainer, leaderboardTableBody) {
     return;
   }
   
-  // Render top 3 users
   // Sort data by points descending to ensure ranks are correct if not provided by API
   data.sort((a, b) => (b.total_points || 0) - (a.total_points || 0));
 
+  // --- Render top 3 users into the topUsersContainer ---
   const topUsers = data.slice(0, 3);
   const rankClasses = ['rank-2', 'rank-1', 'rank-3']; // Order for visual layout (2nd, 1st, 3rd)
   const rankDataOrder = [1, 0, 2]; // Index in topUsers array corresponding to rankClasses
@@ -91,7 +91,7 @@ function renderLeaderboard(data, topUsersContainer, leaderboardTableBody) {
           const rank = dataIndex + 1; // Actual rank (1, 2, 3)
           const rankClass = rankClasses[layoutIndex]; // CSS class for layout
 
-          // Calculate bonus (assuming calculateAvaxBonus exists or we define it)
+          // Calculate bonus
           const bonus = calculateAvaxBonus(user.total_points || 0);
 
           let userCardHTML = `
@@ -115,16 +115,17 @@ function renderLeaderboard(data, topUsersContainer, leaderboardTableBody) {
       }
   });
   
-  // Render remaining users
-  // Render remaining users into the table body
-  const remainingUsers = data.slice(3);
-  remainingUsers.forEach((user, index) => {
-    const rank = index + 4; // Rank starts from 4 for the rest
+  // --- Render ALL users into the leaderboardTableBody ---
+  data.forEach((user, index) => {
+    const rank = index + 1; // Rank starts from 1
     const bonus = calculateAvaxBonus(user.total_points || 0); // Calculate bonus
+
+    // Add crown icon for rank 1 directly in the table cell
+    const rankDisplay = rank === 1 ? '<i class="fas fa-crown" style="color: gold; margin-right: 5px;"></i>1' : rank;
 
     leaderboardTableBody.innerHTML += `
       <tr>
-        <td class="rank-cell">${rank}</td>
+        <td class="rank-cell">${rankDisplay}</td>
         <td class="user-cell">
           <img src="${user.profile_image_url || 'images/cocopfp.jpg'}" alt="${user.handle}" class="user-avatar-small">
           <span class="user-handle">@${user.handle}</span>
