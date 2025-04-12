@@ -116,6 +116,15 @@ function setupEventListeners() {
             connectTwitterBtn.addEventListener('click', handleTwitterConnect);
         }
         
+        // X disconnect button (added inside user-profile-preview)
+        const disconnectXBtn = document.getElementById('disconnect-x-btn');
+        if (disconnectXBtn) {
+            disconnectXBtn.addEventListener('click', handleXDisconnect);
+        } else {
+            // This might log initially if the button is inside a hidden container,
+            // but the listener should still work once the container is shown and the button exists.
+            console.warn('Disconnect X button (#disconnect-x-btn) not found during initial setup.');
+        }
         
         // Search functionality
         const searchBtn = document.getElementById('search-btn');
@@ -215,6 +224,52 @@ function handleTwitterConnect() {
             connectBtn.innerHTML = originalText;
             connectBtn.disabled = false;
         }
+    }
+}
+
+/**
+ * Handle X disconnect button click
+ */
+function handleXDisconnect() {
+    try {
+        console.log('Disconnecting X account');
+
+        // Clear authentication data from localStorage
+        localStorage.removeItem('xAccessToken');
+        localStorage.removeItem('xRefreshToken');
+        localStorage.removeItem('cocoXUser');
+
+        // Update UI elements
+        const twitterConnectContainer = document.getElementById('twitter-connect-container');
+        const userProfilePreview = document.getElementById('user-profile-preview');
+        const userProfileSection = document.getElementById('user-profile'); // Assuming this is the main profile section
+
+        if (twitterConnectContainer) {
+            twitterConnectContainer.classList.remove('hidden');
+        }
+        if (userProfilePreview) {
+            userProfilePreview.classList.add('hidden');
+        }
+        if (userProfileSection) {
+            userProfileSection.classList.add('hidden');
+        }
+
+        // Reset connect button state if needed (optional, depends on initial state)
+        const connectBtn = document.getElementById('connect-twitter-btn');
+         if (connectBtn) {
+             // Restore original button content (ensure this matches the HTML)
+             const originalText = '<img src="images/Ecosystem/xiconwhite.png" alt="X" class="x-icon-small" style="width: 20px; margin-right: 8px;"> Connect X';
+             connectBtn.innerHTML = originalText;
+             connectBtn.disabled = false;
+        }
+
+
+        showNotification('X account disconnected successfully.', 'success');
+        console.log('X account disconnected and UI updated.');
+
+    } catch (error) {
+        console.error('Error disconnecting X account:', error);
+        showNotification('Error disconnecting X account.', 'error');
     }
 }
 
