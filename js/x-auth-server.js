@@ -232,9 +232,9 @@ async function fetchXUserData(token) {
         console.log('Saving user data to localStorage');
         localStorage.setItem('cocoXUser', JSON.stringify(userData));
         
-        // Update UI
-        console.log('Updating UI with user data');
-        updateUIAfterAuth(userData);
+        // Update UI - This should happen on the leaderboard page, not here.
+        console.log('User data stored. UI update will occur on leaderboard page.');
+        // updateUIAfterAuth(userData); // Removed call - function not defined on callback.html
         
         // Show success message
         console.log('Authentication complete, showing success notification');
