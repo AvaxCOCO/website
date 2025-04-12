@@ -132,23 +132,25 @@
             const error = urlParams.get('error');
             const errorDescription = urlParams.get('error_description');
             
-            // Update debug info
-            const debugInfo = document.getElementById('debug-info');
-            debugInfo.innerHTML = `<strong>Debug Information:</strong>
-URL Parameters:
-- code: ${code ? 'Present (first 5 chars: ' + code.substring(0, 5) + '...)' : 'Missing'}
-- state: ${state ? 'Present (first 5 chars: ' + state.substring(0, 5) + '...)' : 'Missing'}
-- error: ${error || 'None'}
-- error_description: ${errorDescription || 'None'}
-
-Redirect URI: ${window.location.origin}/callback.html
-
-LocalStorage:
-- xAuthState: ${localStorage.getItem('xAuthState') ? 'Present (first 5 chars: ' + localStorage.getItem('xAuthState').substring(0, 5) + '...)' : 'Missing'}
-- xCodeVerifier: ${localStorage.getItem('xCodeVerifier') ? 'Present (length: ' + localStorage.getItem('xCodeVerifier').length + ')' : 'Missing'}
-- xAccessToken: ${localStorage.getItem('xAccessToken') ? 'Present' : 'Missing'}
-- xRefreshToken: ${localStorage.getItem('xRefreshToken') ? 'Present' : 'Missing'}
-- cocoXUser: ${localStorage.getItem('cocoXUser') ? 'Present' : 'Missing'}`;
+            // Update debug info - Removed as the element is no longer present
+            // const debugInfo = document.getElementById('debug-info');
+            // if (debugInfo) { // Check if element exists before updating
+            //     debugInfo.innerHTML = `<strong>Debug Information:</strong>
+            // URL Parameters:
+            // - code: ${code ? 'Present (first 5 chars: ' + code.substring(0, 5) + '...)' : 'Missing'}
+            // - state: ${state ? 'Present (first 5 chars: ' + state.substring(0, 5) + '...)' : 'Missing'}
+            // - error: ${error || 'None'}
+            // - error_description: ${errorDescription || 'None'}
+            //
+            // Redirect URI: ${window.location.origin}/callback.html
+            //
+            // LocalStorage:
+            // - xAuthState: ${localStorage.getItem('xAuthState') ? 'Present (first 5 chars: ' + localStorage.getItem('xAuthState').substring(0, 5) + '...)' : 'Missing'}
+            // - xCodeVerifier: ${localStorage.getItem('xCodeVerifier') ? 'Present (length: ' + localStorage.getItem('xCodeVerifier').length + ')' : 'Missing'}
+            // - xAccessToken: ${localStorage.getItem('xAccessToken') ? 'Present' : 'Missing'}
+            // - xRefreshToken: ${localStorage.getItem('xRefreshToken') ? 'Present' : 'Missing'}
+            // - cocoXUser: ${localStorage.getItem('cocoXUser') ? 'Present' : 'Missing'}`;
+            // }
             
             console.log('URL parameters:', {
                 code: code ? 'Present (not shown for security)' : 'Missing',
@@ -209,18 +211,20 @@ LocalStorage:
                 document.querySelector('.callback-message').textContent = 'Authentication failed: Security error (state mismatch)';
                 document.querySelector('.callback-spinner').innerHTML = '<i class="fas fa-times" style="color: red;"></i>';
                 
-                // Update debug info with more details
-                debugInfo.innerHTML += `\n\n<strong>Security Error Details:</strong>
-State Mismatch:
-- URL state: ${state ? state : 'null'}
-- Stored state: ${storedState ? storedState : 'null'}
-
-This error occurs when the state parameter returned from X doesn't match the one we stored before redirecting to X.
-This could happen if:
-1. The localStorage was cleared during authentication
-2. The user started the auth flow from a different browser tab
-3. The user is using private/incognito browsing
-4. There's a bug in how we're storing or retrieving the state`;
+                // Update debug info with more details - Removed as element is gone
+                // if (debugInfo) {
+                //     debugInfo.innerHTML += `\n\n<strong>Security Error Details:</strong>
+                // State Mismatch:
+                // - URL state: ${state ? state : 'null'}
+                // - Stored state: ${storedState ? storedState : 'null'}
+                //
+                // This error occurs when the state parameter returned from X doesn't match the one we stored before redirecting to X.
+                // This could happen if:
+                // 1. The localStorage was cleared during authentication
+                // 2. The user started the auth flow from a different browser tab
+                // 3. The user is using private/incognito browsing
+                // 4. There's a bug in how we're storing or retrieving the state`;
+                // }
                 
                 // Redirect back to leaderboard after a short delay
                 setTimeout(() => {
@@ -235,17 +239,19 @@ This could happen if:
                 document.querySelector('.callback-message').textContent = 'Authentication failed: Missing code verifier';
                 document.querySelector('.callback-spinner').innerHTML = '<i class="fas fa-times" style="color: red;"></i>';
                 
-                // Update debug info with more details
-                debugInfo.innerHTML += `\n\n<strong>Security Error Details:</strong>
-Missing Code Verifier:
-- xCodeVerifier in localStorage: ${storedCodeVerifier ? 'Present' : 'Missing'}
-
-This error occurs when the PKCE code verifier is missing from localStorage.
-This could happen if:
-1. The localStorage was cleared during authentication
-2. The user started the auth flow from a different browser tab
-3. The user is using private/incognito browsing
-4. There's a bug in how we're storing or retrieving the code verifier`;
+                // Update debug info with more details - Removed as element is gone
+                // if (debugInfo) {
+                //     debugInfo.innerHTML += `\n\n<strong>Security Error Details:</strong>
+                // Missing Code Verifier:
+                // - xCodeVerifier in localStorage: ${storedCodeVerifier ? 'Present' : 'Missing'}
+                //
+                // This error occurs when the PKCE code verifier is missing from localStorage.
+                // This could happen if:
+                // 1. The localStorage was cleared during authentication
+                // 2. The user started the auth flow from a different browser tab
+                // 3. The user is using private/incognito browsing
+                // 4. There's a bug in how we're storing or retrieving the code verifier`;
+                // }
                 
                 // Redirect back to leaderboard after a short delay
                 setTimeout(() => {
@@ -258,12 +264,14 @@ This could happen if:
             try {
                 console.log('Calling exchangeCodeForToken directly with code');
                 
-                // Update debug info
-                debugInfo.innerHTML += `\n\n<strong>Authentication Process:</strong>
-Starting token exchange with:
-- code: ${code ? 'Present (first 5 chars: ' + code.substring(0, 5) + '...)' : 'Missing'}
-- code_verifier: ${storedCodeVerifier ? 'Present (length: ' + storedCodeVerifier.length + ')' : 'Missing'}
-- redirect_uri: ${window.location.origin}/callback.html`;
+                // Update debug info - Removed as element is gone
+                // if (debugInfo) {
+                //     debugInfo.innerHTML += `\n\n<strong>Authentication Process:</strong>
+                // Starting token exchange with:
+                // - code: ${code ? 'Present (first 5 chars: ' + code.substring(0, 5) + '...)' : 'Missing'}
+                // - code_verifier: ${storedCodeVerifier ? 'Present (length: ' + storedCodeVerifier.length + ')' : 'Missing'}
+                // - redirect_uri: ${window.location.origin}/callback.html`;
+                // }
                 
                 // Update message to show we're processing
                 document.querySelector('.callback-message').textContent = 'Processing authentication...';
@@ -276,8 +284,8 @@ Starting token exchange with:
                         // Check if authentication was successful after a short delay
                         // to allow async operations to complete
                         setTimeout(() => {
-                            // Update debug info
-                            debugInfo.innerHTML += `\n\nToken exchange completed`;
+                            // Update debug info - Removed as element is gone
+                            // if (debugInfo) debugInfo.innerHTML += `\n\nToken exchange completed`;
                             const token = localStorage.getItem('xAccessToken');
                             const userData = localStorage.getItem('cocoXUser');
                             
@@ -291,22 +299,26 @@ Starting token exchange with:
                                 document.querySelector('.callback-message').textContent = 'Successfully connected X account!';
                                 document.querySelector('.callback-spinner').innerHTML = '<i class="fas fa-check" style="color: green;"></i>';
                                 
-                                // Update debug info
-                                debugInfo.innerHTML += `\n\nAuthentication successful:
-- User data stored in localStorage
-- Redirecting to verification page in 3 seconds`;
+                                // Update debug info - Removed as element is gone
+                                // if (debugInfo) {
+                                //     debugInfo.innerHTML += `\n\nAuthentication successful:
+                                // - User data stored in localStorage
+                                // - Redirecting to verification page in 3 seconds`;
+                                // }
                             } else {
                                 console.log('Authentication may have failed, no user data found');
                                 document.querySelector('.callback-message').textContent = 'Authentication failed: No user data';
                                 document.querySelector('.callback-spinner').innerHTML = '<i class="fas fa-times" style="color: red;"></i>';
                                 
-                                // Update debug info
-                                debugInfo.innerHTML += `\n\nAuthentication issue:
-- Token exchange completed
-- Access token: ${token ? 'Present' : 'Missing'}
-- But no user data was stored
-- This could indicate an issue with the user data fetch
-- Check the console for more detailed error messages`;
+                                // Update debug info - Removed as element is gone
+                                // if (debugInfo) {
+                                //     debugInfo.innerHTML += `\n\nAuthentication issue:
+                                // - Token exchange completed
+                                // - Access token: ${token ? 'Present' : 'Missing'}
+                                // - But no user data was stored
+                                // - This could indicate an issue with the user data fetch
+                                // - Check the console for more detailed error messages`;
+                                // }
                             }
                             
                             // Redirect back to leaderboard after a short delay
@@ -322,18 +334,20 @@ Starting token exchange with:
                         document.querySelector('.callback-message').textContent = 'Authentication failed: ' + error.message;
                         document.querySelector('.callback-spinner').innerHTML = '<i class="fas fa-times" style="color: red;"></i>';
                         
-                        // Update debug info with error details
-                        debugInfo.innerHTML += `\n\n<strong>Token Exchange Error:</strong>
-Error: ${error.message}
-Stack: ${error.stack ? error.stack.split('\n')[0] : 'Not available'}
-
-This error occurred during the exchange of the authorization code for an access token.
-Common causes:
-1. Invalid client ID or secret
-2. Incorrect redirect URI
-3. Invalid authorization code
-4. Code verifier mismatch
-5. Network issues when calling the X API`;
+                        // Update debug info with error details - Removed as element is gone
+                        // if (debugInfo) {
+                        //     debugInfo.innerHTML += `\n\n<strong>Token Exchange Error:</strong>
+                        // Error: ${error.message}
+                        // Stack: ${error.stack ? error.stack.split('\n')[0] : 'Not available'}
+                        //
+                        // This error occurred during the exchange of the authorization code for an access token.
+                        // Common causes:
+                        // 1. Invalid client ID or secret
+                        // 2. Incorrect redirect URI
+                        // 3. Invalid authorization code
+                        // 4. Code verifier mismatch
+                        // 5. Network issues when calling the X API`;
+                        // }
                         
                         // Redirect back to leaderboard after a short delay
                         setTimeout(() => {
@@ -345,12 +359,14 @@ Common causes:
                 document.querySelector('.callback-message').textContent = 'Authentication failed: ' + error.message;
                 document.querySelector('.callback-spinner').innerHTML = '<i class="fas fa-times" style="color: red;"></i>';
                 
-                // Update debug info with error details
-                debugInfo.innerHTML += `\n\n<strong>Authentication Setup Error:</strong>
-Error: ${error.message}
-Stack: ${error.stack ? error.stack.split('\n')[0] : 'Not available'}
-
-This error occurred during the initial setup of the authentication process.`;
+                // Update debug info with error details - Removed as element is gone
+                // if (debugInfo) {
+                //     debugInfo.innerHTML += `\n\n<strong>Authentication Setup Error:</strong>
+                // Error: ${error.message}
+                // Stack: ${error.stack ? error.stack.split('\n')[0] : 'Not available'}
+                //
+                // This error occurred during the initial setup of the authentication process.`;
+                // }
                 
                 // Redirect back to leaderboard after a short delay
                 setTimeout(() => {
