@@ -57,9 +57,9 @@ module.exports = async (req, res) => {
     const userData = await userResponse.json();
     const userId = userData.data.id;
     
-    // Now fetch the user's recent tweets
+    // Now fetch the user's recent tweets (fetch more to increase chance of finding verification)
     const tweetsResponse = await fetch(
-      `https://api.twitter.com/2/users/${userId}/tweets?max_results=10&tweet.fields=created_at,text`, 
+      `https://api.twitter.com/2/users/${userId}/tweets?max_results=50&tweet.fields=created_at,text`,
       {
         headers: {
           'Authorization': `Bearer ${token}`
