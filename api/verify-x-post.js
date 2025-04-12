@@ -57,9 +57,9 @@ module.exports = async (req, res) => {
     const userData = await userResponse.json();
     const userId = userData.data.id;
     
-    // Now fetch the user's recent tweets (fetch more to increase chance of finding verification)
+    // Now fetch the user's recent tweets (reverted to 10 to avoid rate limits)
     const tweetsResponse = await fetch(
-      `https://api.twitter.com/2/users/${userId}/tweets?max_results=50&tweet.fields=created_at,text`,
+      `https://api.twitter.com/2/users/${userId}/tweets?max_results=10&tweet.fields=created_at,text`,
       {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -68,8 +68,16 @@ module.exports = async (req, res) => {
     );
     
     if (!tweetsResponse.ok) {
-      return res.status(tweetsResponse.status).json({ 
-        error: 'Failed to fetch tweets from X' 
+      // Check for specific rate limit error from X API
+      if (tweetsResponse.status === 429) {
+          console.warn('X API rate limit hit while fetching user tweets.');
+          return res.status(429).json({
+              error: 'X API rate limit reached. Please wait a moment and try again.'
+          });
+      }
+      // Handle other errors fetching tweets
+      return res.status(tweetsResponse.status).json({
+        error: `Failed to fetch tweets from X (Status: ${tweetsResponse.status})`
       });
     }
     

@@ -83,8 +83,11 @@ function initializeVerification() {
                 <p>Please make sure you've posted the exact text with your verification code.</p>
               </div>
             `;
-            verifyButton.disabled = false;
-            verifyButton.textContent = 'Verify Post';
+            // Add a longer delay before re-enabling the button
+            verifyButton.textContent = 'Verify Post'; // Reset text first
+            setTimeout(() => {
+                verifyButton.disabled = false;
+            }, 10000); // 10-second delay
           }
         })
         .catch(error => {
@@ -95,8 +98,11 @@ function initializeVerification() {
               <p>Please try again later.</p>
             </div>
           `;
-          verifyButton.disabled = false;
-          verifyButton.textContent = 'Verify Post';
+          // Add a longer delay before re-enabling the button
+          verifyButton.textContent = 'Verify Post'; // Reset text first
+          setTimeout(() => {
+              verifyButton.disabled = false;
+          }, 10000); // 10-second delay
         });
     });
   }
