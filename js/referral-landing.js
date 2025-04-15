@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function fetchReferrerInfo() {
         try {
-            const response = await fetch(`/api/referral?code=${referrerCode}`);
+            const response = await fetch(`/api/user?code=${referrerCode}`);
             if (!response.ok) {
                 if (response.status === 404) throw new Error('Referral code not found.');
                 throw new Error(`Failed to fetch referrer info: ${response.statusText}`);
@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
         timerMessage.textContent = `Tracking visit...`;
 
         try {
-            const response = await fetch('/api/referral', {
+            const response = await fetch('/api/user', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -143,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
         showStatusMessage(emailStatus, 'Submitting...', 'info', true);
 
          try {
-            const response = await fetch('/api/referral', {
+            const response = await fetch('/api/user', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

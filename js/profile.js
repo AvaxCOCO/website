@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            const response = await fetch('/api/profile', {
+            const response = await fetch('/api/user', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`, // Send token for authentication
