@@ -1,0 +1,290 @@
+/* css/profile.css */
+
+.profile-section {
+    padding: var(--spacing-3xl) 0;
+    margin-top: 80px; /* Adjust for fixed header */
+    min-height: 80vh;
+}
+
+.profile-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); /* Slightly larger min width */
+    gap: var(--spacing-xl);
+    margin-top: var(--spacing-lg);
+}
+
+.profile-card {
+    background: rgba(26, 3, 71, 0.7); /* Slightly more opaque */
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-xl); /* Increased padding */
+    box-shadow: var(--shadow-lg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+    color: var(--text-light);
+    display: flex;
+    flex-direction: column; /* Arrange content vertically */
+}
+
+.profile-card h3 {
+    font-size: var(--font-size-xl);
+    margin-bottom: var(--spacing-md);
+    color: var(--primary-light);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Add separator */
+    padding-bottom: var(--spacing-sm);
+}
+
+.profile-card h3 i {
+    color: var(--primary-color);
+}
+
+.profile-card p {
+    margin-bottom: var(--spacing-md);
+    color: var(--text-muted);
+    font-size: var(--font-size-sm);
+    flex-grow: 1; /* Allow paragraphs to take up space */
+}
+
+/* User Info Card */
+.user-info-card .card-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-lg);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.user-info-card .avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    border: 3px solid var(--primary-color);
+    object-fit: cover;
+    flex-shrink: 0; /* Prevent avatar shrinking */
+}
+
+.user-info-card .user-details h3 {
+    margin-bottom: var(--spacing-xs); /* Adjust spacing */
+    font-size: var(--font-size-lg);
+    color: var(--text-light);
+    border-bottom: none; /* Remove double border */
+    padding-bottom: 0;
+}
+
+.user-info-card .handle {
+    color: var(--primary-light);
+    font-size: var(--font-size-md);
+    margin-bottom: 0;
+}
+
+.user-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+    text-align: center;
+}
+
+.user-stats div span {
+    display: block;
+    font-size: var(--font-size-xs);
+    color: var(--text-muted);
+    margin-bottom: var(--spacing-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.user-stats div strong {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--text-light);
+}
+
+#disconnect-x-btn {
+    display: block;
+    margin: var(--spacing-lg) auto 0;
+    border-color: var(--error-color);
+    color: var(--error-color);
+    width: fit-content; /* Don't take full width */
+}
+#disconnect-x-btn:hover {
+    background-color: rgba(244, 67, 54, 0.1);
+    border-color: var(--error-color);
+    color: var(--error-color);
+}
+
+
+/* Referral Card */
+.referral-card #generate-qr-btn {
+    display: block;
+    margin: auto 0 0 0; /* Push to bottom if card grows */
+    width: fit-content;
+    align-self: center; /* Center button */
+}
+
+.qr-display {
+    margin-top: var(--spacing-lg);
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+    flex-grow: 1; /* Allow this section to grow */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center content vertically */
+}
+
+.qr-code-container {
+    background-color: white; /* QR codes need white background */
+    padding: var(--spacing-sm);
+    border-radius: var(--border-radius-md);
+    display: inline-block;
+    margin-bottom: var(--spacing-lg);
+    max-width: 200px; /* Limit QR size */
+    margin-left: auto;
+    margin-right: auto;
+    border: 5px solid white; /* Add border */
+}
+
+.qr-code-container img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.referral-link-container {
+    margin-bottom: var(--spacing-md);
+    text-align: left;
+}
+
+.referral-link-container label {
+    display: block;
+    margin-bottom: var(--spacing-xs);
+    font-size: var(--font-size-sm);
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.input-group {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.input-group input[type="text"] {
+    flex-grow: 1;
+    padding: var(--spacing-sm);
+    border-radius: var(--border-radius-sm);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background-color: rgba(0, 0, 0, 0.2);
+    color: var(--text-light);
+    font-size: var(--font-size-sm);
+}
+
+.input-group button {
+    padding: var(--spacing-sm);
+    flex-shrink: 0; /* Prevent button from shrinking */
+}
+
+.copy-status {
+    display: block;
+    margin-top: var(--spacing-xs);
+    font-size: var(--font-size-xs);
+    color: var(--success-color);
+    min-height: 1.2em; /* Reserve space */
+    text-align: right;
+}
+
+.share-prompt {
+    font-style: italic;
+    margin-top: var(--spacing-sm);
+    font-size: var(--font-size-xs);
+}
+
+/* Points Breakdown Card */
+.points-breakdown-card ul {
+    list-style: none;
+    padding-left: 0;
+    margin-top: var(--spacing-sm);
+}
+
+.points-breakdown-card li {
+    margin-bottom: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+    display: flex;
+    justify-content: space-between;
+}
+
+.points-breakdown-card li strong {
+    color: var(--primary-light);
+    margin-right: var(--spacing-xs);
+}
+
+.points-breakdown-card p em {
+    font-size: var(--font-size-xs);
+    color: var(--text-muted);
+    display: block; /* Ensure it takes its own line */
+    margin-top: var(--spacing-md);
+}
+
+
+/* Loading/Error States */
+.loading-message, .error-message {
+    text-align: center;
+    padding: var(--spacing-lg);
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: var(--border-radius-md);
+    margin-top: var(--spacing-lg);
+    font-size: var(--font-size-md);
+    color: var(--text-muted);
+}
+
+.loading-message i {
+    margin-right: var(--spacing-sm);
+    color: var(--primary-light);
+    animation: spin 1.5s linear infinite; /* Reuse spin animation */
+}
+
+.error-message {
+    color: var(--error-color);
+    background-color: rgba(244, 67, 54, 0.1);
+    border: 1px solid var(--error-color);
+}
+
+.error-message i {
+     margin-right: var(--spacing-sm);
+}
+
+.error-message button {
+    margin-left: var(--spacing-md);
+    vertical-align: middle;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Reveal Animations (from animations.css or define here if needed) */
+.reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    /* Ensure transition is defined if not in animations.css */
+    /* transition: opacity 0.6s ease-out, transform 0.6s ease-out; */
+}
+
+.reveal.reveal-fade.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .profile-content {
+        grid-template-columns: 1fr; /* Stack cards on smaller screens */
+    }
+
+     .user-stats {
+        grid-template-columns: repeat(2, 1fr); /* Keep 2 columns for stats */
+    }
+}

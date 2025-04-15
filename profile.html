@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>$COCO Profile - Referral Hub</title>
+    <meta name="description" content="Manage your $COCO profile, track referral points, and generate your unique QR code.">
+
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Vercel Analytics -->
+    <script defer src="/_vercel/insights/script.js"></script>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/profile.css"> <!-- New CSS for this page -->
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+    <div class="page-wrapper">
+        <!-- Preloader -->
+        <div id="preloader">
+            <div class="preloader-content">
+                <img src="images/transparent images/cocorockettrspt.png" alt="COCO Rocket" class="preloader-rocket">
+                <p>Loading Profile...</p>
+            </div>
+        </div>
+
+         <!-- Particles Background -->
+         <div id="particles-js"></div>
+
+         <!-- Header and Mobile Menu will be loaded dynamically by js/main.js -->
+
+        <!-- Profile Section -->
+        <section id="profile-hub" class="profile-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Your $COCO Profile</h2>
+                    <p>Track your progress and share your referral link!</p>
+                </div>
+
+                <!-- Loading State -->
+                <div id="profile-loading" class="loading-message">
+                    <i class="fas fa-spinner fa-spin"></i> Loading your profile data...
+                </div>
+
+                <!-- Error State -->
+                <div id="profile-error" class="error-message hidden">
+                    <i class="fas fa-exclamation-triangle"></i> Could not load profile data. Please ensure you are connected via X.
+                    <button id="retry-profile-load" class="btn btn-sm btn-secondary">Retry</button>
+                </div>
+
+                <!-- Profile Content (shown after loading) -->
+                <div id="profile-content" class="profile-content hidden">
+
+                    <!-- User Info Card -->
+                    <div class="profile-card user-info-card reveal reveal-fade">
+                        <div class="card-header">
+                            <img id="user-avatar" src="images/cocopfp.jpg" alt="User Avatar" class="avatar"> <!-- Default avatar -->
+                            <div class="user-details">
+                                <h3 id="user-name">Your Name</h3>
+                                <p id="user-handle" class="handle">@YourHandle</p>
+                            </div>
+                        </div>
+                         <div class="user-stats">
+                             <div>
+                                 <span>Referral Points</span>
+                                 <strong id="referral-points">0</strong>
+                             </div>
+                             <div>
+                                 <span>Engagement Points</span>
+                                 <strong id="engagement-points">0</strong>
+                             </div>
+                             <div>
+                                 <span>Rank</span>
+                                 <strong id="user-rank">-</strong>
+                             </div>
+                             <div>
+                                 <span>Level</span>
+                                 <strong id="user-level">Beginner</strong>
+                             </div>
+                         </div>
+                         <button id="disconnect-x-btn" class="btn btn-sm btn-outline">Disconnect X</button>
+                    </div>
+
+                    <!-- Referral Card -->
+                    <div class="profile-card referral-card reveal reveal-fade" style="animation-delay: 0.2s;">
+                        <h3><i class="fas fa-qrcode"></i> Your Referral Link & QR Code</h3>
+                        <p>Share your unique link or QR code. Earn points for every action taken by users who sign up through your referral!</p>
+
+                        <div id="qr-loading" class="loading-message hidden">
+                             <i class="fas fa-spinner fa-spin"></i> Generating QR Code...
+                        </div>
+
+                        <div id="qr-error" class="error-message hidden">
+                             <i class="fas fa-exclamation-triangle"></i> Could not generate QR code.
+                             <button id="retry-qr-generation" class="btn btn-sm btn-secondary">Retry</button>
+                        </div>
+
+                        <div id="qr-display" class="qr-display hidden">
+                             <div class="qr-code-container">
+                                 <img id="qr-code-img" src="" alt="Your Referral QR Code">
+                             </div>
+                             <div class="referral-link-container">
+                                 <label for="referral-link-input">Your Unique Link:</label>
+                                 <div class="input-group">
+                                    <input type="text" id="referral-link-input" readonly>
+                                    <button id="copy-link-btn" class="btn btn-sm btn-primary" title="Copy Link">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                 </div>
+                                 <span id="copy-status" class="copy-status"></span>
+                             </div>
+                              <p class="share-prompt">Share this QR code or link online or print it as stickers!</p>
+                        </div>
+
+                        <button id="generate-qr-btn" class="btn btn-primary">Generate My QR Code</button>
+                    </div>
+
+                    <!-- Points Breakdown Card -->
+                     <div class="profile-card points-breakdown-card reveal reveal-fade" style="animation-delay: 0.4s;">
+                         <h3><i class="fas fa-star"></i> Referral Points Breakdown</h3>
+                         <ul>
+                             <li><strong>Visit Landing Page (15s):</strong> 5 Points</li>
+                             <li><strong>Email Signup:</strong> 10 Points</li>
+                             <li><strong>X Account Connect:</strong> 15 Points</li>
+                             <li><strong>Wallet Connect:</strong> 20 Points</li>
+                         </ul>
+                         <p><em>Points are awarded once per unique action per referred user.</em></p>
+                     </div>
+
+                </div> <!-- End #profile-content -->
+            </div> <!-- End .container -->
+        </section> <!-- End #profile-hub -->
+
+        <!-- Footer will be loaded dynamically by js/main.js -->
+
+    </div> <!-- End .page-wrapper -->
+
+    <!-- JavaScript Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <!-- Wallet Connect Dependencies (Ensure thirdweb is loaded if needed, though profile page might not need direct connection itself) -->
+    <!-- <script src="https://cdn.thirdweb.com/js/connect/dist/thirdweb-connect.js"></script> -->
+
+    <!-- Custom JavaScript -->
+    <script src="js/main.js"></script> <!-- Loads header/footer, common utils -->
+    <script src="js/profile.js"></script> <!-- Logic specific to this page -->
+    <script src="js/animations.js"></script> <!-- General animations -->
+    <script src="js/particles-config.js"></script> <!-- Particle background -->
+    <!-- Include x-auth only if disconnect logic relies on it directly -->
+    <script src="js/x-auth-server.js"></script> <!-- Needed for disconnectX function -->
+    <!-- <script src="js/wallet.js"></script> --> <!-- Wallet connection logic (maybe not needed directly on profile page?) -->
+    <!-- <script src="js/fix-layout.js"></script> --> <!-- If still needed -->
+
+</body>
+</html>

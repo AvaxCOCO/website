@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>$COCO Referral - Welcome!</title>
+    <meta name="description" content="You've been referred to $COCO! Sign up and join the community.">
+
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Vercel Analytics -->
+    <script defer src="/_vercel/insights/script.js"></script>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/referral-landing.css"> <!-- New CSS for this page -->
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+     <div class="page-wrapper">
+        <!-- Preloader -->
+        <div id="preloader">
+            <div class="preloader-content">
+                <img src="images/transparent images/cocorockettrspt.png" alt="COCO Rocket" class="preloader-rocket">
+                <p>Loading $COCO...</p>
+            </div>
+        </div>
+
+         <!-- Particles Background -->
+         <div id="particles-js"></div>
+
+         <!-- Header and Mobile Menu will be loaded dynamically by js/main.js -->
+
+        <!-- Referral Landing Section -->
+        <section id="referral-landing" class="referral-landing-section">
+            <div class="container">
+
+                 <!-- Error Message (if referral code is invalid/missing) -->
+                <div id="referral-error" class="error-message hidden">
+                    <i class="fas fa-exclamation-triangle"></i> Invalid or missing referral code. Please check the link or QR code.
+                    <a href="index.html" class="btn btn-sm btn-secondary">Go to Homepage</a>
+                </div>
+
+                <!-- Referral Content (shown if code is valid) -->
+                <div id="file-referral-content" class="referral-content hidden">
+                    <div class="referral-header reveal reveal-fade">
+                        <img src="images/transparent images/cocoannounce-transparent.png" alt="COCO Logo" class="referral-logo">
+                        <h1>Welcome to $COCO!</h1>
+                        <p id="referrer-info">Loading referrer information...</p>
+                         <p>Join the pink ostrich revolution on Avalanche!</p>
+                    </div>
+
+                     <!-- Visit Timer (5 points for referrer if user stays 15s) -->
+                    <div class="referral-timer reveal reveal-fade" style="animation-delay: 0.2s;">
+                        <i class="fas fa-hourglass-half fa-spin"></i>
+                        <span id="timer-message">Stick around for a moment to support your referrer...</span>
+                        <span id="visit-status" class="status-message hidden"></span>
+                    </div>
+
+                    <!-- Referral Actions (10-20 points for referrer based on user actions) -->
+                    <div class="referral-actions reveal reveal-fade" style="animation-delay: 0.4s;">
+                        <h2>Get Involved & Earn Your Referrer More Points!</h2>
+                        <div class="action-cards">
+                            <div class="action-card">
+                                <i class="fas fa-envelope"></i>
+                                <h3>Sign Up for Updates</h3>
+                                <p>Enter your email to stay informed (10 Points for referrer).</p>
+                                <form id="email-form">
+                                    <input type="email" id="email-input" placeholder="Enter your email" required>
+                                    <button type="submit" class="btn btn-sm btn-primary">Submit Email</button>
+                                </form>
+                                <span id="email-status" class="status-message hidden"></span>
+                            </div>
+
+                            <div class="action-card">
+                                <img src="images/Ecosystem/xiconwhite.png" alt="X Icon" class="action-icon-img">
+                                <h3>Connect X Account</h3>
+                                <p>Connect your X account to join the community (15 Points for referrer).</p>
+                                <button id="connect-x-btn" class="btn btn-sm btn-secondary">Connect X</button>
+                                <span id="x-status" class="status-message hidden"></span>
+                            </div>
+
+                            <div class="action-card">
+                                <i class="fas fa-wallet"></i>
+                                <h3>Connect Wallet</h3>
+                                <p>Connect your wallet to interact with $COCO (20 Points for referrer).</p>
+                                <button id="connect-wallet-btn" class="btn btn-sm btn-secondary">Connect Wallet</button>
+                                <span id="wallet-status" class="status-message hidden"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Explore Full Site Link -->
+                    <div class="explore-more reveal reveal-fade" style="animation-delay: 0.6s;">
+                        <a href="index.html" class="btn btn-primary btn-large">Explore the Full $COCO Site</a>
+                    </div>
+                </div> <!-- End #file-referral-content -->
+            </div> <!-- End .container -->
+        </section> <!-- End #referral-landing -->
+
+        <!-- Footer will be loaded dynamically by js/main.js -->
+
+    </div> <!-- End .page-wrapper -->
+
+    <!-- JavaScript Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="https://cdn.thirdweb.com/js/connect/dist/thirdweb-connect.js"></script> <!-- For wallet connect -->
+
+    <!-- Custom JavaScript -->
+    <script src="js/main.js"></script> <!-- For header/footer load, common utils -->
+    <script src="js/referral-landing.js"></script> <!-- Logic for this page -->
+    <script src="js/animations.js"></script> <!-- General animations -->
+    <script src="js/particles-config.js"></script> <!-- Particle background config -->
+    <script src="js/wallet.js"></script> <!-- Wallet connection logic -->
+    <script src="js/x-auth.js"></script> <!-- X auth logic (for connect X button) -->
+    <!-- <script src="js/fix-layout.js"></script> --> <!-- If still needed -->
+
+</body>
+</html>

@@ -1,12 +1,12 @@
 const fetch = require('node-fetch');
-const db = require('./db');
+const db = require('./db'); // Assuming db/index.js is correctly referenced
+require('dotenv').config(); // Ensure env vars are loaded
 
-/**
- * Verifies a user's X post containing their verification code
- * This approach minimizes API calls while still providing real X activity verification
- */
+// Define points for verification
+const VERIFICATION_POINTS = 50;
+
 module.exports = async (req, res) => {
-  // Set CORS headers
+  // Set CORS headers (adjust origin for production)
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS');
@@ -22,130 +22,131 @@ module.exports = async (req, res) => {
 
   // Only allow POST requests
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return res.status(405).json({ verified: false, error: 'Method not allowed' });
   }
 
   try {
-    // Get the user's X token from the Authorization header
+    // 1. Get Token and Validate User with X API
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ error: 'No token provided' });
+      return res.status(401).json({ verified: false, error: 'No token provided or invalid format' });
     }
-    
     const token = authHeader.split(' ')[1];
-    
-    // Get the verification code from the request body
-    const { verificationCode } = req.body;
-    
-    if (!verificationCode) {
-      return res.status(400).json({ error: 'Missing verification code' });
+
+    console.log('Verification request received. Validating token with X API...');
+    const userApiUrl = 'https://api.twitter.com/2/users/me?user.fields=profile_image_url,username,name';
+    let xApiResponse;
+    try {
+        xApiResponse = await fetch(userApiUrl, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+    } catch (fetchError) {
+        console.error('Error fetching from X API during verification:', fetchError);
+        return res.status(500).json({ verified: false, error: 'Failed to contact X API' });
     }
-    
-    // First, get the user's X ID
-    const userResponse = await fetch('https://api.twitter.com/2/users/me', {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    });
-    
-    if (!userResponse.ok) {
-      return res.status(userResponse.status).json({ 
-        error: 'Failed to fetch user data from X' 
-      });
+
+    const xResponseText = await xApiResponse.text();
+    let xUserData;
+    try {
+        xUserData = JSON.parse(xResponseText);
+    } catch (e) {
+         console.error('Failed to parse X API response during verification:', xResponseText);
+         return res.status(500).json({ verified: false, error: 'Failed to parse user data response from X', details: xResponseText });
     }
-    
-    const userData = await userResponse.json();
-    const userId = userData.data.id;
-    
-    // Now fetch the user's recent tweets (reverted to 10 to avoid rate limits)
-    const tweetsResponse = await fetch(
-      `https://api.twitter.com/2/users/${userId}/tweets?max_results=10&tweet.fields=created_at,text`,
-      {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      }
-    );
-    
-    if (!tweetsResponse.ok) {
-      // Check for specific rate limit error from X API
-      if (tweetsResponse.status === 429) {
-          console.warn('X API rate limit hit while fetching user tweets.');
-          return res.status(429).json({
-              error: 'X API rate limit reached. Please wait a moment and try again.'
-          });
-      }
-      // Handle other errors fetching tweets
-      return res.status(tweetsResponse.status).json({
-        error: `Failed to fetch tweets from X (Status: ${tweetsResponse.status})`
-      });
+
+    if (!xApiResponse.ok) {
+        console.error('X API User data fetch error during verification:', xUserData);
+        return res.status(xApiResponse.status).json({ verified: false, error: 'Failed to validate user with X', details: xUserData });
     }
-    
-    const tweetsData = await tweetsResponse.json();
-    
-    // Check if any of the tweets contain the verification code and $COCO
-    const verificationTweet = tweetsData.data?.find(tweet => 
-      tweet.text.includes(verificationCode) && 
-      (tweet.text.includes('$COCO') || tweet.text.includes('@AVAXCOCO'))
-    );
-    
-    if (!verificationTweet) {
-      return res.status(404).json({ 
-        verified: false,
-        error: 'No tweet found with your verification code and $COCO mention' 
-      });
+
+    if (!xUserData || !xUserData.data) {
+         console.error('Invalid user data format from X API during verification:', xUserData);
+         return res.status(500).json({ verified: false, error: 'Received invalid data format from X API' });
     }
-    
-    // Get or create the user in our database
-    const xUser = {
-      id: userId,
-      handle: '@' + userData.data.username,
-      name: userData.data.name,
-      profileImage: userData.data.profile_image_url
+    console.log(`Token validated for user: @${xUserData.data.username}`);
+
+    // 2. Get/Create User in DB
+    const xUserProfile = {
+        id: xUserData.data.id,
+        handle: xUserData.data.username, // Store without '@' from API
+        name: xUserData.data.name,
+        profileImage: xUserData.data.profile_image_url
     };
-    
-    const dbUserId = await db.createOrUpdateUser(xUser);
-    
-    // Check if this tweet has already been verified
-    const existingActivity = await db.getActivityByXId(verificationTweet.id);
-    
-    if (existingActivity) {
-      return res.status(409).json({ 
-        verified: false,
-        error: 'This tweet has already been verified' 
+    const userResult = await db.createOrUpdateUser(xUserProfile); // Returns { id, referral_code }
+    const dbUserId = userResult.id;
+
+    if (!dbUserId) {
+        throw new Error('Failed to get internal user ID from database.');
+    }
+    console.log(`Internal DB User ID: ${dbUserId}`);
+
+    // 3. Check Verification Status in DB
+    const isAlreadyVerified = await db.getUserVerificationStatus(dbUserId);
+
+    if (isAlreadyVerified) {
+      console.log(`User ${dbUserId} (${xUserProfile.handle}) is already verified.`);
+      // Fetch current points/rank to return consistent data
+      const userRecord = await db.getUserProfile(dbUserId);
+      return res.status(409).json({ // 409 Conflict
+        verified: true, // Indicate they are verified
+        alreadyVerified: true,
+        error: 'Account already verified.',
+        points: 0, // No new points awarded
+        totalPoints: userRecord?.engagement_points ?? 0,
+        level: userRecord?.level ?? 'Beginner',
+        rank: userRecord?.rank ?? 'N/A'
       });
     }
-    
-    // Record the activity
-    const points = 50; // Award 50 points for verification post
-    const activityId = await db.recordActivity(
+
+    // 4. Mark User as Verified and Award Points (if not already verified)
+    console.log(`User ${dbUserId} not verified yet. Proceeding with verification...`);
+    const markedVerified = await db.markUserAsVerified(dbUserId);
+
+    if (!markedVerified) {
+        // This could happen if there was a race condition, treat as already verified
+        console.warn(`User ${dbUserId} could not be marked as verified (likely already done).`);
+         const userRecord = await db.getUserProfile(dbUserId);
+         return res.status(409).json({
+            verified: true,
+            alreadyVerified: true,
+            error: 'Account verification race condition or already verified.',
+            points: 0,
+            totalPoints: userRecord?.engagement_points ?? 0,
+            level: userRecord?.level ?? 'Beginner',
+            rank: userRecord?.rank ?? 'N/A'
+         });
+    }
+
+    // Award points for successful verification
+    const pointsResult = await db.updateUserPoints(dbUserId, VERIFICATION_POINTS);
+
+    // Record the verification activity (optional, but good for tracking)
+    await db.recordActivity(
       dbUserId,
       'verification',
-      verificationTweet.text,
-      verificationTweet.id,
-      points
+      `Completed initial X post verification`,
+      `verification-${dbUserId}`, // Create a unique ID for this activity type
+      VERIFICATION_POINTS
     );
-    
-    // Update user points
-    const pointsResult = await db.updateUserPoints(dbUserId, points);
-    
-    // Get the user's updated rank
-    const userRecord = await db.getUserByXId(userId);
-    
-    // Return success response
+
+    // 5. Get Updated Profile and Respond
+    const finalUserRecord = await db.getUserProfile(dbUserId);
+
+    console.log(`Verification successful for user ${dbUserId}. Awarded ${VERIFICATION_POINTS} points.`);
     res.status(200).json({
       verified: true,
-      points: points,
-      totalPoints: pointsResult.totalPoints,
-      level: pointsResult.level,
-      rank: userRecord.rank || 'N/A',
-      tweetId: verificationTweet.id
+      alreadyVerified: false,
+      points: VERIFICATION_POINTS,
+      totalPoints: finalUserRecord?.engagement_points ?? 0,
+      level: finalUserRecord?.level ?? 'Beginner',
+      rank: finalUserRecord?.rank ?? 'N/A'
     });
+
   } catch (error) {
     console.error('Error verifying X post:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       verified: false,
-      error: 'Failed to verify X post' 
+      error: 'Failed to verify X post due to a server error.'
     });
   }
 };

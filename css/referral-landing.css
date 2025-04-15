@@ -1,0 +1,207 @@
+/* css/referral-landing.css */
+
+.referral-landing-section {
+    padding: var(--spacing-3xl) 0;
+    margin-top: 80px; /* Adjust for fixed header */
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.referral-content {
+    max-width: 800px;
+    margin: 0 auto;
+    background: rgba(26, 3, 71, 0.7);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-xl);
+    box-shadow: var(--shadow-xl), 0 0 30px rgba(255, 20, 147, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+}
+
+.referral-header {
+    margin-bottom: var(--spacing-xl);
+}
+
+.referral-logo {
+    width: 80px;
+    height: auto;
+    margin: 0 auto var(--spacing-md);
+    animation: float 5s ease-in-out infinite; /* Reuse float animation */
+}
+
+.referral-header h1 {
+    font-size: var(--font-size-3xl);
+    color: var(--primary-color);
+    margin-bottom: var(--spacing-sm);
+}
+
+#referrer-info {
+    font-size: var(--font-size-lg);
+    color: var(--primary-light);
+    margin-bottom: var(--spacing-sm);
+    font-weight: 600;
+}
+
+.referral-header p:last-of-type {
+     font-size: var(--font-size-md);
+     color: var(--text-muted);
+     margin-bottom: 0;
+}
+
+
+.referral-timer {
+    margin-bottom: var(--spacing-xl);
+    padding: var(--spacing-md);
+    background-color: rgba(0,0,0,0.2);
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-sm);
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+}
+
+.referral-timer i {
+    color: var(--primary-light);
+    font-size: var(--font-size-md);
+}
+
+.referral-actions {
+    margin-bottom: var(--spacing-xl);
+}
+
+.referral-actions h2 {
+    font-size: var(--font-size-xl);
+    margin-bottom: var(--spacing-lg);
+    color: var(--text-light);
+}
+
+.action-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--spacing-lg);
+}
+
+.action-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-lg);
+    transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.action-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.action-card i, .action-card .action-icon-img {
+    font-size: var(--font-size-2xl);
+    color: var(--primary-color);
+    margin-bottom: var(--spacing-md);
+}
+.action-card .action-icon-img {
+    width: 32px; /* Adjust size as needed */
+    height: 32px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+.action-card h3 {
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--spacing-sm);
+    color: var(--primary-light);
+}
+
+.action-card p {
+    font-size: var(--font-size-sm);
+    color: var(--text-muted);
+    margin-bottom: var(--spacing-md);
+    min-height: 3em; /* Reserve space */
+}
+
+.action-card form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.action-card input[type="email"] {
+    padding: var(--spacing-sm);
+    border-radius: var(--border-radius-sm);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background-color: rgba(0, 0, 0, 0.2);
+    color: var(--text-light);
+    font-size: var(--font-size-sm);
+    text-align: center;
+}
+
+.action-card button {
+    margin-top: var(--spacing-xs);
+}
+
+.status-message {
+    display: block;
+    margin-top: var(--spacing-sm);
+    font-size: var(--font-size-xs);
+    min-height: 1.2em; /* Reserve space */
+}
+.status-message.success {
+    color: var(--success-color);
+}
+.status-message.error {
+    color: var(--error-color);
+}
+.status-message.info {
+    color: var(--text-muted);
+}
+
+
+.explore-more {
+    margin-top: var(--spacing-xl);
+}
+
+/* Error message styling */
+.error-message {
+    max-width: 600px;
+    margin: 0 auto var(--spacing-lg);
+    text-align: center;
+    padding: var(--spacing-lg);
+    color: var(--error-color);
+    background-color: rgba(244, 67, 54, 0.1);
+    border: 1px solid var(--error-color);
+    border-radius: var(--border-radius-md);
+}
+.error-message i {
+    margin-right: var(--spacing-sm);
+}
+.error-message a {
+    margin-left: var(--spacing-md);
+}
+
+.hidden {
+    display: none !important;
+}
+
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .referral-content {
+        padding: var(--spacing-lg);
+    }
+    .referral-header h1 {
+        font-size: var(--font-size-2xl);
+    }
+    .referral-actions h2 {
+        font-size: var(--font-size-lg);
+    }
+    .action-cards {
+        grid-template-columns: 1fr; /* Stack action cards */
+    }
+}

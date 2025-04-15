@@ -1,67 +1,74 @@
-// X Authentication Login Endpoint
-const { generateRandomString, generateCodeChallenge, getRedirectUri } = require('../utils');
+// api/auth/x/login.js
+// Handles the initiation of the X OAuth 2.0 PKCE flow and stores referrer code in session
 
-// Store PKCE code verifiers temporarily (in production, use a database or Redis)
-// Note: This is a global variable that persists between function invocations
-// on the same server instance, but not across multiple instances
-let codeVerifiers = new Map();
+const { generateRandomString, generateCodeChallenge, getRedirectUri } = require('./utils'); // Correct path
+const sessionMiddleware = require('../../_middleware/session'); // Import session middleware
+require('dotenv').config(); // Ensure env vars are loaded
 
 module.exports = async (req, res) => {
-  // Set CORS headers
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  );
+    // Apply session middleware manually at the start of the handler
+    sessionMiddleware(req, res, async (err) => {
+        if (err) {
+            console.error("Session middleware failed in /auth/x/login:", err);
+            return res.status(500).send('Session initialization error.');
+        }
 
-  // Handle OPTIONS request
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
+        // Proceed with login logic only after session middleware is done
+        try {
+            const state = generateRandomString(16);
+            const codeVerifier = generateRandomString(64); // PKCE verifier
 
-  // Only allow GET requests
-  if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+            // Store state and code verifier in the session
+            req.session.xAuthState = state;
+            req.session.xCodeVerifier = codeVerifier;
+            console.log(`Stored state (${state.substring(0,5)}...) and verifier (${codeVerifier.substring(0,5)}...) in session ${req.sessionID}`);
 
-  try {
-    // Generate state and code verifier
-    const state = generateRandomString();
-    const codeVerifier = generateRandomString(64);
-    const codeChallenge = await generateCodeChallenge(codeVerifier);
-    
-    // Store the code verifier for later use
-    codeVerifiers.set(state, codeVerifier);
-    
-    // Clean up old entries to prevent memory leaks
-    const now = Date.now();
-    for (const [key, value] of codeVerifiers.entries()) {
-      if (value.timestamp && now - value.timestamp > 10 * 60 * 1000) { // 10 minutes
-        codeVerifiers.delete(key);
-      }
-    }
-    
-    // Build the authorization URL
-    const redirectUri = getRedirectUri(req);
-    const authUrl = new URL('https://twitter.com/i/oauth2/authorize');
-    authUrl.searchParams.append('response_type', 'code');
-    authUrl.searchParams.append('client_id', process.env.X_CLIENT_ID);
-    authUrl.searchParams.append('redirect_uri', redirectUri);
-    authUrl.searchParams.append('scope', 'tweet.read users.read offline.access');
-    authUrl.searchParams.append('state', state);
-    authUrl.searchParams.append('code_challenge', codeChallenge);
-    authUrl.searchParams.append('code_challenge_method', 'S256');
-    
-    // Return the authorization URL, state, and code verifier to the client
-    res.json({ 
-      authUrl: authUrl.toString(), 
-      state,
-      codeVerifier // Send the code verifier to the client
-    });
-  } catch (error) {
-    console.error('Error initiating auth:', error);
-    res.status(500).json({ error: 'Failed to initiate authentication' });
-  }
+            // Capture referrer code from query parameters if present
+            const referrerCode = req.query.referrer_code;
+            if (referrerCode) {
+                // Store it in the session to link the referral after successful login
+                req.session.referrer_code = referrerCode;
+                console.log(`Referrer code ${referrerCode} stored in session ${req.sessionID}.`);
+            } else {
+                // Ensure any previous referrer code is cleared if none provided now
+                delete req.session.referrer_code;
+                 console.log(`No referrer code in query, ensuring it's cleared from session ${req.sessionID}.`);
+            }
+
+             // Save the session explicitly before redirecting
+            req.session.save(async (saveErr) => {
+                if (saveErr) {
+                    console.error("Session save error before redirect:", saveErr);
+                    return res.status(500).send('Session save error');
+                }
+                console.log(`Session ${req.sessionID} saved successfully before redirect.`);
+
+                // Generate PKCE challenge
+                const codeChallenge = await generateCodeChallenge(codeVerifier);
+                const redirectUri = getRedirectUri(req); // Use existing util
+
+                // Construct X Authorization URL
+                const authUrl = new URL('https://twitter.com/i/oauth2/authorize');
+                authUrl.searchParams.append('response_type', 'code');
+                authUrl.searchParams.append('client_id', process.env.X_CLIENT_ID); // Use environment variable
+                authUrl.searchParams.append('redirect_uri', redirectUri);
+                authUrl.searchParams.append('scope', 'tweet.read users.read offline.access'); // Request necessary scopes
+                authUrl.searchParams.append('state', state);
+                authUrl.searchParams.append('code_challenge', codeChallenge);
+                authUrl.searchParams.append('code_challenge_method', 'S256');
+
+                console.log('Redirecting user to X authorization URL:', authUrl.toString());
+                // Perform the redirect
+                res.writeHead(302, { Location: authUrl.toString() });
+                res.end();
+            });
+
+        } catch (error) {
+            console.error('Error starting X auth:', error);
+            // Avoid redirecting if an error occurred before saving session/generating URL
+            if (!res.headersSent) {
+                 res.status(500).send('Failed to start authentication process.');
+            }
+        }
+    }); // End sessionMiddleware wrapper
 };

@@ -241,30 +241,11 @@ async function fetchXUserData(token) {
         showNotification('Successfully connected X account!', 'success');
         
     } catch (error) {
-        console.error('Error fetching user data:', error);
-        showNotification('Failed to get user data: ' + error.message, 'error');
+        console.error('Error fetching or processing user data:', error);
+        // Show a more generic error, as the specific error message might be misleading here
+        showNotification('Failed to retrieve user details after token exchange.', 'error');
     }
 }
 
-/**
- * Disconnect X account
- */
-function disconnectX() {
-    // Clear stored tokens and user data
-    localStorage.removeItem('xAccessToken');
-    localStorage.removeItem('xRefreshToken');
-    localStorage.removeItem('cocoXUser');
-    localStorage.removeItem('xAuthState');
-    
-    // Reset UI
-    const twitterConnectContainer = document.getElementById('twitter-connect-container');
-    const userProfilePreview = document.getElementById('user-profile-preview');
-    const userProfileSection = document.getElementById('user-profile');
-    
-    if (twitterConnectContainer) twitterConnectContainer.classList.remove('hidden');
-    if (userProfilePreview) userProfilePreview.classList.add('hidden');
-    if (userProfileSection) userProfileSection.classList.add('hidden');
-    
-    // Show notification
-    showNotification('X account disconnected', 'info');
-}
+// Removed redundant disconnectX function from this file.
+// Disconnect logic should be handled by the page where the button exists (e.g., leaderboard.js, profile.js)
