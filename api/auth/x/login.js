@@ -1,7 +1,7 @@
 // api/auth/x/login.js
 // Handles the initiation of the X OAuth 2.0 PKCE flow and stores referrer code in session
 
-const { generateRandomString, generateCodeChallenge, getRedirectUri } = require('./utils'); // Correct path
+const { generateRandomString, generateCodeChallenge, getRedirectUri } = require('../utils'); // Correct path
 const sessionMiddleware = require('../../_middleware/session'); // Import session middleware
 require('dotenv').config(); // Ensure env vars are loaded
 
