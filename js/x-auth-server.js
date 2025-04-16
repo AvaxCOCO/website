@@ -129,15 +129,24 @@ async function connectToX() {
             throw new Error(`Failed to initiate authentication: ${data.error}`);
         }
         
-        // Store state for CSRF protection
-        localStorage.setItem('xAuthState', data.state);
-        console.log('Stored state in localStorage:', data.state.substring(0, 5) + '...');
-        
-        // Store code verifier if provided by the server
-        if (data.codeVerifier) {
-            localStorage.setItem('xCodeVerifier', data.codeVerifier);
-            console.log('Stored code verifier in localStorage:', data.codeVerifier.substring(0, 5) + '...');
-        }
+// Store state for CSRF protection
+if (data.state) {
+    localStorage.setItem('xAuthState', data.state);
+    console.log('Stored state in localStorage:', data.state.substring(0, 5) + '...');
+} else {
+    console.error('No state received from server.');
+    showNotification('Authentication failed: No state received.', 'error');
+    return;
+}
+
+// Store code verifier if provided by the server
+if (data.codeVerifier) {
+    localStorage.setItem('xCodeVerifier', data.codeVerifier);
+    console.log('Stored code verifier in localStorage:', data.codeVerifier.substring(0, 5) + '...');
+} else {
+    console.log('No codeVerifier received from server. This is not necessarily an error.');
+    // Not necessarily an error if codeVerifier is not needed or expected
+}
         
         // Redirect to X authorization page
         console.log('Redirecting to authorization URL:', data.authUrl);
