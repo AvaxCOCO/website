@@ -58,9 +58,8 @@ module.exports = async (req, res) => {
                 authUrl.searchParams.append('code_challenge_method', 'S256');
 
                 console.log('Redirecting user to X authorization URL:', authUrl.toString());
-                // Perform the redirect
-                res.writeHead(302, { Location: authUrl.toString() });
-                res.end();
+                // Return the authorization URL instead of redirecting
+                res.json({ authUrl: authUrl.toString() });
             });
 
         } catch (error) {
