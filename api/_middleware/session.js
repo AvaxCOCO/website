@@ -3,9 +3,9 @@
 // If this global approach doesn't work, you'll need to apply session middleware
 // within each individual API route file that requires session access.
 
+const Redis = require('ioredis');
 const session = require('express-session');
 const RedisStore = require('connect-redis')(session);
-const Redis = require('ioredis');
 require('dotenv').config(); // Ensure environment variables are loaded
 
 const redisClient = new Redis({
