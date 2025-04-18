@@ -58,7 +58,12 @@ module.exports = async (req, res) => {
             console.log(`Received state: ${state?.substring(0,5)}..., Session state: ${sessionState?.substring(0,5)}...`);
 
             if (!sessionState || state !== sessionState) {
-                console.error('State mismatch error in callback.');
+                // Log more specific reason for mismatch
+                if (!sessionState) {
+                    console.error('State mismatch error in callback: Session state was undefined (failed to load session?).');
+                } else {
+                    console.error('State mismatch error in callback: Received state does not match session state.');
+                }
                 // Destroy potentially compromised session
                 if (req.session) {
                     req.session.destroy(destroyErr => {
