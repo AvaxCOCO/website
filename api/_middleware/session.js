@@ -4,8 +4,8 @@
 // within each individual API route file that requires session access.
 
 const session = require('express-session');
+const { default: RedisStore } = require('connect-redis');
 const Redis = require('ioredis');
-const RedisStore = require('connect-redis')(session);
 require('dotenv').config(); // Ensure environment variables are loaded
 
 const redisClient = new Redis({
