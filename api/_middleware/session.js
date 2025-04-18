@@ -17,7 +17,7 @@ const redisClient = new Redis({
 });
 
 const sessionMiddleware = session({
-  store: RedisStore.create({
+  store: new RedisStore({
     client: redisClient,
     client: redisClient,
   }),
