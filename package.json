@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "connect-pg-simple": "^9.0.1",
-    "connect-redis": "^8.0.2",
+    "connect-redis": "^7.1.0",
     "dotenv": "^16.0.3",
     "express-session": "^1.18.0",
     "ioredis": "^5.3.2",
