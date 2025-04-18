@@ -5,7 +5,7 @@
 
 const Redis = require('ioredis');
 const session = require('express-session');
-const RedisStore = require('connect-redis')(session);
+const RedisStore = require('connect-redis'); // Correct import for v7+
 require('dotenv').config(); // Ensure environment variables are loaded
 
 const redisClient = new Redis({
