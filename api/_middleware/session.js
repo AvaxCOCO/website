@@ -8,10 +8,8 @@ const session = require('express-session');
 const RedisStore = require('connect-redis').default; // Use .default for CommonJS require with v7+
 require('dotenv').config(); // Ensure environment variables are loaded
 
-const redisClient = new Redis({
-  host: process.env.REDIS_HOST,
-  port: process.env.REDIS_PORT,
-  password: process.env.REDIS_PASSWORD,
+// Use the single REDIS_URL provided by Vercel KV or similar services
+const redisClient = new Redis(process.env.REDIS_URL, {
   maxRetriesPerRequest: null,
   enableReadyCheck: false // Important for serverless environments
 });
