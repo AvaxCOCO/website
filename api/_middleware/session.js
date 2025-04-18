@@ -19,7 +19,6 @@ const redisClient = new Redis({
 const sessionMiddleware = session({
   store: new RedisStore({
     client: redisClient,
-    client: redisClient,
   }),
   secret: process.env.SESSION_SECRET,
   resave: false,
