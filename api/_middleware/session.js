@@ -3,54 +3,90 @@
 // If this global approach doesn't work, you'll need to apply session middleware
 // within each individual API route file that requires session access.
 
-const Redis = require('ioredis');
+// Use the official 'redis' package (v4+)
+const { createClient } = require('redis');
 const session = require('express-session');
-const RedisStore = require('connect-redis').default; // Use .default for CommonJS require with v7+
-require('dotenv').config(); // Ensure environment variables are loaded
+const RedisStore = require('connect-redis').default; // connect-redis v7+ supports redis v4 clients
+require('dotenv').config(); // Ensure env vars are loaded
 
-// Use the single REDIS_URL provided by Vercel KV or similar services
-const redisClient = new Redis(process.env.REDIS_URL, {
-  connectTimeout: 20000, // Increase connection timeout to 20 seconds
-  maxRetriesPerRequest: null,
-  enableReadyCheck: false // Important for serverless environments
+// Initialize client.
+const redisClient = createClient({
+    url: process.env.REDIS_URL // Use the connection string
+});
+redisClient.on('error', (err) => console.error('Redis Client Error:', err));
+
+// Create a promise that resolves once connected.
+// We connect here so the connection is established reuse across function invocations (within limits)
+const redisConnectPromise = redisClient.connect().catch(err => {
+    console.error('Failed to connect to Redis:', err);
+    // Exit or handle critical failure if Redis is essential for startup
+    process.exit(1); // Or throw error to prevent middleware setup
 });
 
-const sessionMiddleware = session({
-  store: new RedisStore({
-    client: redisClient,
-  }),
-  secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: process.env.NODE_ENV === 'production',
-    httpOnly: true,
-    maxAge: 1000 * 60 * 60 * 24 * 7,
-    sameSite: 'lax'
-  }
-});
+// Variable to hold the configured session middleware
+let sessionMiddlewareInstance;
 
-// Export middleware function for Vercel (or manual application)
-module.exports = (req, res, next) => {
-    // Check if secret is set (critical for security)
-    if (!process.env.SESSION_SECRET) {
-        console.error("\n!!! FATAL ERROR: SESSION_SECRET environment variable is not set. Sessions will not be secure. !!!\n");
-        // In a real production app, you might want to throw an error or prevent startup.
-        // For now, we log and continue, but this MUST be fixed.
-        // return res.status(500).send('Server configuration error: Session secret missing.');
-    }
+// Async function to initialize the middleware once Redis is connected
+async function initializeSessionMiddleware() {
+    if (sessionMiddlewareInstance) return sessionMiddlewareInstance;
 
-    // Apply the actual session middleware logic
-    sessionMiddleware(req, res, (err) => {
-        if (err) {
-            console.error("Session middleware error:", err);
-            // Handle error appropriately, maybe return 500
-            return res.status(500).send('Session initialization error.');
+    await redisConnectPromise; // Wait for the connection to be established
+    console.log('Redis client connected successfully.');
+
+    sessionMiddlewareInstance = session({
+        store: new RedisStore({
+            client: redisClient,
+            // Optional: prefix for session keys in Redis
+            // prefix: "myapp:session:",
+        }),
+        secret: process.env.SESSION_SECRET,
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+            secure: process.env.NODE_ENV === 'production',
+            httpOnly: true,
+            maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+            sameSite: 'lax'
         }
-        // If session middleware initializes without error, proceed to the next handler (the API route)
-        next();
     });
+    return sessionMiddlewareInstance;
+}
+
+// Export middleware function for Vercel
+module.exports = async (req, res, next) => {
+    try {
+        // Ensure secret is set
+        if (!process.env.SESSION_SECRET) {
+            console.error("\n!!! FATAL ERROR: SESSION_SECRET environment variable is not set. Sessions will not be secure. !!!\n");
+            // Stop processing if the secret is missing
+            return res.status(500).json({ error: 'Server configuration error: Session secret missing.' });
+        }
+
+        // Get or initialize the session middleware instance
+        const middleware = await initializeSessionMiddleware();
+
+        // Apply the actual session middleware logic
+        middleware(req, res, (err) => {
+            if (err) {
+                console.error("Session middleware execution error:", err);
+                // Handle error appropriately
+                // Avoid sending response if headers already sent
+                if (!res.headersSent) {
+                    return res.status(500).json({ error: 'Session initialization/handling error.' });
+                }
+                return; // Stop further processing if error occurs
+            }
+            // If session middleware initializes without error, proceed
+            next();
+        });
+    } catch (initError) {
+        console.error("Failed to initialize session middleware:", initError);
+        if (!res.headersSent) {
+            res.status(500).json({ error: 'Failed to initialize session infrastructure.' });
+        }
+    }
 };
+
 
 // --- Notes if global middleware doesn't work: ---
 // You would import and apply `sessionMiddleware` within each API route file like this:
