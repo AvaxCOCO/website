@@ -4,25 +4,31 @@
 // within each individual API route file that requires session access.
 
 const session = require('express-session');
-const pgSession = require('connect-pg-simple')(session);
-const { pool } = require('../db'); // Import pool from your db module
+const Redis = require('ioredis');
+const RedisStore = require('connect-redis')(session);
 require('dotenv').config(); // Ensure environment variables are loaded
 
+const redisClient = new Redis({
+  host: process.env.REDIS_HOST,
+  port: process.env.REDIS_PORT,
+  password: process.env.REDIS_PASSWORD,
+  maxRetriesPerRequest: null,
+  enableReadyCheck: false // Important for serverless environments
+});
+
 const sessionMiddleware = session({
-    store: new pgSession({
-        pool: pool,                // Connection pool from db/index.js
-        tableName: 'session',      // Use the table created in schema
-        createTableIfMissing: false // Assume table is created by schema script
-    }),
-    secret: process.env.SESSION_SECRET, // MUST set this in your .env / Vercel env vars
-    resave: false, // Don't save session if unmodified
-    saveUninitialized: false, // Only save sessions when data is added (e.g., on login)
-    cookie: {
-        secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
-        httpOnly: true, // Prevent client-side JS access to the cookie
-        maxAge: 1000 * 60 * 60 * 24 * 7, // Cookie expires in 7 days (milliseconds)
-        sameSite: 'lax' // Recommended for most cases to mitigate CSRF
-    }
+  store: new RedisStore({
+    client: redisClient,
+  }),
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
+    maxAge: 1000 * 60 * 60 * 24 * 7,
+    sameSite: 'lax'
+  }
 });
 
 // Export middleware function for Vercel (or manual application)

@@ -8,16 +8,18 @@
     "deploy": "vercel --prod"
   },
   "dependencies": {
-    "node-fetch": "^2.6.9",
-    "dotenv": "^16.0.3",
-    "pg": "^8.11.3",
-    "express-session": "^1.18.0",
     "connect-pg-simple": "^9.0.1",
+    "connect-redis": "^8.0.2",
+    "dotenv": "^16.0.3",
+    "express-session": "^1.18.0",
+    "node-fetch": "^2.6.9",
+    "pg": "^8.11.3",
     "qrcode": "^1.5.3",
+    "redis": "^4.7.0",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
-    "vercel": "^32.5.0"
+    "vercel": "^41.6.1"
   },
   "engines": {
     "node": ">=16.0.0"
