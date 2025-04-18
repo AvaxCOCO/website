@@ -10,6 +10,7 @@ require('dotenv').config(); // Ensure environment variables are loaded
 
 // Use the single REDIS_URL provided by Vercel KV or similar services
 const redisClient = new Redis(process.env.REDIS_URL, {
+  connectTimeout: 20000, // Increase connection timeout to 20 seconds
   maxRetriesPerRequest: null,
   enableReadyCheck: false // Important for serverless environments
 });
