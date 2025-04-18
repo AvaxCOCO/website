@@ -10,7 +10,8 @@ module.exports = async (req, res) => {
     sessionMiddleware(req, res, async (err) => {
         if (err) {
             console.error("Session middleware failed in /auth/x/login:", err);
-            return res.status(500).send('Session initialization error.');
+            // Return JSON error
+            return res.status(500).json({ error: 'Session initialization error.', details: err.message });
         }
 
         // Proceed with login logic only after session middleware is done
@@ -39,7 +40,8 @@ module.exports = async (req, res) => {
             req.session.save(async (saveErr) => {
                 if (saveErr) {
                     console.error("Session save error before redirect:", saveErr);
-                    return res.status(500).send('Session save error');
+                    // Return JSON error
+                    return res.status(500).json({ error: 'Session save error', details: saveErr.message });
                 }
                 console.log(`Session ${req.sessionID} saved successfully before redirect.`);
 
@@ -70,7 +72,8 @@ module.exports = async (req, res) => {
             console.error('Error starting X auth:', error);
             // Avoid redirecting if an error occurred before saving session/generating URL
             if (!res.headersSent) {
-                 res.status(500).send('Failed to start authentication process.');
+                 // Return JSON error
+                 res.status(500).json({ error: 'Failed to start authentication process.', details: error.message });
             }
         }
     }); // End sessionMiddleware wrapper
