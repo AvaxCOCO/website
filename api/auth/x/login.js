@@ -59,7 +59,8 @@ module.exports = async (req, res) => {
                 authUrl.searchParams.append('code_challenge', codeChallenge);
                 authUrl.searchParams.append('code_challenge_method', 'S256');
 
-                console.log('Redirecting user to X authorization URL:', authUrl.toString());
+                console.log('Redirecting user to X authorization URL.'); // Keep this less verbose
+                console.log("Full Auth URL:", authUrl.toString()); // Log the full URL for debugging
                 // Return the authorization URL, state, and codeVerifier
                 res.json({
                     authUrl: authUrl.toString(),
