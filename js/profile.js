@@ -26,12 +26,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Check if user is authenticated (using x-auth-server.js logic/localStorage)
         const token = localStorage.getItem('xAccessToken');
+        const userData = localStorage.getItem('cocoXUser');
+        
         if (!token) {
             profileLoading.classList.add('hidden');
-            profileError.textContent = 'Authentication required. Please connect your X account.';
+            profileError.innerHTML = `
+                <div class="alert alert-danger">
+                    <p>Authentication required. Please connect your X account.</p>
+                    <a href="x-verification.html" class="btn btn-primary mt-4">Connect X Account</a>
+                </div>
+            `;
             profileError.classList.remove('hidden');
-            // Optionally redirect to login or show connect button
             return;
+        }
+        
+        // Check if we have user data in localStorage
+        if (userData) {
+            try {
+                const user = JSON.parse(userData);
+                // Use the cached user data while we fetch the latest
+                updateProfileUI(user);
+                profileLoading.classList.add('hidden');
+                profileContent.classList.remove('hidden');
+            } catch (error) {
+                console.error("Error parsing user data from localStorage:", error);
+                // Continue with API fetch if parsing fails
+            }
         }
 
         try {
