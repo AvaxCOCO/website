@@ -107,7 +107,20 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (!response.ok) {
-                throw new Error(`Failed to fetch profile: ${response.statusText}`);
+                // If we still get an error after re-authentication, show a more user-friendly error
+                profileLoading.classList.add('hidden');
+                profileError.innerHTML = `
+                    <div class="alert alert-danger">
+                        <p>Error fetching profile. Please try again later.</p>
+                        <button id="retry-profile-load" class="btn btn-primary mt-4">Retry</button>
+                    </div>
+                `;
+                profileError.classList.remove('hidden');
+                
+                // Add event listener to the retry button
+                document.getElementById('retry-profile-load').addEventListener('click', fetchProfileData);
+                
+                return;
             }
 
             const data = await response.json();

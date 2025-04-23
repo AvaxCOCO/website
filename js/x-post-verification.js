@@ -27,7 +27,7 @@ function initializeVerification() {
   if (userData) {
     try {
       const user = JSON.parse(userData);
-      if (user.verified) {
+      if (user.verified || user.verified_at) {
         // User is already verified, show success message and redirect option
         verificationStatus.innerHTML = `
           <div class="alert alert-success">
