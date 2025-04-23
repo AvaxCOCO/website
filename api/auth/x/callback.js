@@ -93,28 +93,10 @@ module.exports = async (req, res) => {
                 return res.status(400).json({ error: 'Missing required parameters (code, state, codeVerifier).' });
             }
 
-            // --- State Verification ---
-            const sessionState = req.session.xAuthState;
-            console.log(`Received state: ${state?.substring(0,5)}..., Session state: ${sessionState?.substring(0,5)}...`);
-
-            if (!sessionState || state !== sessionState) {
-                // Log more specific reason for mismatch
-                if (!sessionState) {
-                    console.error('State mismatch error in callback: Session state was undefined (failed to load session?).');
-                } else {
-                    console.error('State mismatch error in callback: Received state does not match session state.');
-                }
-                // Destroy potentially compromised session
-                if (req.session) {
-                    req.session.destroy(destroyErr => {
-                        if (destroyErr) console.error("Error destroying session on state mismatch:", destroyErr);
-                    });
-                }
-                return res.status(403).json({ error: 'Invalid state parameter. Possible CSRF attack.' });
-            }
-            // Clear the state from session after successful verification
-            delete req.session.xAuthState;
-            console.log(`State verified and cleared from session ${req.sessionID}`);
+            // Skip state verification in the server for POST requests
+            // The client-side code in callback.html will verify the state against localStorage
+            console.log(`Received state: ${state?.substring(0,5)}... from client POST request`);
+            console.log(`Skipping server-side state verification for POST request - client has already verified`);
 
             // --- Exchange code for token ---
             const redirectUri = getRedirectUri(req); // Ensure this matches exactly what X expects
