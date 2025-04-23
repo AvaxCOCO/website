@@ -127,15 +127,27 @@ module.exports = async (req, res) => {
         if (req.method === 'GET') {
             // Apply authentication check AFTER session is loaded
             ensureAuthenticated(req, res, async () => {
+                // Declare userId at the top level of the function to ensure it's available in the catch block
+                let userId;
+                
                 try {
-                    const userId = req.session.userId;
+                    // Use session userId if available, otherwise use the userId from the token-based auth
+                    userId = req.session?.userId || req.userId;
+                    
+                    if (!userId) {
+                        console.error('No userId available for profile fetch');
+                        return res.status(401).json({ error: 'Authentication required.' });
+                    }
+                    
                     console.log(`Fetching profile for user ID: ${userId}`);
                     let userProfile = await db.getUserProfile(userId);
 
                     if (!userProfile) {
                         // If user session exists but DB record doesn't, something is wrong.
                         // Maybe clear session and force re-auth? For now, return 404.
-                        req.session.destroy(); // Clear potentially invalid session
+                        if (req.session) {
+                            req.session.destroy(); // Clear potentially invalid session
+                        }
                         return res.status(404).json({ error: 'User profile not found. Please reconnect X.' });
                     }
 
@@ -175,47 +187,50 @@ module.exports = async (req, res) => {
         else if (req.method === 'POST') {
             // Apply authentication check
             ensureAuthenticated(req, res, async () => {
-                 try {
-                     // Use session userId if available, otherwise use the userId from the token-based auth
-                     const userId = req.session?.userId || req.userId;
-                     
-                     if (!userId) {
-                         console.error('No userId available for QR code generation');
-                         return res.status(401).json({ error: 'Authentication required.' });
-                     }
-                     
-                     console.log(`Generating QR code request for user ID: ${userId}`);
-                     const referralCode = await db.ensureReferralCode(userId); // Ensure code exists
+                // Declare userId at the top level of the function to ensure it's available in the catch block
+                let userId;
+                
+                try {
+                    // Use session userId if available, otherwise use the userId from the token-based auth
+                    userId = req.session?.userId || req.userId;
+                    
+                    if (!userId) {
+                        console.error('No userId available for QR code generation');
+                        return res.status(401).json({ error: 'Authentication required.' });
+                    }
+                    
+                    console.log(`Generating QR code request for user ID: ${userId}`);
+                    const referralCode = await db.ensureReferralCode(userId); // Ensure code exists
 
-                     if (!referralCode) {
-                         throw new Error('Could not obtain referral code for QR generation.');
-                     }
+                    if (!referralCode) {
+                        throw new Error('Could not obtain referral code for QR generation.');
+                    }
 
-                     const host = req.headers.host || process.env.VERCEL_URL || 'localhost:3000';
-                     const protocol = host.includes('localhost') ? 'http' : 'https';
-                     const baseUrl = `${protocol}://${host}`;
-                     const referralLink = `${baseUrl}/referral-landing.html?code=${referralCode}`;
+                    const host = req.headers.host || process.env.VERCEL_URL || 'localhost:3000';
+                    const protocol = host.includes('localhost') ? 'http' : 'https';
+                    const baseUrl = `${protocol}://${host}`;
+                    const referralLink = `${baseUrl}/referral-landing.html?code=${referralCode}`;
 
-                     console.log(`Generating QR code for link: ${referralLink}`);
-                     // Generate QR code as Data URL
-                     const qrCodeDataUrl = await qrcode.toDataURL(referralLink, {
-                         errorCorrectionLevel: 'H', // High error correction
-                         margin: 1, // Minimal margin
-                         width: 256 // Specify width
-                        });
+                    console.log(`Generating QR code for link: ${referralLink}`);
+                    // Generate QR code as Data URL
+                    const qrCodeDataUrl = await qrcode.toDataURL(referralLink, {
+                        errorCorrectionLevel: 'H', // High error correction
+                        margin: 1, // Minimal margin
+                        width: 256 // Specify width
+                    });
 
-                     console.log(`QR code generated successfully for user ${userId}`);
-                     res.status(200).json({
-                         referralLink: referralLink,
-                         qrCodeDataUrl: qrCodeDataUrl
-                     });
+                    console.log(`QR code generated successfully for user ${userId}`);
+                    res.status(200).json({
+                        referralLink: referralLink,
+                        qrCodeDataUrl: qrCodeDataUrl
+                    });
 
-                 } catch (error) {
-                     // Use a safe userId reference for logging
-                     const safeUserId = userId || 'unknown';
-                     console.error(`Error generating QR code for user ${safeUserId}:`, error);
-                     res.status(500).json({ error: 'Failed to generate QR code.' });
-                 }
+                } catch (error) {
+                    // Use a safe userId reference for logging
+                    const safeUserId = userId || 'unknown';
+                    console.error(`Error generating QR code for user ${safeUserId}:`, error);
+                    res.status(500).json({ error: 'Failed to generate QR code.' });
+                }
             }); // End ensureAuthenticated wrapper
         }
         // --- Handle GET /api/referral?code=... --- (Referrer Info)
