@@ -221,8 +221,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            // Assuming POST to /api/profile triggers QR generation in the backend logic
-             const response = await fetch('/api/profile', {
+            // POST to /api/user triggers QR code generation in the backend
+             const response = await fetch('/api/user', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
