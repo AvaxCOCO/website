@@ -40,20 +40,29 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         
-        // Check if we have user data in localStorage
+        // If we have user data in localStorage, use it and show the profile content
         if (userData) {
             try {
                 const user = JSON.parse(userData);
-                // Use the cached user data while we fetch the latest
                 updateProfileUI(user);
                 profileLoading.classList.add('hidden');
                 profileContent.classList.remove('hidden');
+                
+                // Continue with API fetch in the background to get the latest data
+                fetchLatestProfileData(token);
             } catch (error) {
                 console.error("Error parsing user data from localStorage:", error);
-                // Continue with API fetch if parsing fails
+                // If parsing fails, try to fetch from API
+                fetchLatestProfileData(token);
             }
+        } else {
+            // No cached data, try to fetch from API
+            fetchLatestProfileData(token);
         }
-
+    }
+    
+    // Function to fetch the latest profile data from the API
+    async function fetchLatestProfileData(token) {
         try {
             // First try to get user data from /api/user (session-based)
             let response = await fetch('/api/user', {
@@ -91,6 +100,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                 } else {
                     // X API authentication failed
+                    if (!document.getElementById('profile-content').classList.contains('hidden')) {
+                        // If profile content is already showing, don't show the error
+                        return;
+                    }
+                    
                     profileLoading.classList.add('hidden');
                     profileError.innerHTML = `
                         <div class="alert alert-danger">
@@ -99,15 +113,18 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     `;
                     profileError.classList.remove('hidden');
-                    // Clear local storage
-                    localStorage.removeItem('xAccessToken');
-                    localStorage.removeItem('cocoXUser');
                     return;
                 }
             }
 
             if (!response.ok) {
                 // If we still get an error after re-authentication, show a more user-friendly error
+                // Only show the error if we don't have cached data already showing
+                if (!document.getElementById('profile-content').classList.contains('hidden')) {
+                    // If profile content is already showing, don't show the error
+                    return;
+                }
+                
                 profileLoading.classList.add('hidden');
                 profileError.innerHTML = `
                     <div class="alert alert-danger">
@@ -124,16 +141,37 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const data = await response.json();
+            
+            // Update localStorage with the latest data
+            localStorage.setItem('cocoXUser', JSON.stringify(data));
+            
+            // Update the UI with the latest data
             updateProfileUI(data);
 
             profileLoading.classList.add('hidden');
             profileContent.classList.remove('hidden');
+            profileError.classList.add('hidden');
 
         } catch (error) {
             console.error("Error fetching profile:", error);
+            
+            // Only show the error if we don't have cached data already showing
+            if (!document.getElementById('profile-content').classList.contains('hidden')) {
+                // If profile content is already showing, don't show the error
+                return;
+            }
+            
             profileLoading.classList.add('hidden');
-            profileError.textContent = `Error fetching profile: ${error.message}. Please try again.`;
+            profileError.innerHTML = `
+                <div class="alert alert-danger">
+                    <p>Error fetching profile. Please try again later.</p>
+                    <button id="retry-profile-load" class="btn btn-primary mt-4">Retry</button>
+                </div>
+            `;
             profileError.classList.remove('hidden');
+            
+            // Add event listener to the retry button
+            document.getElementById('retry-profile-load').addEventListener('click', fetchProfileData);
         }
     }
 
