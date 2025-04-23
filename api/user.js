@@ -164,7 +164,9 @@ module.exports = async (req, res) => {
                     res.status(200).json(userProfile);
 
                 } catch (error) {
-                    console.error(`Error fetching user profile for ID ${userId}:`, error);
+                    // Use a safe userId reference for logging
+                    const safeUserId = userId || 'unknown';
+                    console.error(`Error fetching user profile for ID ${safeUserId}:`, error);
                     res.status(500).json({ error: 'Failed to fetch profile data.' });
                 }
             }); // End ensureAuthenticated wrapper
@@ -209,7 +211,9 @@ module.exports = async (req, res) => {
                      });
 
                  } catch (error) {
-                     console.error(`Error generating QR code for user ${userId}:`, error);
+                     // Use a safe userId reference for logging
+                     const safeUserId = userId || 'unknown';
+                     console.error(`Error generating QR code for user ${safeUserId}:`, error);
                      res.status(500).json({ error: 'Failed to generate QR code.' });
                  }
             }); // End ensureAuthenticated wrapper
