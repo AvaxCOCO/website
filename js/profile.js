@@ -55,22 +55,55 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            const response = await fetch('/api/user', {
+            // First try to get user data from /api/user (session-based)
+            let response = await fetch('/api/user', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`, // Send token for authentication
                     'Accept': 'application/json'
-                }
+                },
+                credentials: 'include' // Important: Include cookies for session
             });
 
+            // If session is not found, try to re-authenticate with X API
             if (response.status === 401) { // Unauthorized
-                 profileLoading.classList.add('hidden');
-                 profileError.textContent = 'Your session may have expired. Please reconnect your X account.';
-                 profileError.classList.remove('hidden');
-                 // Clear local storage?
-                 localStorage.removeItem('xAccessToken');
-                 localStorage.removeItem('cocoXUser');
-                 return;
+                console.log('Session not found, trying to re-authenticate with X API');
+                
+                // Try to get user data from X API directly
+                const xResponse = await fetch('/api/auth/x/user', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`, // Send token for authentication
+                        'Accept': 'application/json'
+                    },
+                    credentials: 'include' // Important: Include cookies for session
+                });
+                
+                if (xResponse.ok) {
+                    // X API authentication successful, now try to get user data again
+                    response = await fetch('/api/user', {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Accept': 'application/json'
+                        },
+                        credentials: 'include'
+                    });
+                } else {
+                    // X API authentication failed
+                    profileLoading.classList.add('hidden');
+                    profileError.innerHTML = `
+                        <div class="alert alert-danger">
+                            <p>Your session may have expired. Please reconnect your X account.</p>
+                            <a href="x-verification.html" class="btn btn-primary mt-4">Reconnect X Account</a>
+                        </div>
+                    `;
+                    profileError.classList.remove('hidden');
+                    // Clear local storage
+                    localStorage.removeItem('xAccessToken');
+                    localStorage.removeItem('cocoXUser');
+                    return;
+                }
             }
 
             if (!response.ok) {
@@ -95,7 +128,14 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateProfileUI(data) {
         document.getElementById('user-name').textContent = data.name || 'N/A';
         document.getElementById('user-handle').textContent = data.handle ? `@${data.handle.substring(1)}` : '@N/A'; // Remove '@' if present
-        document.getElementById('user-avatar').src = data.profile_image_url || 'images/cocopfp.jpg'; // Default avatar
+        
+        // Check all possible profile image property names
+        const profileImage = data.profileImage || data.profile_image_url || data.profileImageUrl || data.avatar;
+        document.getElementById('user-avatar').src = profileImage || 'images/cocopfp.jpg'; // Default avatar
+        
+        // Log the data to help debug
+        console.log('Profile data:', data);
+        
         document.getElementById('referral-points').textContent = data.referral_points || 0;
         document.getElementById('engagement-points').textContent = data.engagement_points || 0; // Use alias from DB query
         document.getElementById('user-rank').textContent = data.rank || '-';
@@ -137,7 +177,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     'Authorization': `Bearer ${token}`,
                     'Accept': 'application/json'
                     // No body needed if backend uses session userId
-                }
+                },
+                credentials: 'include' // Important: Include cookies for session
             });
 
             if (response.status === 401) {
