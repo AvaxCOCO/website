@@ -38,10 +38,50 @@ module.exports = async (req, res) => {
             return res.status(200).end();
         }
 
-        // Only allow POST requests from the client (callback.html script)
-        if (req.method !== 'POST') {
-            console.log(`Callback received non-POST method: ${req.method}`);
-            return res.status(405).json({ error: 'Method not allowed. Client must POST code/state/verifier.' });
+        // Handle both GET (from X redirect) and POST (from client script) requests
+        if (req.method !== 'POST' && req.method !== 'GET') {
+            console.log(`Callback received unsupported method: ${req.method}`);
+            return res.status(405).json({ error: 'Method not allowed. Only GET and POST are supported.' });
+        }
+
+        // For GET requests (coming directly from X OAuth redirect)
+        if (req.method === 'GET') {
+            console.log('Received GET request from X OAuth redirect');
+            
+            // Extract code and state from query parameters
+            const code = req.query.code;
+            const state = req.query.state;
+            
+            if (!code || !state) {
+                console.error('Missing code or state in query parameters');
+                return res.status(400).send(`
+                    <html>
+                    <head>
+                        <title>Authentication Error</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background-color: #0a0225; color: white; }
+                            .error-container { max-width: 600px; margin: 0 auto; }
+                            .error-title { color: #FF1493; }
+                            .error-message { margin: 20px 0; }
+                            .back-button { display: inline-block; background-color: #FF1493; color: white; padding: 10px 20px; 
+                                          text-decoration: none; border-radius: 5px; margin-top: 20px; }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="error-container">
+                            <h1 class="error-title">Authentication Error</h1>
+                            <p class="error-message">Missing required parameters from X authentication.</p>
+                            <a href="/" class="back-button">Back to Home</a>
+                        </div>
+                    </body>
+                    </html>
+                `);
+            }
+            
+            // Redirect to callback.html with the code and state as query parameters
+            const redirectUrl = `/callback.html?code=${encodeURIComponent(code)}&state=${encodeURIComponent(state)}`;
+            console.log(`Redirecting to: ${redirectUrl}`);
+            return res.redirect(302, redirectUrl);
         }
 
         try {
