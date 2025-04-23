@@ -80,7 +80,44 @@ async function getUserProfile(userId) {
 // Ensure user has a referral code, generate if needed
 async function ensureReferralCode(userId) {
     let user = await getUserProfile(userId); // Reuse profile fetch
-    if (!user) throw new Error('User not found');
+    
+    // If user doesn't exist, create a temporary user record
+    if (!user) {
+        console.log(`User not found for ID: ${userId}, creating a temporary user record`);
+        
+        try {
+            // Check if userId is a string that looks like an X user ID (large number as string)
+            const isXUserId = typeof userId === 'string' && userId.length > 15;
+            
+            if (isXUserId) {
+                // Create a new user with the X ID
+                const insertQuery = `
+                    INSERT INTO users (x_id, handle, name, profile_image_url)
+                    VALUES ($1, $2, $3, $4)
+                    RETURNING id, x_id, handle, name, profile_image_url, referral_code
+                `;
+                
+                const result = await pool.query(insertQuery, [
+                    userId,
+                    '@user' + userId.substring(userId.length - 6), // Generate a temporary handle
+                    'User', // Generic name
+                    null // No profile image
+                ]);
+                
+                if (result.rows.length > 0) {
+                    user = result.rows[0];
+                    console.log(`Created temporary user record for X ID: ${userId}`);
+                } else {
+                    throw new Error('Failed to create temporary user record');
+                }
+            } else {
+                throw new Error('Cannot create user without X ID');
+            }
+        } catch (error) {
+            console.error(`Error creating temporary user: ${error.message}`);
+            throw new Error(`User not found and could not create temporary record: ${error.message}`);
+        }
+    }
 
     if (!user.referral_code) {
         const newCode = uuidv4();
