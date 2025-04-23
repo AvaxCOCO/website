@@ -21,17 +21,50 @@ function initializeVerification() {
   const verificationStatus = document.getElementById('verification-status');
   const postButton = document.getElementById('post-to-x-button');
   const verifyButton = document.getElementById('verify-post-button');
-  
+
+  // Check if user is already verified
+  const userData = localStorage.getItem('cocoXUser');
+  if (userData) {
+    try {
+      const user = JSON.parse(userData);
+      if (user.verified) {
+        // User is already verified, show success message and redirect option
+        verificationStatus.innerHTML = `
+          <div class="alert alert-success">
+            <p>✅ Your X account is already verified!</p>
+            <p>You've earned ${user.points || 0} points on the leaderboard.</p>
+            <p>Your current rank: #${user.rank || '-'}</p>
+          </div>
+          <div class="mt-4" style="display: flex; gap: 10px; justify-content: center;">
+            <a href="/leaderboard.html" class="btn btn-primary">View Leaderboard</a>
+            <a href="/profile.html" class="btn btn-primary">My Profile & QR Code</a>
+          </div>
+        `;
+        
+        // Hide verification steps
+        const verificationSteps = document.querySelectorAll('.verification-step');
+        verificationSteps.forEach(step => {
+          step.style.display = 'none';
+        });
+        
+        return; // Exit early, no need to set up verification
+      }
+    } catch (error) {
+      console.error('Error parsing user data:', error);
+      // Continue with verification process if there's an error
+    }
+  }
+
   // Generate a unique verification code for this user
   const verificationCode = generateVerificationCode();
-  
+
   // Store the verification code in localStorage
   localStorage.setItem('cocoVerificationCode', verificationCode);
-  
+
   // Update the suggested post text with the verification code
   const suggestedPostElement = document.getElementById('suggested-post');
   if (suggestedPostElement) {
-    suggestedPostElement.textContent = 
+    suggestedPostElement.textContent =
       `I'm joining the $COCO leaderboard! 🚀 Building my $COCO bag on $AVAX. Verification: ${verificationCode} @AVAXCOCO`;
   }
   
