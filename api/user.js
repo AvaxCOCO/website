@@ -140,7 +140,33 @@ module.exports = async (req, res) => {
                     }
                     
                     console.log(`Fetching profile for user ID: ${userId}`);
-                    let userProfile = await db.getUserProfile(userId);
+                    
+                    // Convert userId to a number if it's a string
+                    // This is needed because the X API returns user IDs as strings, but our database expects integers
+                    let userIdForDb;
+                    try {
+                        // If userId is a string that represents a large number, it might be too big for JavaScript's Number type
+                        // In that case, we'll use a different approach to generate a smaller, hash-based ID
+                        if (typeof userId === 'string' && userId.length > 15) {
+                            // Create a simple hash of the userId string to get a smaller number
+                            userIdForDb = Math.abs(userId.split('').reduce((acc, char) => {
+                                return acc + char.charCodeAt(0);
+                            }, 0) % 1000000); // Limit to 6 digits
+                            console.log(`Converted long userId string "${userId}" to hash-based ID: ${userIdForDb}`);
+                        } else {
+                            // For smaller numbers, just convert to integer
+                            userIdForDb = parseInt(userId, 10);
+                            if (isNaN(userIdForDb)) {
+                                throw new Error(`Failed to convert userId "${userId}" to a number`);
+                            }
+                        }
+                    } catch (error) {
+                        console.error(`Error converting userId to number: ${error.message}`);
+                        // Fall back to using the original userId
+                        userIdForDb = userId;
+                    }
+                    
+                    let userProfile = await db.getUserProfile(userIdForDb);
 
                     if (!userProfile) {
                         // If user session exists but DB record doesn't, something is wrong.
@@ -154,7 +180,7 @@ module.exports = async (req, res) => {
                     // Ensure user has a referral code (generate if missing)
                     if (!userProfile.referral_code) {
                         try {
-                            userProfile.referral_code = await db.ensureReferralCode(userId);
+                            userProfile.referral_code = await db.ensureReferralCode(userIdForDb);
                             console.log(`Generated referral code for user ${userId}: ${userProfile.referral_code}`);
                         } catch (codeGenError) {
                              console.error(`Error generating referral code for user ${userId}:`, codeGenError);
@@ -200,7 +226,33 @@ module.exports = async (req, res) => {
                     }
                     
                     console.log(`Generating QR code request for user ID: ${userId}`);
-                    const referralCode = await db.ensureReferralCode(userId); // Ensure code exists
+                    
+                    // Convert userId to a number if it's a string
+                    // This is needed because the X API returns user IDs as strings, but our database expects integers
+                    let userIdForDb;
+                    try {
+                        // If userId is a string that represents a large number, it might be too big for JavaScript's Number type
+                        // In that case, we'll use a different approach to generate a smaller, hash-based ID
+                        if (typeof userId === 'string' && userId.length > 15) {
+                            // Create a simple hash of the userId string to get a smaller number
+                            userIdForDb = Math.abs(userId.split('').reduce((acc, char) => {
+                                return acc + char.charCodeAt(0);
+                            }, 0) % 1000000); // Limit to 6 digits
+                            console.log(`Converted long userId string "${userId}" to hash-based ID: ${userIdForDb}`);
+                        } else {
+                            // For smaller numbers, just convert to integer
+                            userIdForDb = parseInt(userId, 10);
+                            if (isNaN(userIdForDb)) {
+                                throw new Error(`Failed to convert userId "${userId}" to a number`);
+                            }
+                        }
+                    } catch (error) {
+                        console.error(`Error converting userId to number: ${error.message}`);
+                        // Fall back to using the original userId
+                        userIdForDb = userId;
+                    }
+                    
+                    const referralCode = await db.ensureReferralCode(userIdForDb); // Ensure code exists
 
                     if (!referralCode) {
                         throw new Error('Could not obtain referral code for QR generation.');
