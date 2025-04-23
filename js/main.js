@@ -401,6 +401,7 @@ function loadHeaderAndMobileMenu() {
             { href: '#presale', text: 'Presale', page: 'index.html' },
             { href: 'meme-gallery.html', text: 'Meme Gallery', page: 'meme-gallery.html' },
             { href: 'leaderboard.html', text: 'Leaderboard', page: 'leaderboard.html' },
+            { href: 'profile.html', text: 'My Profile', page: 'profile.html' },
             // Only include Arcade link on main pages
             ...(isMainPage ? [{ href: 'arcade.html', text: 'Arcade', page: 'arcade.html' }] : [])
         ];
@@ -494,6 +495,7 @@ function loadFooter() {
             { href: '#presale', text: 'Presale', page: 'index.html' },
             { href: 'meme-gallery.html', text: 'Meme Gallery', page: 'meme-gallery.html' },
             { href: 'leaderboard.html', text: 'Leaderboard', page: 'leaderboard.html' },
+            { href: 'profile.html', text: 'My Profile', page: 'profile.html' },
              // Only include Arcade link on main pages
             ...(isMainPage ? [{ href: 'arcade.html', text: 'Arcade', page: 'arcade.html' }] : [])
         ];
