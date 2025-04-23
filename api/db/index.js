@@ -47,14 +47,32 @@ async function getUserByXId(xId) {
 
 // Get user profile data including referral info and verification status
 async function getUserProfile(userId) {
-    const query = `
-        SELECT u.id, u.x_id, u.handle, u.name, u.profile_image_url,
-               u.referral_code, u.referral_points, u.verified_at, -- Added verified_at
-               p.total_points AS engagement_points, p.rank, p.level
-        FROM users u
-        LEFT JOIN points p ON u.id = p.user_id
-        WHERE u.id = $1
-    `;
+    // Check if userId is a string that looks like an X user ID (large number as string)
+    const isXUserId = typeof userId === 'string' && userId.length > 15;
+    
+    let query;
+    if (isXUserId) {
+        // If it looks like an X user ID, search by x_id column
+        query = `
+            SELECT u.id, u.x_id, u.handle, u.name, u.profile_image_url,
+                   u.referral_code, u.referral_points, u.verified_at, -- Added verified_at
+                   p.total_points AS engagement_points, p.rank, p.level
+            FROM users u
+            LEFT JOIN points p ON u.id = p.user_id
+            WHERE u.x_id = $1
+        `;
+    } else {
+        // Otherwise, search by internal id column
+        query = `
+            SELECT u.id, u.x_id, u.handle, u.name, u.profile_image_url,
+                   u.referral_code, u.referral_points, u.verified_at, -- Added verified_at
+                   p.total_points AS engagement_points, p.rank, p.level
+            FROM users u
+            LEFT JOIN points p ON u.id = p.user_id
+            WHERE u.id = $1
+        `;
+    }
+    
     const result = await pool.query(query, [userId]);
     return result.rows[0];
 }
@@ -66,7 +84,19 @@ async function ensureReferralCode(userId) {
 
     if (!user.referral_code) {
         const newCode = uuidv4();
-        const updateQuery = 'UPDATE users SET referral_code = $1 WHERE id = $2 RETURNING referral_code';
+        
+        // Check if userId is a string that looks like an X user ID (large number as string)
+        const isXUserId = typeof userId === 'string' && userId.length > 15;
+        
+        let updateQuery;
+        if (isXUserId) {
+            // If it looks like an X user ID, update by x_id column
+            updateQuery = 'UPDATE users SET referral_code = $1 WHERE x_id = $2 RETURNING referral_code';
+        } else {
+            // Otherwise, update by internal id column
+            updateQuery = 'UPDATE users SET referral_code = $1 WHERE id = $2 RETURNING referral_code';
+        }
+        
         const result = await pool.query(updateQuery, [newCode, userId]);
         if (result.rows.length > 0) {
             console.log(`Generated and assigned referral code ${result.rows[0].referral_code} to user ${userId}`);
