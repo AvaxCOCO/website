@@ -2,7 +2,7 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     const referralError = document.getElementById('referral-error');
-    const referralContent = document.getElementById('referral-content');
+    const referralContent = document.getElementById('file-referral-content');
     const referrerInfo = document.getElementById('referrer-info');
     const timerMessage = document.getElementById('timer-message');
     const visitStatus = document.getElementById('visit-status');

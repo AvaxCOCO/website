@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
         qrDisplay.classList.add('hidden'); // Hide QR initially
         generateQrBtn.classList.remove('hidden'); // Show generate button initially
 
-        // Check if user is authenticated (using x-auth.js logic/localStorage)
+        // Check if user is authenticated (using x-auth-server.js logic/localStorage)
         const token = localStorage.getItem('xAccessToken');
         if (!token) {
             profileLoading.classList.add('hidden');
@@ -91,7 +91,6 @@ document.addEventListener('DOMContentLoaded', () => {
              const baseUrl = window.location.origin;
              referralLinkInput.value = `${baseUrl}/referral-landing.html?code=${data.referral_code}`;
         }
-
     }
 
      // Function to handle QR code generation
@@ -100,7 +99,6 @@ document.addEventListener('DOMContentLoaded', () => {
         qrError.classList.add('hidden');
         qrDisplay.classList.add('hidden');
         generateQrBtn.classList.add('hidden'); // Hide button while loading
-
 
         const token = localStorage.getItem('xAccessToken');
         if (!token) {
@@ -113,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             // Assuming POST to /api/profile triggers QR generation in the backend logic
-             const response = await fetch('/api/profile', { 
+             const response = await fetch('/api/profile', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -173,7 +171,6 @@ document.addEventListener('DOMContentLoaded', () => {
              });
         }
 
-
         // Clear status message after a few seconds
         setTimeout(() => {
             copyStatus.textContent = '';
@@ -182,27 +179,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
      // Function to handle X disconnection
     function handleDisconnectX() {
-        // Use the disconnect function from x-auth.js if available
-        if (typeof disconnectX === 'function') {
-            disconnectX(); // This should clear localStorage and update UI potentially
-            // Redirect to home page or show logged out message
-            showNotification('X account disconnected. Redirecting...', 'info');
-            setTimeout(() => {
-                 window.location.href = '/index.html'; // Or appropriate page
-            }, 2000);
-        } else {
-            console.error('disconnectX function not found. Make sure x-auth.js is loaded.');
-             // Manual cleanup as fallback
-             localStorage.removeItem('xAccessToken');
-             localStorage.removeItem('xRefreshToken');
-             localStorage.removeItem('cocoXUser');
-             showNotification('X account disconnected (manual). Redirecting...', 'info');
-             setTimeout(() => {
-                 window.location.href = '/index.html';
-            }, 2000);
-        }
+        // Manual cleanup since disconnectX function might not be available in x-auth-server.js
+        localStorage.removeItem('xAccessToken');
+        localStorage.removeItem('xRefreshToken');
+        localStorage.removeItem('cocoXUser');
+        showNotification('X account disconnected. Redirecting...', 'info');
+        setTimeout(() => {
+            window.location.href = '/index.html';
+        }, 2000);
     }
-
 
     // --- Event Listeners ---
     if (retryProfileLoadBtn) {
@@ -224,10 +209,8 @@ document.addEventListener('DOMContentLoaded', () => {
         disconnectXBtn.addEventListener('click', handleDisconnectX);
     }
 
-
     // --- Initial Load ---
     fetchProfileData();
-
 });
 
 // Helper: showNotification (ensure this exists globally or define here)
@@ -251,7 +234,7 @@ function showNotification(message, type) {
     notification.style.color = 'white';
     notification.style.borderRadius = '5px';
     notification.style.zIndex = '10001';
-    notification.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
+    notification.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.2)';
     notification.textContent = message;
 
     notificationArea.appendChild(notification);

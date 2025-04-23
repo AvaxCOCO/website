@@ -211,7 +211,7 @@ function handleTwitterConnect() {
         connectBtn.disabled = true;
         
         // Start X authentication flow
-        // This function is defined in x-auth.js
+        // This function is defined in x-auth-server.js
         connectToX();
         
     } catch (error) {
@@ -627,17 +627,6 @@ function showNotification(message, type = 'info') {
                     notification.remove();
                 }
             }, 300);
-        }
-        
-        /**
-         * Calculate AVAX allocation bonus based on points
-         * @param {number} points - User points
-         * @returns {number} - AVAX allocation bonus
-         */
-        function calculateAvaxBonus(points) {
-            // Convert points to AVAX bonus (1000 points = 0.1 AVAX)
-            const bonus = (points / 10000).toFixed(2);
-            return bonus;
         }
     }, 5000);
 }
