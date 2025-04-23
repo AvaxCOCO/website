@@ -226,9 +226,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
-                    'Accept': 'application/json'
-                    // No body needed if backend uses session userId
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
                 },
+                body: JSON.stringify({
+                    token: token, // Include token in the body as well
+                    xUserId: JSON.parse(localStorage.getItem('cocoXUser'))?.id // Include X user ID if available
+                }),
                 credentials: 'include' // Important: Include cookies for session
             });
 

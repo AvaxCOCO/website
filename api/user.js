@@ -8,12 +8,25 @@ require('dotenv').config();
 
 // Simple auth check middleware (can be moved to a separate file like api/middleware/auth.js)
 function ensureAuthenticated(req, res, next) {
-    if (!req.session || !req.session.userId) {
-        console.log('Authentication check failed: No session or userId found.');
-        return res.status(401).json({ error: 'Authentication required.' });
+    // First check for session-based authentication
+    if (req.session && req.session.userId) {
+        console.log(`Authentication check passed for userId: ${req.session.userId}`);
+        next(); // User is authenticated proceed
+        return;
     }
-    console.log(`Authentication check passed for userId: ${req.session.userId}`);
-    next(); // User is authenticated, proceed
+    
+    // If no session, check for token-based authentication in the request body
+    if (req.body && req.body.token && req.body.xUserId) {
+        console.log(`Token-based authentication attempt for X user ID: ${req.body.xUserId}`);
+        // Set a temporary userId on the request object for use in the handler
+        req.userId = req.body.xUserId;
+        next(); // Proceed with token-based authentication
+        return;
+    }
+    
+    // If neither session nor token is present, authentication fails
+    console.log('Authentication check failed: No session or userId found, and no token in request body.');
+    return res.status(401).json({ error: 'Authentication required.' });
 }
 
 // Referral point values
@@ -161,7 +174,14 @@ module.exports = async (req, res) => {
             // Apply authentication check
             ensureAuthenticated(req, res, async () => {
                  try {
-                     const userId = req.session.userId;
+                     // Use session userId if available, otherwise use the userId from the token-based auth
+                     const userId = req.session?.userId || req.userId;
+                     
+                     if (!userId) {
+                         console.error('No userId available for QR code generation');
+                         return res.status(401).json({ error: 'Authentication required.' });
+                     }
+                     
                      console.log(`Generating QR code request for user ID: ${userId}`);
                      const referralCode = await db.ensureReferralCode(userId); // Ensure code exists
 
