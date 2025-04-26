@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             // Use the correct endpoint for visit tracking
-            const response = await fetch('/api/referral', {
+            const response = await fetch('/api/user', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
          try {
             // Use the correct endpoint for email submissions
-            const response = await fetch('/api/referral', {
+            const response = await fetch('/api/user', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
