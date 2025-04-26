@@ -63,6 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function fetchReferrerInfo() {
         try {
+            // Use the correct endpoint for fetching referrer info
             const response = await fetch(`/api/user?code=${referrerCode}`);
             if (!response.ok) {
                 if (response.status === 404) throw new Error('Referral code not found.');
@@ -76,11 +77,29 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             console.error("Error fetching referrer info:", error);
+            
+            // Try the alternative endpoint if the first one fails
+            try {
+                console.log("Trying alternative endpoint for referrer info");
+                const altResponse = await fetch(`/api/referral?code=${referrerCode}`);
+                if (!altResponse.ok) {
+                    throw new Error(`Failed to fetch referrer info from alternative endpoint: ${altResponse.statusText}`);
+                }
+                const altData = await altResponse.json();
+                if (altData.referrerHandle) {
+                    referrerInfo.textContent = `You were referred by @${altData.referrerHandle}!`;
+                    return; // Success, exit the function
+                }
+            } catch (altError) {
+                console.error("Error fetching referrer info from alternative endpoint:", altError);
+                // Continue to show the original error
+            }
+            
             referrerInfo.textContent = 'Could not load referrer information.';
             // Consider showing main error block if code is invalid
-             if (error.message.includes('not found')) {
-                 showReferralError('Invalid referral code.');
-             }
+            if (error.message.includes('not found')) {
+                showReferralError('Invalid referral code.');
+            }
         }
     }
 
