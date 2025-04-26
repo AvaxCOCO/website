@@ -71,7 +71,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             const data = await response.json();
             if (data.referrerHandle) {
-                referrerInfo.textContent = `You were referred by @${data.referrerHandle}!`;
+                // Check if the handle already starts with @ to avoid double @@ symbols
+                const handle = data.referrerHandle.startsWith('@') ? 
+                    data.referrerHandle : `@${data.referrerHandle}`;
+                referrerInfo.textContent = `You were referred by ${handle}!`;
             } else {
                  referrerInfo.textContent = 'Welcome! Thanks for visiting.';
             }
@@ -87,7 +90,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 const altData = await altResponse.json();
                 if (altData.referrerHandle) {
-                    referrerInfo.textContent = `You were referred by @${altData.referrerHandle}!`;
+                    // Check if the handle already starts with @ to avoid double @@ symbols
+                    const handle = altData.referrerHandle.startsWith('@') ? 
+                        altData.referrerHandle : `@${altData.referrerHandle}`;
+                    referrerInfo.textContent = `You were referred by ${handle}!`;
                     return; // Success, exit the function
                 }
             } catch (altError) {
