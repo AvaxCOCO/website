@@ -22,7 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
         profileError.classList.add('hidden');
         profileContent.classList.add('hidden');
         qrDisplay.classList.add('hidden'); // Hide QR initially
-        generateQrBtn.classList.add('hidden'); // Keep generate button hidden
 
         // Check if user is authenticated (using x-auth-server.js logic/localStorage)
         const token = localStorage.getItem('xAccessToken');
