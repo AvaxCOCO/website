@@ -124,7 +124,8 @@ document.addEventListener('DOMContentLoaded', () => {
         timerMessage.textContent = `Tracking visit...`;
 
         try {
-            const response = await fetch('/api/user', {
+            // Use the correct endpoint for visit tracking
+            const response = await fetch('/api/referral', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -168,7 +169,8 @@ document.addEventListener('DOMContentLoaded', () => {
         showStatusMessage(emailStatus, 'Submitting...', 'info', true);
 
          try {
-            const response = await fetch('/api/user', {
+            // Use the correct endpoint for email submissions
+            const response = await fetch('/api/referral', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
