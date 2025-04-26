@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
         profileError.classList.add('hidden');
         profileContent.classList.add('hidden');
         qrDisplay.classList.add('hidden'); // Hide QR initially
-        generateQrBtn.classList.remove('hidden'); // Show generate button initially
+        generateQrBtn.classList.add('hidden'); // Keep generate button hidden
 
         // Check if user is authenticated (using x-auth-server.js logic/localStorage)
         const token = localStorage.getItem('xAccessToken');
@@ -192,15 +192,17 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('user-rank').textContent = data.rank || '-';
         document.getElementById('user-level').textContent = data.level || 'Beginner';
 
-         // Store referral link if available (might be generated on first profile load)
+        // Store referral link if available (might be generated on first profile load)
         if (data.referralLink) {
              referralLinkInput.value = data.referralLink;
-             // Maybe auto-generate QR on load if link exists?
-             // handleGenerateQr(); // Uncomment to auto-generate
+             // Auto-generate QR on load if link exists
+             handleGenerateQr();
         } else if (data.referral_code) {
             // Construct link client-side if only code is present (less ideal)
              const baseUrl = window.location.origin;
              referralLinkInput.value = `${baseUrl}/referral-landing.html?code=${data.referral_code}`;
+             // Auto-generate QR on load even if we had to construct the link client-side
+             handleGenerateQr();
         }
     }
 
@@ -216,7 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
             qrLoading.classList.add('hidden');
             qrError.textContent = 'Authentication required.';
             qrError.classList.remove('hidden');
-            generateQrBtn.classList.remove('hidden'); // Show button again
+            // Keep the button hidden even in case of errors
             return;
         }
 
@@ -240,7 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
                  qrLoading.classList.add('hidden');
                  qrError.textContent = 'Session expired. Please reconnect X.';
                  qrError.classList.remove('hidden');
-                 generateQrBtn.classList.remove('hidden'); // Show button again
+                 // Keep the button hidden even in case of errors
                  return;
             }
 
@@ -265,7 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
             qrLoading.classList.add('hidden');
             qrError.textContent = `Error generating QR: ${error.message}. Please try again.`;
             qrError.classList.remove('hidden');
-            generateQrBtn.classList.remove('hidden'); // Show button again
+            // Keep the button hidden even in case of errors
         }
     }
 
