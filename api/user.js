@@ -125,89 +125,109 @@ module.exports = async (req, res) => {
 
         // --- Handle GET /api/user --- (Profile Data)
         if (req.method === 'GET') {
-            // Apply authentication check AFTER session is loaded
-            ensureAuthenticated(req, res, async () => {
-                // Declare userId at the top level of the function to ensure it's available in the catch block
-                let userId;
-                
+            // Check if this is a referral code lookup request
+            if (req.query.code) {
                 try {
-                    // Use session userId if available, otherwise use the userId from the token-based auth
-                    userId = req.session?.userId || req.userId;
-                    
-                    if (!userId) {
-                        console.error('No userId available for profile fetch');
-                        return res.status(401).json({ error: 'Authentication required.' });
+                    const referralCode = req.query.code;
+                    console.log(`Fetching referrer info for code: ${referralCode}`);
+                    const referrer = await db.getUserByReferralCode(referralCode);
+
+                    if (referrer) {
+                        console.log(`Referrer found: @${referrer.handle}`);
+                        res.status(200).json({ referrerHandle: referrer.handle });
+                    } else {
+                        console.log(`Referrer not found for code: ${referralCode}`);
+                        res.status(404).json({ error: 'Referral code not found.' });
                     }
-                    
-                    console.log(`Fetching profile for user ID: ${userId}`);
-                    
-                    // Convert userId to a number if it's a string
-                    // This is needed because the X API returns user IDs as strings, but our database expects integers
-                    let userIdForDb;
+                } catch (error) {
+                    console.error('Error fetching referrer info:', error);
+                    res.status(500).json({ error: 'Failed to fetch referrer information.' });
+                }
+            } else {
+                // Apply authentication check AFTER session is loaded for profile data requests
+                ensureAuthenticated(req, res, async () => {
+                    // Declare userId at the top level of the function to ensure it's available in the catch block
+                    let userId;
+
                     try {
-                        // If userId is a string that represents a large number, it might be too big for JavaScript's Number type
-                        // In that case, we'll use a different approach to generate a smaller, hash-based ID
-                        if (typeof userId === 'string' && userId.length > 15) {
-                            // Create a simple hash of the userId string to get a smaller number
-                            userIdForDb = Math.abs(userId.split('').reduce((acc, char) => {
-                                return acc + char.charCodeAt(0);
-                            }, 0) % 1000000); // Limit to 6 digits
-                            console.log(`Converted long userId string "${userId}" to hash-based ID: ${userIdForDb}`);
-                        } else {
-                            // For smaller numbers, just convert to integer
-                            userIdForDb = parseInt(userId, 10);
-                            if (isNaN(userIdForDb)) {
-                                throw new Error(`Failed to convert userId "${userId}" to a number`);
+                        // Use session userId if available, otherwise use the userId from the token-based auth
+                        userId = req.session?.userId || req.userId;
+
+                        if (!userId) {
+                            console.error('No userId available for profile fetch');
+                            return res.status(401).json({ error: 'Authentication required.' });
+                        }
+
+                        console.log(`Fetching profile for user ID: ${userId}`);
+
+                        // Convert userId to a number if it's a string
+                        // This is needed because the X API returns user IDs as strings, but our database expects integers
+                        let userIdForDb;
+                        try {
+                            // If userId is a string that represents a large number, it might be too big for JavaScript's Number type
+                            // In that case, we'll use a different approach to generate a smaller, hash-based ID
+                            if (typeof userId === 'string' && userId.length > 15) {
+                                // Create a simple hash of the userId string to get a smaller number
+                                userIdForDb = Math.abs(userId.split('').reduce((acc, char) => {
+                                    return acc + char.charCodeAt(0);
+                                }, 0) % 1000000); // Limit to 6 digits
+                                console.log(`Converted long userId string "${userId}" to hash-based ID: ${userIdForDb}`);
+                            } else {
+                                // For smaller numbers, just convert to integer
+                                userIdForDb = parseInt(userId, 10);
+                                if (isNaN(userIdForDb)) {
+                                    throw new Error(`Failed to convert userId "${userId}" to a number`);
+                                }
+                            }
+                        } catch (error) {
+                            console.error(`Error converting userId to number: ${error.message}`);
+                            // Fall back to using the original userId
+                            userIdForDb = userId;
+                        }
+
+                        let userProfile = await db.getUserProfile(userIdForDb);
+
+                        if (!userProfile) {
+                            // If user session exists but DB record doesn't, something is wrong.
+                            // Maybe clear session and force re-auth? For now, return 404.
+                            if (req.session) {
+                                req.session.destroy(); // Clear potentially invalid session
+                            }
+                            return res.status(404).json({ error: 'User profile not found. Please reconnect X.' });
+                        }
+
+                        // Ensure user has a referral code (generate if missing)
+                        if (!userProfile.referral_code) {
+                            try {
+                                userProfile.referral_code = await db.ensureReferralCode(userIdForDb);
+                                console.log(`Generated referral code for user ${userId}: ${userProfile.referral_code}`);
+                            } catch (codeGenError) {
+                                 console.error(`Error generating referral code for user ${userId}:`, codeGenError);
+                                 // Proceed without code if generation fails, but log it
                             }
                         }
+
+                        // Add full referral link for convenience
+                        if (userProfile.referral_code) {
+                            const host = req.headers.host || process.env.VERCEL_URL || 'localhost:3000';
+                            const protocol = host.includes('localhost') ? 'http' : 'https';
+                            const baseUrl = `${protocol}://${host}`;
+                            userProfile.referralLink = `${baseUrl}/referral-landing.html?code=${userProfile.referral_code}`;
+                        } else {
+                             userProfile.referralLink = null; // Indicate no link available
+                        }
+
+                        console.log(`Returning profile data for user ${userId}`);
+                        res.status(200).json(userProfile);
+
                     } catch (error) {
-                        console.error(`Error converting userId to number: ${error.message}`);
-                        // Fall back to using the original userId
-                        userIdForDb = userId;
+                        // Use a safe userId reference for logging
+                        const safeUserId = userId || 'unknown';
+                        console.error(`Error fetching user profile for ID ${safeUserId}:`, error);
+                        res.status(500).json({ error: 'Failed to fetch profile data.' });
                     }
-                    
-                    let userProfile = await db.getUserProfile(userIdForDb);
-
-                    if (!userProfile) {
-                        // If user session exists but DB record doesn't, something is wrong.
-                        // Maybe clear session and force re-auth? For now, return 404.
-                        if (req.session) {
-                            req.session.destroy(); // Clear potentially invalid session
-                        }
-                        return res.status(404).json({ error: 'User profile not found. Please reconnect X.' });
-                    }
-
-                    // Ensure user has a referral code (generate if missing)
-                    if (!userProfile.referral_code) {
-                        try {
-                            userProfile.referral_code = await db.ensureReferralCode(userIdForDb);
-                            console.log(`Generated referral code for user ${userId}: ${userProfile.referral_code}`);
-                        } catch (codeGenError) {
-                             console.error(`Error generating referral code for user ${userId}:`, codeGenError);
-                             // Proceed without code if generation fails, but log it
-                        }
-                    }
-
-                    // Add full referral link for convenience
-                    if (userProfile.referral_code) {
-                        const host = req.headers.host || process.env.VERCEL_URL || 'localhost:3000';
-                        const protocol = host.includes('localhost') ? 'http' : 'https';
-                        const baseUrl = `${protocol}://${host}`;
-                        userProfile.referralLink = `${baseUrl}/referral-landing.html?code=${userProfile.referral_code}`;
-                    } else {
-                         userProfile.referralLink = null; // Indicate no link available
-                    }
-
-                    console.log(`Returning profile data for user ${userId}`);
-                    res.status(200).json(userProfile);
-
-                } catch (error) {
-                    // Use a safe userId reference for logging
-                    const safeUserId = userId || 'unknown';
-                    console.error(`Error fetching user profile for ID ${safeUserId}:`, error);
-                    res.status(500).json({ error: 'Failed to fetch profile data.' });
-                }
-            }); // End ensureAuthenticated wrapper
+                }); // End ensureAuthenticated wrapper
+            }
         }
         // --- Handle POST /api/user --- (QR Code Generation)
         else if (req.method === 'POST') {
