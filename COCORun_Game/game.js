@@ -348,27 +348,6 @@ function imageLoaded() {
     if (imagesLoaded === imagesToLoad.length) { console.log("All images loaded successfully! Attempting initialization..."); completeInitialization(); }
 }
 
-imagesToLoad.forEach(imgData => {
-    let img = new Image(); 
-    img.onload = imageLoaded;
-    img.onerror = () => { 
-        console.error(`!!! Failed to load image: ${imgData.name} from ${imgData.src} - Check path/filename !!!`); 
-        if (!imageLoadErrorOccurred) { 
-            imageLoadErrorOccurred = true; 
-        } 
-        images[imgData.name] = null; 
-    };
-    if (!imgData.src || typeof imgData.src !== 'string') { 
-        console.error(`Invalid image src definition for name: ${imgData.name}`); 
-        imageLoadErrorOccurred = true; 
-        images[imgData.name] = null; 
-    } else { 
-        console.log(`Loading image: ${imgData.name} from ${imgData.src}`);
-        img.src = imgData.src; 
-        images[imgData.name] = img; 
-    }
-});
-
 // --- Game Variables ---
 let playerX, playerY, playerVx, playerVy;
 let playerWidth, playerHeight; let onGround = false; let facingRight = true;
