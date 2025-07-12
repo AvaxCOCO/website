@@ -314,7 +314,7 @@ const numberSpacing = 2;
 function imageLoaded() {
     if (imageLoadErrorOccurred) return; imagesLoaded++;
     // console.log(`Successfully loaded ${imagesLoaded}/${imagesToLoad.length}`); // Optional log
-    if (imagesLoaded === imagesToLoad.length) { console.log("All images loaded successfully! Attempting initialization..."); initializeGame(); }
+    if (imagesLoaded === imagesToLoad.length) { console.log("All images loaded successfully! Attempting initialization..."); completeInitialization(); }
 }
 
 imagesToLoad.forEach(imgData => {
