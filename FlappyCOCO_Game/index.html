@@ -98,7 +98,23 @@
     </style>
 </head>
 <body>
-    <div class="game-header">
+    <!-- Header -->
+    <header class="header" style="position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: rgba(13, 2, 33, 0.95); backdrop-filter: blur(10px); padding: 10px 0;">
+        <nav class="navbar">
+            <div class="container" style="display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+                <div class="nav-brand">
+                    <h1 style="color: #ff6b9d; margin: 0; font-size: 1.5rem;">$COCO</h1>
+                </div>
+                <div style="display: flex; gap: 20px; align-items: center;">
+                    <a href="../index.html" style="color: #c9d1d9; text-decoration: none; font-size: 0.9rem;">Home</a>
+                    <a href="../arcade.html" style="color: #c9d1d9; text-decoration: none; font-size: 0.9rem;">Arcade</a>
+                    <a href="../leaderboard.html" style="color: #c9d1d9; text-decoration: none; font-size: 0.9rem;">Leaderboard</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="game-header" style="margin-top: 80px;">
         <h1>Flappy $COCO</h1>
         <p>Guide COCO through the obstacles!</p>
     </div>

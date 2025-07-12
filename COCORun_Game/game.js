@@ -263,24 +263,131 @@ const LevelGenerator = {
 };
 // --- End Level Generator ---
 
-// --- Image Loading ---
+// --- Image Loading (Fallback Mode) ---
 let images = {};
-// *** IMPORTANT: Ensure this path 'ASSETS/' matches your folder name! ***
-const assetFolder = 'ASSETS/';
-// Using final filenames from image_a2070a.jpg
-let imagesToLoad = [
-    { name: 'p_idle', src: assetFolder + 'coco_idle.png' }, { name: 'p_jump', src: assetFolder + 'coco_jump.png' },
-    { name: 'p_fall', src: assetFolder + 'coco_fall.png' }, { name: 'p_run1', src: assetFolder + 'coco_platform_run_1.png' },
-    { name: 'p_run2', src: assetFolder + 'coco_platform_run_2.png' }, { name: 'p_run3', src: assetFolder + 'coco_platform_run_3.png' },
-    { name: 'p_run4', src: assetFolder + 'coco_platform_run_4.png' }, { name: 'p_run5', src: assetFolder + 'coco_platform_run_5.png' },
-    { name: 'gameOverBanner', src: assetFolder + 'game_over_banner.png' }, { name: 'levelCompleteBanner', src: assetFolder + 'level_complete_banner.png'},
-    { name: 'startButton', src: assetFolder + 'start_button.png' }, { name: 'tryAgainButton', src: assetFolder + 'try_again_button.png' },
-    { name: 'titleLogo', src: assetFolder + 'title_logo_platformer.png' }, { name: 'sky', src: assetFolder + 'sky_image.png' },
-    { name: 'landscape', src: assetFolder + 'coco_landscape_sprites.png' }, { name: 'numbers', src: assetFolder + 'number_sprites.png' },
-    { name: 'nextLevelButton', src: assetFolder + 'next_level_button.png' } // Added next level button
-];
 let imagesLoaded = 0;
 let imageLoadErrorOccurred = false;
+
+// Create fallback images using canvas
+function createFallbackImages() {
+    console.log("Creating fallback images...");
+    
+    // Create simple colored rectangles as fallback sprites
+    const createColoredCanvas = (width, height, color) => {
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = color;
+        ctx.fillRect(0, 0, width, height);
+        return canvas;
+    };
+    
+    // Create text-based buttons
+    const createTextButton = (text, width, height, bgColor, textColor) => {
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        
+        // Background
+        ctx.fillStyle = bgColor;
+        ctx.fillRect(0, 0, width, height);
+        
+        // Border
+        ctx.strokeStyle = textColor;
+        ctx.lineWidth = 2;
+        ctx.strokeRect(1, 1, width-2, height-2);
+        
+        // Text
+        ctx.fillStyle = textColor;
+        ctx.font = 'bold 16px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(text, width/2, height/2);
+        
+        return canvas;
+    };
+    
+    // Player sprites (pink ostrich-like character)
+    images.p_idle = createColoredCanvas(50, 50, '#FF69B4');
+    images.p_jump = createColoredCanvas(50, 50, '#FF1493');
+    images.p_fall = createColoredCanvas(50, 50, '#C71585');
+    images.p_run1 = createColoredCanvas(50, 50, '#FF69B4');
+    images.p_run2 = createColoredCanvas(50, 50, '#FF1493');
+    images.p_run3 = createColoredCanvas(50, 50, '#FF69B4');
+    images.p_run4 = createColoredCanvas(50, 50, '#FF1493');
+    images.p_run5 = createColoredCanvas(50, 50, '#FF69B4');
+    
+    // UI elements
+    images.startButton = createTextButton('START', 120, 40, '#2AAA8A', '#FFFFFF');
+    images.tryAgainButton = createTextButton('TRY AGAIN', 120, 40, '#F44336', '#FFFFFF');
+    images.nextLevelButton = createTextButton('NEXT LEVEL', 120, 40, '#4CAF50', '#FFFFFF');
+    
+    // Banners
+    images.gameOverBanner = createTextButton('GAME OVER', 300, 60, '#F44336', '#FFFFFF');
+    images.levelCompleteBanner = createTextButton('LEVEL COMPLETE!', 300, 60, '#4CAF50', '#FFFFFF');
+    images.titleLogo = createTextButton('COCO RUN', 400, 80, '#FF1493', '#FFFFFF');
+    
+    // Background
+    const skyCanvas = document.createElement('canvas');
+    skyCanvas.width = 800;
+    skyCanvas.height = 600;
+    const skyCtx = skyCanvas.getContext('2d');
+    const gradient = skyCtx.createLinearGradient(0, 0, 0, 600);
+    gradient.addColorStop(0, '#87CEEB');
+    gradient.addColorStop(1, '#98FB98');
+    skyCtx.fillStyle = gradient;
+    skyCtx.fillRect(0, 0, 800, 600);
+    images.sky = skyCanvas;
+    
+    // Landscape tileset
+    const landscapeCanvas = document.createElement('canvas');
+    landscapeCanvas.width = 256;
+    landscapeCanvas.height = 128;
+    const landscapeCtx = landscapeCanvas.getContext('2d');
+    
+    // Grass tile at position (224, 64)
+    landscapeCtx.fillStyle = '#32CD32';
+    landscapeCtx.fillRect(224, 64, 16, 16);
+    
+    // Dirt tile at position (224, 80)
+    landscapeCtx.fillStyle = '#8B4513';
+    landscapeCtx.fillRect(224, 80, 16, 16);
+    
+    // Coin tile at position (64, 112)
+    landscapeCtx.fillStyle = '#FFD700';
+    landscapeCtx.beginPath();
+    landscapeCtx.arc(72, 120, 6, 0, 2 * Math.PI);
+    landscapeCtx.fill();
+    
+    images.landscape = landscapeCanvas;
+    
+    // Numbers sprite sheet
+    const numbersCanvas = document.createElement('canvas');
+    numbersCanvas.width = 1050;
+    numbersCanvas.height = 160;
+    const numbersCtx = numbersCanvas.getContext('2d');
+    numbersCtx.fillStyle = '#FFFFFF';
+    numbersCtx.font = 'bold 120px Arial';
+    numbersCtx.textBaseline = 'top';
+    
+    // Draw numbers 0-9 at their expected positions
+    const numberPositions = [
+        { x: 32, text: '0' }, { x: 145, text: '1' }, { x: 234, text: '2' },
+        { x: 337, text: '3' }, { x: 434, text: '4' }, { x: 547, text: '5' },
+        { x: 643, text: '6' }, { x: 744, text: '7' }, { x: 844, text: '8' }, { x: 948, text: '9' }
+    ];
+    
+    numberPositions.forEach(pos => {
+        numbersCtx.fillText(pos.text, pos.x, 6);
+    });
+    
+    images.numbers = numbersCanvas;
+    
+    console.log("Fallback images created successfully!");
+    return true;
+}
 
 // --- Number Sprite Data & Settings --- (Using h: 149)
 const numberSpriteData = [
@@ -289,17 +396,15 @@ const numberDrawHeight = 40; // Adjust score size if needed
 const numberSpacing = 2;
 // --- End Number Sprite Data ---
 
-function imageLoaded() {
-    if (imageLoadErrorOccurred) return; imagesLoaded++;
-    // console.log(`Successfully loaded ${imagesLoaded}/${imagesToLoad.length}`); // Optional log
-    if (imagesLoaded === imagesToLoad.length) { console.log("All images loaded successfully! Attempting initialization..."); initializeGame(); }
+// Initialize with fallback images immediately
+console.log("Using fallback images for COCO Run game...");
+if (createFallbackImages()) {
+    console.log("Fallback images created successfully! Attempting initialization...");
+    initializeGame();
+} else {
+    console.error("Failed to create fallback images!");
+    gameState = 'criticalError';
 }
-
-imagesToLoad.forEach(imgData => {
-    let img = new Image(); img.onload = imageLoaded;
-    img.onerror = () => { if (!imageLoadErrorOccurred) { console.error(`!!! Failed to load image: ${imgData.src} - Check path/filename !!!`); imageLoadErrorOccurred = true; } images[imgData.name] = null; };
-    if (!imgData.src || typeof imgData.src !== 'string') { console.error(`Invalid image src definition for name: ${imgData.name}`); imageLoadErrorOccurred = true; images[imgData.name] = null; } else { img.src = imgData.src; images[imgData.name] = img; }
-});
 
 // --- Game Variables ---
 let playerX, playerY, playerVx, playerVy;
