@@ -396,15 +396,46 @@ const numberDrawHeight = 40; // Adjust score size if needed
 const numberSpacing = 2;
 // --- End Number Sprite Data ---
 
-// Initialize with fallback images immediately
-console.log("Using fallback images for COCO Run game...");
-if (createFallbackImages()) {
-    console.log("Fallback images created successfully! Attempting initialization...");
-    initializeGame();
-} else {
-    console.error("Failed to create fallback images!");
-    gameState = 'criticalError';
+// --- Image Loading ---
+let imagesToLoad = [
+    // Player Sprites
+    { name: 'p_idle', src: 'ASSETS/coco_idle.png' },
+    { name: 'p_jump', src: 'ASSETS/coco_jump.png' },
+    { name: 'p_fall', src: 'ASSETS/coco_fall.png' },
+    { name: 'p_run1', src: 'ASSETS/coco_platform_run_1.png' },
+    { name: 'p_run2', src: 'ASSETS/coco_platform_run_2.png' },
+    { name: 'p_run3', src: 'ASSETS/coco_platform_run_3.png' },
+    { name: 'p_run4', src: 'ASSETS/coco_platform_run_4.png' },
+    { name: 'p_run5', src: 'ASSETS/coco_platform_run_5.png' },
+    // UI Sprites
+    { name: 'gameOverBanner', src: 'ASSETS/game_over_banner.png' },
+    { name: 'levelCompleteBanner', src: 'ASSETS/level_complete_banner.png' },
+    { name: 'startButton', src: 'ASSETS/start_button.png' },
+    { name: 'tryAgainButton', src: 'ASSETS/try_again_button.png' },
+    { name: 'nextLevelButton', src: 'ASSETS/next_level_button.png' },
+    // Scenery & Obstacles
+    { name: 'sky', src: 'ASSETS/sky_image.png' },
+    { name: 'landscape', src: 'ASSETS/coco_landscape_sprites.png' },
+    // Score & Title
+    { name: 'numbers', src: 'ASSETS/number_sprites.png' },
+    { name: 'titleLogo', src: 'ASSETS/title_logo_platformer.png' }
+];
+
+function imageLoaded() {
+    imagesLoaded++;
+    if (imagesLoaded === imagesToLoad.length) { 
+        console.log("All images loaded!"); 
+        initializeGame(); 
+    }
 }
+
+imagesToLoad.forEach(imgData => {
+    let img = new Image(); 
+    img.onload = imageLoaded;
+    img.onerror = () => console.error(`Failed to load image: ${imgData.src}`);
+    img.src = imgData.src; 
+    images[imgData.name] = img;
+});
 
 // --- Game Variables ---
 let playerX, playerY, playerVx, playerVy;

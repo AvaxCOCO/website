@@ -13,123 +13,37 @@ let groundSpeed = obstacleSpeed;
 const effectiveGroundHeight = 50; // Adjust if needed
 const minDistanceFromTop = 50;
 
-// --- Image Loading (Fallback Mode) ---
-let images = {};
-let imagesLoaded = 0;
+// --- Game Variables ---
+let playerY, playerVy, playerWidth, playerHeight;
+let gameState = 'loading'; 
+let frame = 0, score = 0; 
+let obstacles = [], groundX = 0;
+let groundImageWidth = 0, obstacleWidth = 0, obstacleNaturalHeight = 0;
+let startButtonArea = null, tryAgainButtonArea = null;
+let gameOverBannerPos = { x:0, y:0, w:0, h:0 }; 
+let gameOverScorePos = { x:0, y:0 };
 
-// Create fallback images using canvas
-function createFallbackImages() {
-    console.log("Creating fallback images for Flappy COCO...");
-    
-    // Create simple colored rectangles as fallback sprites
-    const createColoredCanvas = (width, height, color) => {
-        const canvas = document.createElement('canvas');
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        ctx.fillStyle = color;
-        ctx.fillRect(0, 0, width, height);
-        return canvas;
-    };
-    
-    // Create text-based buttons
-    const createTextButton = (text, width, height, bgColor, textColor) => {
-        const canvas = document.createElement('canvas');
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        
-        // Background
-        ctx.fillStyle = bgColor;
-        ctx.fillRect(0, 0, width, height);
-        
-        // Border
-        ctx.strokeStyle = textColor;
-        ctx.lineWidth = 2;
-        ctx.strokeRect(1, 1, width-2, height-2);
-        
-        // Text
-        ctx.fillStyle = textColor;
-        ctx.font = 'bold 16px Arial';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(text, width/2, height/2);
-        
-        return canvas;
-    };
-    
-    // Player sprites (pink ostrich bird)
-    images.idle = createColoredCanvas(40, 40, '#FF69B4');
-    images.flap = createColoredCanvas(40, 40, '#FF1493');
-    images.fall = createColoredCanvas(40, 40, '#C71585');
-    images.crash = createColoredCanvas(40, 40, '#8B0000');
-    
-    // UI elements
-    images.startButton = createTextButton('START', 120, 40, '#2AAA8A', '#FFFFFF');
-    images.tryAgainButton = createTextButton('TRY AGAIN', 120, 40, '#F44336', '#FFFFFF');
-    
-    // Banners
-    images.gameOverBanner = createTextButton('GAME OVER', 300, 60, '#F44336', '#FFFFFF');
-    images.title = createTextButton('FLAPPY $COCO', 400, 80, '#FF1493', '#FFFFFF');
-    
-    // Background
-    const skyCanvas = document.createElement('canvas');
-    skyCanvas.width = 800;
-    skyCanvas.height = 600;
-    const skyCtx = skyCanvas.getContext('2d');
-    const gradient = skyCtx.createLinearGradient(0, 0, 0, 600);
-    gradient.addColorStop(0, '#87CEEB');
-    gradient.addColorStop(1, '#98FB98');
-    skyCtx.fillStyle = gradient;
-    skyCtx.fillRect(0, 0, 800, 600);
-    images.sky = skyCanvas;
-    
-    // Ground
-    const groundCanvas = document.createElement('canvas');
-    groundCanvas.width = 800;
-    groundCanvas.height = 50;
-    const groundCtx = groundCanvas.getContext('2d');
-    groundCtx.fillStyle = '#8B4513';
-    groundCtx.fillRect(0, 0, 800, 50);
-    images.ground = groundCanvas;
-    
-    // Obstacle (pipe)
-    const obstacleCanvas = document.createElement('canvas');
-    obstacleCanvas.width = 60;
-    obstacleCanvas.height = 400;
-    const obstacleCtx = obstacleCanvas.getContext('2d');
-    obstacleCtx.fillStyle = '#32CD32';
-    obstacleCtx.fillRect(0, 0, 60, 400);
-    obstacleCtx.strokeStyle = '#228B22';
-    obstacleCtx.lineWidth = 3;
-    obstacleCtx.strokeRect(0, 0, 60, 400);
-    images.obstacle = obstacleCanvas;
-    
-    // Numbers sprite sheet
-    const numbersCanvas = document.createElement('canvas');
-    numbersCanvas.width = 1050;
-    numbersCanvas.height = 160;
-    const numbersCtx = numbersCanvas.getContext('2d');
-    numbersCtx.fillStyle = '#FFFFFF';
-    numbersCtx.font = 'bold 120px Arial';
-    numbersCtx.textBaseline = 'top';
-    
-    // Draw numbers 0-9 at their expected positions
-    const numberPositions = [
-        { x: 32, text: '0' }, { x: 145, text: '1' }, { x: 234, text: '2' },
-        { x: 337, text: '3' }, { x: 434, text: '4' }, { x: 547, text: '5' },
-        { x: 643, text: '6' }, { x: 744, text: '7' }, { x: 844, text: '8' }, { x: 948, text: '9' }
-    ];
-    
-    numberPositions.forEach(pos => {
-        numbersCtx.fillText(pos.text, pos.x, 6);
-    });
-    
-    images.numbers = numbersCanvas;
-    
-    console.log("Fallback images for Flappy COCO created successfully!");
-    return true;
-}
+// --- Image Loading ---
+let images = {};
+let imagesToLoad = [
+    // Player Sprites
+    { name: 'idle', src: 'COCOFLAP/coco_idle.png' },
+    { name: 'flap', src: 'COCOFLAP/coco_flap.png' },
+    { name: 'fall', src: 'COCOFLAP/coco_fall.png' },
+    { name: 'crash', src: 'COCOFLAP/coco_crash.png' },
+    // UI Sprites
+    { name: 'gameOverBanner', src: 'COCOFLAP/game_over_banner.png' },
+    { name: 'startButton', src: 'COCOFLAP/start_button.png' },
+    { name: 'tryAgainButton', src: 'COCOFLAP/try_again_button.png' },
+    // Scenery & Obstacles
+    { name: 'sky', src: 'COCOFLAP/sky_image.png' },
+    { name: 'ground', src: 'COCOFLAP/ground_image.png' },
+    { name: 'obstacle', src: 'COCOFLAP/obstacle_one.png' },
+    // Score & Title
+    { name: 'numbers', src: 'COCOFLAP/number_sprites.png' },
+    { name: 'title', src: 'COCOFLAP/title_image.png' }
+];
+let imagesLoaded = 0;
 
 // --- Number Sprite Data & Settings ---
 const numberSpriteData = [
@@ -143,23 +57,21 @@ const numberDrawHeight = 72;
 const numberSpacing = 4;
 // --- End Number Sprite Data ---
 
-
-// Initialize with fallback images immediately
-console.log("Using fallback images for Flappy COCO game...");
-if (createFallbackImages()) {
-    console.log("Fallback images created successfully! Attempting initialization...");
-    initializeGame();
-} else {
-    console.error("Failed to create fallback images!");
-    gameState = 'criticalError';
+function imageLoaded() {
+    imagesLoaded++;
+    if (imagesLoaded === imagesToLoad.length) { 
+        console.log("All images loaded!"); 
+        initializeGame(); 
+    }
 }
 
-// --- Game Variables ---
-let playerY, playerVy, playerWidth, playerHeight;
-let gameState; let frame = 0, score; let obstacles = [], groundX = 0;
-let groundImageWidth = 0, obstacleWidth = 0, obstacleNaturalHeight = 0;
-let startButtonArea = null, tryAgainButtonArea = null;
-let gameOverBannerPos = { x:0, y:0, w:0, h:0 }; let gameOverScorePos = { x:0, y:0 };
+imagesToLoad.forEach(imgData => {
+    let img = new Image(); 
+    img.onload = imageLoaded;
+    img.onerror = () => console.error(`Failed to load image: ${imgData.src}`);
+    img.src = imgData.src; 
+    images[imgData.name] = img;
+});
 
 // --- Utility Functions ---
 function checkCollision(rect1, rect2) {
@@ -175,7 +87,11 @@ function drawScore(scoreValue, drawX, drawY, align = 'left') {
 
 // --- Initialization Function ---
 function initializeGame() {
-    if (!images.idle || !images.ground || !images.obstacle || !images.startButton || !images.tryAgainButton || !images.gameOverBanner || !images.sky || !images.numbers || !images.title) { /* Error Handling */ }
+    if (!images.idle || !images.ground || !images.obstacle || !images.startButton || !images.tryAgainButton || !images.gameOverBanner || !images.sky || !images.numbers || !images.title) { 
+        console.error("Critical images missing!"); 
+        gameState = 'criticalError'; 
+        return; 
+    }
 
     gameState = 'start';
     playerY = canvas.height / 2.5; playerVy = 0; score = 0; frame = 0; obstacles = []; groundX = 0;
@@ -193,7 +109,7 @@ function initializeGame() {
          gameOverBannerPos.h = bannerTargetWidth * bannerAspectRatio;
          gameOverBannerPos.x = canvas.width / 2 - gameOverBannerPos.w / 2;
          gameOverBannerPos.y = Math.max(10, (canvas.height / 4) - gameOverBannerPos.h / 2);
-    } else { /* Fallback */ }
+    }
 
     // Calculate Score position BELOW banner
     gameOverScorePos.x = canvas.width / 2; // Centered horizontally
@@ -210,14 +126,12 @@ function initializeGame() {
     // Start Button position
     startButtonArea = { x: 0, y: 0, width: images.startButton.width, height: images.startButton.height };
 
-
     if (!canvas.hasInputListener) { canvas.addEventListener('mousedown', handleInput); canvas.hasInputListener = true; }
 
     if (playerHeight > 0 && effectiveGroundHeight > 0 && obstacleWidth > 0 && obstacleNaturalHeight > 0) {
          if(gameState !== 'criticalError' && !canvas.gameLoopRunning) { console.log("Starting game loop..."); gameLoop(); canvas.gameLoopRunning = true; }
-    } else { /* Error handling */ }
+    }
 }
-
 
 // --- Input Handling ---
 function handleInput(event) {
@@ -252,7 +166,6 @@ function gameLoop(currentTime) {
          if (playerY < 0) {
              playerY = 0;
              playerVy = 0;
-             // isGameOver = true; // Optional
          }
 
          // Spawn obstacles
@@ -374,7 +287,7 @@ function gameLoop(currentTime) {
 
      // --- Draw UI ---
      if (gameState === 'start') {
-         if (images.title && images.title.width > 0) { let titleDrawWidth = canvas.width * 0.75; let titleAspectRatio = images.title.height > 0 ? images.title.height / images.title.width : 1; let titleDrawHeight = titleDrawWidth * titleAspectRatio; let titleX = canvas.width / 2 - titleDrawWidth / 2; let titleY = canvas.height * 0.15; ctx.drawImage(images.title, titleX, titleY, titleDrawWidth, titleDrawHeight); if (images.startButton && startButtonArea) { startButtonArea.x = canvas.width / 2 - images.startButton.width / 2; startButtonArea.y = titleY + titleDrawHeight + 40; ctx.drawImage(images.startButton, startButtonArea.x, startButtonArea.y); } } else { /* Fallback text */ }
+         if (images.title && images.title.width > 0) { let titleDrawWidth = canvas.width * 0.75; let titleAspectRatio = images.title.height > 0 ? images.title.height / images.title.width : 1; let titleDrawHeight = titleDrawWidth * titleAspectRatio; let titleX = canvas.width / 2 - titleDrawWidth / 2; let titleY = canvas.height * 0.15; ctx.drawImage(images.title, titleX, titleY, titleDrawWidth, titleDrawHeight); if (images.startButton && startButtonArea) { startButtonArea.x = canvas.width / 2 - images.startButton.width / 2; startButtonArea.y = titleY + titleDrawHeight + 40; ctx.drawImage(images.startButton, startButtonArea.x, startButtonArea.y); } }
      } else if (gameState === 'gameOver') {
          if (images.gameOverBanner && gameOverBannerPos.w > 0) {
              ctx.drawImage(images.gameOverBanner, gameOverBannerPos.x, gameOverBannerPos.y, gameOverBannerPos.w, gameOverBannerPos.h);
@@ -382,7 +295,7 @@ function gameLoop(currentTime) {
              if (images.tryAgainButton && tryAgainButtonArea) {
                   ctx.drawImage(images.tryAgainButton, tryAgainButtonArea.x, tryAgainButtonArea.y);
              }
-         } else { /* Fallback text */ }
+         }
      }
      if (gameState === 'playing') { drawScore(score, 20, 20, 'left'); }
 
