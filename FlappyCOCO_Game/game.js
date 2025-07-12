@@ -1,3 +1,6 @@
+// --- Global Canvas and Context Variables ---
+let canvas, ctx;
+
 // --- Wait for DOM to be ready ---
 document.addEventListener('DOMContentLoaded', function() {
     console.log("DOM loaded, initializing Flappy COCO game...");
@@ -15,8 +18,8 @@ if (document.readyState === 'loading') {
 
 function initializeFlappyGameAfterDOM() {
     // --- Get Canvas and Context ---
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
+    canvas = document.getElementById('gameCanvas');
+    ctx = canvas ? canvas.getContext('2d') : null;
     
     if (!canvas) {
         console.error("Canvas element not found!");

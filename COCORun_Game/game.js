@@ -1,3 +1,6 @@
+// --- Global Canvas and Context Variables ---
+let canvas, ctx;
+
 // --- Wait for DOM to be ready ---
 document.addEventListener('DOMContentLoaded', function() {
     console.log("DOM loaded, initializing game...");
@@ -15,8 +18,8 @@ if (document.readyState === 'loading') {
 
 function initializeGameAfterDOM() {
     // --- Get Canvas and Context ---
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas ? canvas.getContext('2d') : null; // Check canvas exists
+    canvas = document.getElementById('gameCanvas');
+    ctx = canvas ? canvas.getContext('2d') : null; // Check canvas exists
     console.log("game.js script executing...");
     console.log("Canvas element:", canvas);
     console.log("Canvas context:", ctx);
