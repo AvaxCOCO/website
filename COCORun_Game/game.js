@@ -1,10 +1,41 @@
-// --- Get Canvas and Context ---
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas ? canvas.getContext('2d') : null; // Check canvas exists
-console.log("game.js script executing...");
-console.log("Canvas element:", canvas);
-console.log("Canvas context:", ctx);
-// Force deployment refresh - 2025-01-12
+// --- Wait for DOM to be ready ---
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("DOM loaded, initializing game...");
+    initializeGameAfterDOM();
+});
+
+// Fallback if DOMContentLoaded already fired
+if (document.readyState === 'loading') {
+    // DOM is still loading, event listener will handle it
+} else {
+    // DOM is already loaded
+    console.log("DOM already loaded, initializing game immediately...");
+    initializeGameAfterDOM();
+}
+
+function initializeGameAfterDOM() {
+    // --- Get Canvas and Context ---
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas ? canvas.getContext('2d') : null; // Check canvas exists
+    console.log("game.js script executing...");
+    console.log("Canvas element:", canvas);
+    console.log("Canvas context:", ctx);
+    
+    if (!canvas) {
+        console.error("Canvas element not found!");
+        return;
+    }
+    
+    if (!ctx) {
+        console.error("Canvas context not available!");
+        return;
+    }
+    
+    // Continue with game initialization
+    startGameInitialization();
+}
+
+function startGameInitialization() {
 
 // --- Game Settings ---
 const gravity = 0.5;
@@ -804,3 +835,5 @@ if (ctx) { ctx.fillStyle = 'black'; ctx.font = '20px sans-serif'; ctx.textAlign 
 else { console.error("Canvas context not available."); }
 
 // Note: gameLoop() starts inside initializeGame() after images load.
+
+} // End of startGameInitialization function
