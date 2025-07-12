@@ -309,10 +309,10 @@ const LevelGenerator = {
 // --- Image Loading ---
 let images = {};
 // *** IMPORTANT: Ensure this path 'ASSETS/' matches your folder name! ***
-// Try different path approaches for better web compatibility
+// Use absolute path for web deployment
 const assetFolder = window.location.hostname === 'localhost' || window.location.protocol === 'file:' 
     ? 'ASSETS/' 
-    : './ASSETS/';
+    : '/COCORun_Game/ASSETS/';
 // Using final filenames from image_a2070a.jpg
 let imagesToLoad = [
     { name: 'p_idle', src: assetFolder + 'coco_idle.png' }, { name: 'p_jump', src: assetFolder + 'coco_jump.png' },
