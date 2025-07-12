@@ -4,7 +4,7 @@ let canvas, ctx;
 // --- Wait for DOM to be ready ---
 document.addEventListener('DOMContentLoaded', function() {
     console.log("DOM loaded, initializing game...");
-    initializeGameAfterDOM();
+    setTimeout(initializeGameAfterDOM, 100); // Add small delay for better compatibility
 });
 
 // Fallback if DOMContentLoaded already fired
@@ -13,8 +13,16 @@ if (document.readyState === 'loading') {
 } else {
     // DOM is already loaded
     console.log("DOM already loaded, initializing game immediately...");
-    initializeGameAfterDOM();
+    setTimeout(initializeGameAfterDOM, 100); // Add small delay for better compatibility
 }
+
+// Additional fallback for web deployment
+window.addEventListener('load', function() {
+    console.log("Window fully loaded, ensuring game initialization...");
+    if (!canvas || !ctx) {
+        setTimeout(initializeGameAfterDOM, 200);
+    }
+});
 
 function initializeGameAfterDOM() {
     // --- Get Canvas and Context ---
