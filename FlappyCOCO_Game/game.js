@@ -1,6 +1,38 @@
-// --- Get Canvas and Context ---
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
+// --- Wait for DOM to be ready ---
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("DOM loaded, initializing Flappy COCO game...");
+    initializeFlappyGameAfterDOM();
+});
+
+// Fallback if DOMContentLoaded already fired
+if (document.readyState === 'loading') {
+    // DOM is still loading, event listener will handle it
+} else {
+    // DOM is already loaded
+    console.log("DOM already loaded, initializing Flappy COCO game immediately...");
+    initializeFlappyGameAfterDOM();
+}
+
+function initializeFlappyGameAfterDOM() {
+    // --- Get Canvas and Context ---
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    if (!canvas) {
+        console.error("Canvas element not found!");
+        return;
+    }
+    
+    if (!ctx) {
+        console.error("Canvas context not available!");
+        return;
+    }
+    
+    // Continue with game initialization
+    startFlappyGameInitialization();
+}
+
+function startFlappyGameInitialization() {
 
 // --- Game Settings ---
 const gravity = 0.4;
@@ -289,3 +321,5 @@ if (ctx) {
 } else { console.error("Canvas context not available for initial loading message."); }
 
 // Note: gameLoop() starts inside initializeGame() after images load.
+
+} // End of startFlappyGameInitialization function
