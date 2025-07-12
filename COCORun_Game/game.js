@@ -23,6 +23,9 @@ function initializeGame() {
 }
 
 function startGameInitialization() {
+    // This function will call completeInitialization after images load
+    console.log("Starting game initialization...");
+}
 
 // --- Game Settings ---
 const gravity = 0.5;
@@ -840,5 +843,3 @@ if (ctx) { ctx.fillStyle = 'black'; ctx.font = '20px sans-serif'; ctx.textAlign 
 else { console.error("Canvas context not available."); }
 
 // Note: gameLoop() starts inside initializeGame() after images load.
-
-} // End of startGameInitialization function
