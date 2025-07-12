@@ -1,0 +1,1 @@
+This is a placeholder for images. The actual images will be copied from the original $COCO folder.

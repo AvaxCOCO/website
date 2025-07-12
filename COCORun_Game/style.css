@@ -1,0 +1,23 @@
+/* Updated style.css for COCORun Game integration */
+
+body {
+    /* Removed background-color: #87CEEB; */
+    /* Removed display: flex; justify-content: center; align-items: center; height: 100vh; */
+    margin: 0;
+    /* overflow: hidden; /* Keep this ONLY if the game absolutely requires no scrollbars, 
+                           otherwise remove it to allow scrolling to the footer if needed. */
+}
+
+canvas {
+    display: block; /* Prevent extra space below canvas */
+    /* Removed border: 1px solid black; */
+}
+
+/* Added rule to specifically style the canvas background */
+#gameCanvas { 
+    background-color: #87CEEB; /* Sky blue background */
+    /* The border and centering are handled in the main HTML structure now */
+}
+
+/* Add any other game-specific styles below */
+

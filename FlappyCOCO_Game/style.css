@@ -1,0 +1,24 @@
+/* Updated style.css for Flappy $COCO Game integration */
+
+body {
+    /* Removed background-color: skyblue; */
+    /* Removed display: flex; justify-content: center; align-items: center; flex-direction: column; min-height: 100vh; */
+    /* Removed font-family: sans-serif; */
+    /* Removed padding: 0; box-sizing: border-box; */
+    margin: 0; /* Keep margin reset */
+}
+
+canvas {
+    display: block; /* Prevents extra space below */
+    max-width: 100%;
+    /* border: 2px solid #4682b4; */ /* Ensure border is removed or handled in HTML */
+}
+
+/* Added rule to specifically style the canvas background */
+#gameCanvas { 
+    background-color: skyblue; /* Apply skyblue background only to the canvas */
+    /* Border and centering are handled in the main HTML structure */
+}
+
+/* Add any other game-specific styles below */
+

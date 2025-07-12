@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>$COCO Meme Gallery - Share the Fun</title>
+    <meta name="description" content="Browse and download $COCO memes for sharing on social media and spreading the word about our pink ostrich!">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    
+    <!-- Google Fonts - Fredoka -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    
+    <style>
+        /* Meme Gallery Specific Styles */
+        .meme-gallery-hero {
+            text-align: center;
+            padding: 80px 20px 40px;
+            background: linear-gradient(135deg, rgba(255, 107, 157, 0.1) 0%, rgba(255, 107, 157, 0.05) 100%);
+        }
+
+        .meme-gallery-hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #ff6b9d, #ff8fab);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .meme-gallery-hero p {
+            font-size: 1.1rem;
+            color: #c9d1d9;
+            margin-bottom: 20px;
+        }
+
+        .gallery-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 20px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            display: block;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ff6b9d;
+            text-shadow: 0 0 15px rgba(255, 107, 157, 0.5);
+        }
+
+        .stat-label {
+            display: block;
+            font-size: 0.9rem;
+            color: #8b949e;
+            margin-top: 0.5rem;
+        }
+
+        .gallery-section {
+            padding: 60px 0;
+            background: #0d1117;
+        }
+
+        .gallery-filters {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 107, 157, 0.1);
+            color: #ff6b9d;
+            border: 1px solid rgba(255, 107, 157, 0.3);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: #ff6b9d;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .meme-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .meme-card {
+            background: linear-gradient(145deg, #161b22 0%, #21262d 100%);
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid #30363d;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .meme-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(255, 107, 157, 0.2);
+            border-color: #ff6b9d;
+        }
+
+        .meme-image-container {
+            position: relative;
+            height: 250px;
+            overflow: hidden;
+        }
+
+        .meme-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .meme-card:hover .meme-image {
+            transform: scale(1.05);
+        }
+
+        .meme-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .meme-card:hover .meme-overlay {
+            opacity: 1;
+        }
+
+        .meme-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .action-btn {
+            width: 50px;
+            height: 50px;
+            background: #ff6b9d;
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .action-btn:hover {
+            background: #ff5a8a;
+            transform: scale(1.1);
+        }
+
+        .meme-info {
+            padding: 1.5rem;
+        }
+
+        .meme-title {
+            font-size: 1.1rem;
+            color: #ff6b9d;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .meme-category {
+            font-size: 0.9rem;
+            color: #8b949e;
+            margin-bottom: 1rem;
+        }
+
+        .meme-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            background: rgba(255, 107, 157, 0.1);
+            color: #ff6b9d;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            border: 1px solid rgba(255, 107, 157, 0.2);
+        }
+
+        .copy-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #ff6b9d;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .copy-notification.show {
+            transform: translateX(0);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            max-width: 90vw;
+            max-height: 90vh;
+            position: relative;
+        }
+
+        .modal-image {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 10px;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            background: #ff6b9d;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .search-container {
+            max-width: 500px;
+            margin: 0 auto 2rem;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem 1.5rem 1rem 3rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 107, 157, 0.3);
+            border-radius: 25px;
+            color: #c9d1d9;
+            font-size: 1rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #ff6b9d;
+            box-shadow: 0 0 20px rgba(255, 107, 157, 0.3);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #8b949e;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .meme-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 1.5rem;
+            }
+
+            .gallery-filters {
+                gap: 0.5rem;
+            }
+
+            .filter-btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .gallery-stats {
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-wrapper">
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="preloader-content">
+            <img src="images/transparent images/cocorockettrspt.png" alt="COCO Rocket" class="preloader-rocket">
+            <p>Loading Meme Gallery...</p>
+        </div>
+    </div>
+
+    <!-- Particles Background -->
+    <div id="particles-js"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="container">
+                <div class="nav-brand">
+                    <h1>$COCO</h1>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="index.html#defi">DeFi</a></li>
+                    <li><a href="index.html#how-to-buy">How to Buy</a></li>
+                    <li><a href="index.html#community">Community</a></li>
+                    <li><a href="index.html#launch">Arena Launch</a></li>
+                    <li><a href="meme-gallery.html" class="active">Meme Gallery</a></li>
+                    <li><a href="leaderboard.html">Leaderboard</a></li>
+                    <li><a href="arcade.html">Arcade</a></li>
+                    <li><button id="connect-wallet" class="btn btn-primary btn-sm">Connect Wallet</button></li>
+                </ul>
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Meme Gallery Hero Section -->
+    <section class="meme-gallery-hero">
+        <div class="container">
+            <div class="meme-gallery-hero-content">
+                <h1>$COCO Meme Gallery</h1>
+                <p>Share the fun! Copy, download, and spread $COCO memes across social media</p>
+                <div class="gallery-stats">
+                    <div class="stat">
+                        <span class="stat-number" id="meme-count">50+</span>
+                        <span class="stat-label">Memes Available</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">∞</span>
+                        <span class="stat-label">Viral Potential</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Meme Gallery Section -->
+    <section class="gallery-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Browse Memes</h2>
+                <p>Click to view full size, right-click to copy, or download for sharing</p>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" id="meme-search" placeholder="Search memes...">
+            </div>
+
+            <!-- Filter Buttons -->
+            <div class="gallery-filters">
+                <button class="filter-btn active" data-filter="all">All Memes</button>
+                <button class="filter-btn" data-filter="business">Business</button>
+                <button class="filter-btn" data-filter="defi">DeFi</button>
+                <button class="filter-btn" data-filter="community">Community</button>
+                <button class="filter-btn" data-filter="trading">Trading</button>
+                <button class="filter-btn" data-filter="funny">Funny</button>
+                <button class="filter-btn" data-filter="avax">AVAX</button>
+            </div>
+
+            <!-- Meme Grid -->
+            <div class="meme-grid" id="meme-grid">
+                <!-- Memes will be loaded here by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>$COCO</h3>
+                    <p>The Pink Ostrich of AVAX</p>
+                    <div class="social-links">
+                        <a href="#" target="_blank"><i class="fab fa-twitter"></i></a>
+                        <a href="#" target="_blank"><i class="fab fa-telegram"></i></a>
+                        <a href="#" target="_blank"><i class="fab fa-discord"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="index.html#launch">Arena Launch</a></li>
+                        <li><a href="index.html#how-to-buy">How to Buy</a></li>
+                        <li><a href="meme-gallery.html">Meme Gallery</a></li>
+                        <li><a href="arcade.html">Arcade</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="terms.html">Terms of Service</a></li>
+                        <li><a href="privacy.html">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 $COCO. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Copy Notification -->
+    <div class="copy-notification" id="copy-notification">
+        <i class="fas fa-check"></i> Meme copied to clipboard!
+    </div>
+
+    <!-- Modal for full-size view -->
+    <div class="modal" id="meme-modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <img class="modal-image" id="modal-image" src="" alt="">
+        </div>
+    </div>
+
+    <!-- Floating COCO Characters -->
+    <div class="floating-characters">
+        <img src="images/transparent images/cocoannounce-transparent.png" alt="COCO" class="floating-character character-1">
+        <img src="images/transparent images/cocotrophy-transparent.png" alt="COCO" class="floating-character character-2">
+        <img src="images/transparent images/cococoffee-transparent.png" alt="COCO" class="floating-character character-3">
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script src="js/main.js"></script>
+    <script src="js/animations.js"></script>
+    <script src="js/particles-config.js"></script>
+
+    <script>
+        // Meme data with categories and tags
+        const memes = [
+            {
+                src: 'images/acocoalchemist.png',
+                title: 'COCO Alchemist',
+                category: 'defi',
+                tags: ['defi', 'alchemy', 'trading']
+            },
+            {
+                src: 'images/bettercallcoco.png',
+                title: 'Better Call COCO',
+                category: 'funny',
+                tags: ['funny', 'tv-show', 'meme']
+            },
+            {
+                src: 'images/businesscoco.png',
+                title: 'Business COCO',
+                category: 'business',
+                tags: ['business', 'professional', 'suit']
+            },
+            {
+                src: 'images/buyallthecoco.png',
+                title: 'Buy All The COCO',
+                category: 'trading',
+                tags: ['trading', 'buy', 'investment']
+            },
+            {
+                src: 'images/cocoairdropavax.png',
+                title: 'COCO Airdrop AVAX',
+                category: 'avax',
+                tags: ['airdrop', 'avax', 'blockchain']
+            },
+            {
+                src: 'images/cocoapex1.png',
+                title: 'COCO Apex 1',
+                category: 'defi',
+                tags: ['apex', 'defi', 'partnership']
+            },
+            {
+                src: 'images/cocoapex2.png',
+                title: 'COCO Apex 2',
+                category: 'defi',
+                tags: ['apex', 'defi', 'partnership']
+            },
+            {
+                src: 'images/cocoapex3.png',
+                title: 'COCO Apex 3',
+                category: 'defi',
+                tags: ['apex', 'defi', 'partnership']
+            },
+            {
+                src: 'images/cocoapex4.png',
+                title: 'COCO Apex 4',
+                category: 'defi',
+                tags: ['apex', 'defi', 'partnership']
+            },
+            {
+                src: 'images/cocoapex5.png',
+                title: 'COCO Apex 5',
+                category: 'defi',
+                tags: ['apex', 'defi', 'partnership']
+            },
+            {
+                src: 'images/cocoapexhandshake.png',
+                title: 'COCO Apex Handshake',
+                category: 'defi',
+                tags: ['apex', 'partnership', 'handshake']
+            },
+            {
+                src: 'images/cocoavaxflag.png',
+                title: 'COCO AVAX Flag',
+                category: 'avax',
+                tags: ['avax', 'flag', 'patriotic']
+            },
+            {
+                src: 'images/cocoavaxtokenomics.png',
+                title: 'COCO AVAX Tokenomics',
+                category: 'avax',
+                tags: ['tokenomics', 'avax', 'economics']
+            },
+            {
+                src: 'images/cocobizplan.png',
+                title: 'COCO Business Plan',
+                category: 'business',
+                tags: ['business', 'plan', 'strategy']
+            },
+            {
+                src: 'images/cocobreakingbad.png',
+                title: 'COCO Breaking Bad',
+                category: 'funny',
+                tags: ['funny', 'tv-show', 'breaking-bad']
+            },
+            {
+                src: 'images/cocobuyavaxcdc.png',
+                title: 'COCO Buy AVAX CDC',
+                category: 'avax',
+                tags: ['buy', 'avax', 'cdc']
+            },
+            {
+                src: 'images/cococaine.png',
+                title: 'COCO Caine',
+                category: 'funny',
+                tags: ['funny', 'wordplay', 'meme']
+            },
+            {
+                src: 'images/cococelebrate.png',
+                title: 'COCO Celebrate',
+                category: 'community',
+                tags: ['celebrate', 'party', 'happy']
+            },
+            {
+                src: 'images/cocochad.png',
+                title: 'COCO Chad',
+                category: 'funny',
+                tags: ['chad', 'meme', 'strong']
+            },
+            {
+                src: 'images/cococoffee.png',
+                title: 'COCO Coffee',
+                category: 'funny',
+                tags: ['coffee', 'morning', 'energy']
+            },
+            {
+                src: 'images/cococoingecko.png',
+                title: 'COCO CoinGecko',
+                category: 'trading',
+                tags: ['coingecko', 'listing', 'trading']
+            },
+            {
+                src: 'images/cococoreapp.png',
+                title: 'COCO Core App',
+                category: 'avax',
+                tags: ['core', 'app', 'wallet']
+            },
+            {
+                src: 'images/cocodoomer1.png',
+                title: 'COCO Doomer 1',
+                category: 'funny',
+                tags: ['doomer', 'meme', 'mood']
+            },
+            {
+                src: 'images/cocodoomer2.png',
+                title: 'COCO Doomer 2',
+                category: 'funny',
+                tags: ['doomer', 'meme', 'mood']
+            },
+            {
+                src: 'images/cocoethgasfees.png',
+                title: 'COCO ETH Gas Fees',
+                category: 'avax',
+                tags: ['gas-fees', 'ethereum', 'avax']
+            },
+            {
+                src: 'images/cocofamilyfued.png',
+                title: 'COCO Family Feud',
+                category: 'funny',
+                tags: ['family-feud', 'tv-show', 'game']
+            },
+            {
+                src: 'images/cocogm1.png',
+                title: 'COCO GM 1',
+                category: 'community',
+                tags: ['gm', 'good-morning', 'community']
+            },
+            {
+                src: 'images/cocogm2.png',
+                title: 'COCO GM 2',
+                category: 'community',
+                tags: ['gm', 'good-morning', 'community']
+            },
+            {
+                src: 'images/cocogm3.png',
+                title: 'COCO GM 3',
+                category: 'community',
+                tags: ['gm', 'good-morning', 'community']
+            },
+            {
+                src: 'images/cocogm4.png',
+                title: 'COCO GM 4',
+                category: 'community',
+                tags: ['gm', 'good-morning', 'community']
+            },
+            {
+                src: 'images/cocogreedisgood.png',
+                title: 'COCO Greed is Good',
+                category: 'trading',
+                tags: ['greed', 'trading', 'wall-street']
+            },
+            {
+                src: 'images/cocoheadset.png',
+                title: 'COCO Headset',
+                category: 'funny',
+                tags: ['headset', 'gaming', 'tech']
+            },
+            {
+                src: 'images/cocojobinterviw.png',
+                title: 'COCO Job Interview',
+                category: 'business',
+                tags: ['job', 'interview', 'business']
+            },
+            {
+                src: 'images/cocojulian.png',
+                title: 'COCO Julian',
+                category: 'funny',
+                tags: ['julian', 'character', 'meme']
+            },
+            {
+                src: 'images/cocoleaderboardcoming.png',
+                title: 'COCO Leaderboard Coming',
+                category: 'community',
+                tags: ['leaderboard', 'coming-soon', 'competition']
+            },
+            {
+                src: 'images/cocoleaderboardreward.png',
+                title: 'COCO Leaderboard Reward',
+                category: 'community',
+                tags: ['leaderboard', 'reward', 'prize']
+            },
+            {
+                src: 'images/coconewbie.png',
+                title: 'COCO Newbie',
+                category: 'community',
+                tags: ['newbie', 'beginner', 'welcome']
+            },
+            {
+                src: 'images/coconews1.png',
+                title: 'COCO News 1',
+                category: 'community',
+                tags: ['news', 'announcement', 'update']
+            },
+            {
+                src: 'images/coconobills.png',
+                title: 'COCO No Bills',
+                category: 'funny',
+                tags: ['bills', 'money', 'broke']
+            },
+            {
+                src: 'images/cocoofficememe.png',
+                title: 'COCO Office Meme',
+                category: 'funny',
+                tags: ['office', 'tv-show', 'workplace']
+            },
+            {
+                src: 'images/cocoofficememe2.png',
+                title: 'COCO Office Meme 2',
+                category: 'funny',
+                tags: ['office', 'tv-show', 'workplace']
+            },
+            {
+                src: 'images/cocoofficememe3.png',
+                title: 'COCO Office Meme 3',
+                category: 'funny',
+                tags: ['office', 'tv-show', 'workplace']
+            },
+            {
+                src: 'images/cocooffthegrid.png',
+                title: 'COCO Off The Grid',
+                category: 'funny',
+                tags: ['off-grid', 'privacy', 'stealth']
+            },
+            {
+                src: 'images/cocooffthegrid2.png',
+                title: 'COCO Off The Grid 2',
+                category: 'funny',
+                tags: ['off-grid', 'privacy', 'stealth']
+            },
+            {
+                src: 'images/cocooutoftime.png',
+                title: 'COCO Out of Time',
+                category: 'trading',
+                tags: ['time', 'urgency', 'fomo']
+            },
+            {
+                src: 'images/cocopfp.jpg',
+                title: 'COCO PFP',
+                category: 'community',
+                tags: ['pfp', 'profile', 'avatar']
+            },
+            {
+                src: 'images/cocophar3.png',
+                title: 'COCO Pharaoh 3',
+                category: 'defi',
+                tags: ['pharaoh', 'defi', 'partnership']
+            },
+            {
+                src: 'images/cocophar4.png',
+                title: 'COCO Pharaoh 4',
+                category: 'defi',
+                tags: ['pharaoh', 'defi', 'partnership']
+            },
+            {
+                src: 'images/cocophar5.png',
+                title: 'COCO Pharaoh 5',
+                category: 'defi',
+                tags: ['pharaoh', 'defi', 'partnership']
+            },
+            {
+                src: 'images/cocopharaoh.png',
+                title: 'COCO Pharaoh',
+                category: 'defi',
+                tags: ['pharaoh', 'defi', 'partnership']
+            },
+            {
+                src: 'images/cocopharaoh2.png',
+                title: 'COCO Pharaoh 2',
+                category: 'defi',
+                tags: ['pharaoh', 'defi', 'partnership']
+            },
+            {
+                src: 'images/cocopowell.png',
+                title: 'COCO Powell',
+                category: 'trading',
+                tags: ['powell', 'fed', 'economics']
+            },
+            {
+                src: 'images/cocopresaleopen.png',
+                title: 'COCO Presale Open',
+                category: 'trading',
+                tags: ['presale', 'launch', 'investment']
+            },
+            {
+                src: 'images/cocoqrcode.png',
+                title: 'COCO QR Code',
+                category: 'community',
+                tags: ['qr-code', 'sticker', 'campaign']
+            },
+            {
+                src: 'images/cocoreversal.png',
+                title: 'COCO Reversal',
+                category: 'trading',
+                tags: ['reversal', 'trading', 'chart']
+            },
+            {
+                src: 'images/cocorocket.png',
+                title: 'COCO Rocket',
+                category: 'trading',
+                tags: ['rocket', 'moon', 'pump']
+            },
+            {
+                src: 'images/cocoSMBC.png',
+                title: 'COCO SMBC',
+                category: 'funny',
+                tags: ['comic', 'funny', 'meme']
+            },
+            {
+                src: 'images/cocospongebob.png',
+                title: 'COCO SpongeBob',
+                category: 'funny',
+                tags: ['spongebob', 'cartoon', 'funny']
+            },
+            {
+                src: 'images/cocoterminal.png',
+                title: 'COCO Terminal',
+                category: 'trading',
+                tags: ['terminal', 'trading', 'tech']
+            },
+            {
+                src: 'images/cocotheoffice.png',
+                title: 'COCO The Office',
+                category: 'funny',
+                tags: ['office', 'tv-show', 'workplace']
+            },
+            {
+                src: 'images/cocothisisfine.png',
+                title: 'COCO This is Fine',
+                category: 'funny',
+                tags: ['this-is-fine', 'meme', 'stress']
+            },
+            {
+                src: 'images/cocouliftiloop.png',
+                title: 'COCO Uplift Loop',
+                category: 'defi',
+                tags: ['uplift', 'loop', 'defi']
+            },
+            {
+                src: 'images/cocowatr.png',
+                title: 'COCO Water',
+                category: 'funny',
+                tags: ['water', 'drink', 'hydration']
+            },
+            {
+                src: 'images/cocowelcome.png',
+                title: 'COCO Welcome',
+                category: 'community',
+                tags: ['welcome', 'greeting', 'community']
+            },
+            {
+                src: 'images/cocowenlaunch.png',
+                title: 'COCO When Launch',
+                category: 'trading',
+                tags: ['launch', 'when', 'anticipation']
+            },
+            {
+                src: 'images/cocowhyavax.png',
+                title: 'COCO Why AVAX',
+                category: 'avax',
+                tags: ['why', 'avax', 'blockchain']
+            },
+            {
+                src: 'images/cocowojack.png',
+                title: 'COCO Wojak',
+                category: 'funny',
+                tags: ['wojak', 'meme', 'emotion']
+            },
+            {
+                src: 'images/cocowwtbam.png',
+                title: 'COCO Who Wants to Be a Millionaire',
+                category: 'funny',
+                tags: ['millionaire', 'game-show', 'money']
+            },
+            {
+                src: 'images/cocoyellinglady.png',
+                title: 'COCO Yelling Lady',
+                category: 'funny',
+                tags: ['yelling', 'lady', 'meme']
+            },
+            {
+                src: 'images/howtobuycoco.png',
+                title: 'How to Buy COCO',
+                category: 'trading',
+                tags: ['how-to', 'buy', 'guide']
+            },
+            {
+                src: 'images/peakycoco.png',
+                title: 'Peaky COCO',
+                category: 'funny',
+                tags: ['peaky', 'blinders', 'tv-show']
+            },
+            {
+                src: 'images/widomtreecoco.png',
+                title: 'Wisdom Tree COCO',
+                category: 'funny',
+                tags: ['wisdom', 'tree', 'philosophy']
+            }
+        ];
+
+        let currentFilter = 'all';
+        let filteredMemes = [...memes];
+
+        // Initialize the gallery
+        function initGallery() {
+            renderMemes(memes);
+            setupEventListeners();
+            updateMemeCount();
+        }
+
+        // Render memes to the grid
+        function renderMemes(memesToRender) {
+            const grid = document.getElementById('meme-grid');
+            grid.innerHTML = '';
+
+            memesToRender.forEach((meme, index) => {
+                const memeCard = createMemeCard(meme, index);
+                grid.appendChild(memeCard);
+            });
+        }
+
+        // Create a meme card element
+        function createMemeCard(meme, index) {
+            const card = document.createElement('div');
+            card.className = 'meme-card';
+            card.setAttribute('data-category', meme.category);
+            card.setAttribute('data-tags', meme.tags.join(' '));
+
+            card.innerHTML = `
+                <div class="meme-image-container">
+                    <img src="${meme.src}" alt="${meme.title}" class="meme-image" loading="lazy">
+                    <div class="meme-overlay">
+                        <div class="meme-actions">
+                            <button class="action-btn" onclick="viewFullSize('${meme.src}', '${meme.title}')" title="View Full Size">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                            <button class="action-btn" onclick="copyMeme('${meme.src}')" title="Copy Image">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                            <button class="action-btn" onclick="downloadMeme('${meme.src}', '${meme.title}')" title="Download">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="meme-info">
+                    <div class="meme-title">${meme.title}</div>
+                    <div class="meme-category">${meme.category.charAt(0).toUpperCase() + meme.category.slice(1)}</div>
+                    <div class="meme-tags">
+                        ${meme.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                    </div>
+                </div>
+            `;
+
+            return card;
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Filter buttons
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const filter = btn.getAttribute('data-filter');
+                    setActiveFilter(btn, filter);
+                });
+            });
+
+            // Search functionality
+            const searchInput = document.getElementById('meme-search');
+            searchInput.addEventListener('input', handleSearch);
+
+            // Modal close on background click
+            const modal = document.getElementById('meme-modal');
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+        }
+
+        // Set active filter
+        function setActiveFilter(activeBtn, filter) {
+            // Update button states
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            activeBtn.classList.add('active');
+
+            currentFilter = filter;
+            applyFilters();
+        }
+
+        // Apply filters and search
+        function applyFilters() {
+            let filtered = [...memes];
+
+            // Apply category filter
+            if (currentFilter !== 'all') {
+                filtered = filtered.filter(meme => meme.category === currentFilter);
+            }
+
+            // Apply search filter
+            const searchTerm = document.getElementById('meme-search').value.toLowerCase();
+            if (searchTerm) {
+                filtered = filtered.filter(meme => 
+                    meme.title.toLowerCase().includes(searchTerm) ||
+                    meme.category.toLowerCase().includes(searchTerm) ||
+                    meme.tags.some(tag => tag.toLowerCase().includes(searchTerm))
+                );
+            }
+
+            filteredMemes = filtered;
+            renderMemes(filteredMemes);
+            updateMemeCount();
+        }
+
+        // Handle search input
+        function handleSearch() {
+            applyFilters();
+        }
+
+        // Update meme count
+        function updateMemeCount() {
+            const countElement = document.getElementById('meme-count');
+            countElement.textContent = filteredMemes.length;
+        }
+
+        // View full size image
+        function viewFullSize(src, title) {
+            const modal = document.getElementById('meme-modal');
+            const modalImage = document.getElementById('modal-image');
+            
+            modalImage.src = src;
+            modalImage.alt = title;
+            modal.classList.add('show');
+        }
+
+        // Close modal
+        function closeModal() {
+            const modal = document.getElementById('meme-modal');
+            modal.classList.remove('show');
+        }
+
+        // Copy meme to clipboard
+        async function copyMeme(src) {
+            try {
+                const response = await fetch(src);
+                const blob = await response.blob();
+                
+                await navigator.clipboard.write([
+                    new ClipboardItem({
+                        [blob.type]: blob
+                    })
+                ]);
+                
+                showCopyNotification();
+            } catch (err) {
+                console.error('Failed to copy image: ', err);
+                // Fallback: copy the image URL
+                try {
+                    await navigator.clipboard.writeText(window.location.origin + '/' + src);
+                    showCopyNotification('Image URL copied to clipboard!');
+                } catch (fallbackErr) {
+                    console.error('Failed to copy URL: ', fallbackErr);
+                }
+            }
+        }
+
+        // Download meme
+        function downloadMeme(src, title) {
+            const link = document.createElement('a');
+            link.href = src;
+            link.download = `${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Show copy notification
+        function showCopyNotification(message = 'Meme copied to clipboard!') {
+            const notification = document.getElementById('copy-notification');
+            notification.innerHTML = `<i class="fas fa-check"></i> ${message}`;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Initialize gallery when page loads
+        document.addEventListener('DOMContentLoaded', initGallery);
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+    </div><!-- End of page-wrapper -->
+</body>
+</html>

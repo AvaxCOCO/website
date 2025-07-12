@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>$COCO - The Pink Ostrich of AVAX</title>
+    <meta name="description" content="$COCO is a memecoin launched on the Avalanche (AVAX) blockchain featuring a pink ostrich mascot.">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    
+    <!-- Google Fonts - Fredoka -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+    <div class="page-wrapper">
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="preloader-content">
+            <img src="images/transparent images/cocorockettrspt.png" alt="COCO Rocket" class="preloader-rocket">
+            <p>Loading $COCO...</p>
+        </div>
+    </div>
+
+    <!-- Particles Background -->
+    <div id="particles-js"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="container">
+                <div class="nav-brand">
+                    <h1>$COCO</h1>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="#hero">Home</a></li>
+                    <li><a href="#defi">DeFi</a></li>
+                    <li><a href="#how-to-buy">How to Buy</a></li>
+                    <li><a href="#community">Community</a></li>
+                    <li><a href="#launch">Arena Launch</a></li>
+                    <li><a href="meme-gallery.html">Meme Gallery</a></li>
+                    <li><a href="leaderboard.html">Leaderboard</a></li>
+                    <li><a href="arcade.html">Arcade</a></li>
+                    <li><button id="connect-wallet" class="btn btn-primary btn-sm">Connect Wallet</button></li>
+                </ul>
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero-section">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1>$COCO</h1>
+                    <h2>The Pink Ostrich of AVAX</h2>
+                    <p>A memecoin launched on the Avalanche blockchain with DeFi integration, sticker campaigns, and viral growth potential.</p>
+                    <div class="hero-buttons">
+                        <a href="#launch" class="btn btn-primary btn-large">Arena Launch</a>
+                        <a href="#how-to-buy" class="btn btn-secondary btn-large">How to Buy</a>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <img src="images/transparent images/cocorockettrspt.png" alt="COCO Rocket" class="hero-coco-img">
+                </div>
+            </div>
+        </div>
+        <div class="scroll-down">
+            <a href="#launch">
+                <span class="scroll-text">Scroll Down</span>
+                <i class="fas fa-chevron-down"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- Arena Launch Section -->
+    <section id="launch" class="launch-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>$COCO Arena Launch</h2>
+                <p>Join the $COCO token launch on Arena.social - the next generation SocialFi platform</p>
+            </div>
+            
+            <div class="launch-content">
+                <div class="launch-info">
+                    <h3>Token Launch Details</h3>
+                    <div class="token-info">
+                        <div class="info-item">
+                            <span class="label">Token Name:</span>
+                            <span class="value">$COCO</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Blockchain:</span>
+                            <span class="value">Avalanche (AVAX)</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Launch Platform:</span>
+                            <span class="value">Arena.social</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Contract Address:</span>
+                            <span class="value" id="contract-address">TBA - Coming Soon</span>
+                        </div>
+                    </div>
+                    
+                    <div class="launch-benefits">
+                        <h4>Why Arena.social?</h4>
+                        <ul>
+                            <li><i class="fas fa-star"></i> Next-gen SocialFi experience</li>
+                            <li><i class="fas fa-star"></i> Connect, Engage, Monetize</li>
+                            <li><i class="fas fa-star"></i> Fair launch mechanism</li>
+                            <li><i class="fas fa-star"></i> Community-driven token distribution</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="launch-action">
+                    <div class="launch-coco-image">
+                        <img src="images/transparent images/cocoofficetrspt.png" alt="COCO Office" class="launch-img">
+                    </div>
+                    
+                    <div class="launch-buttons">
+                        <a href="https://arena.social" target="_blank" class="btn btn-primary btn-large rocket-btn">
+                            <span class="btn-text">Visit Arena.social</span>
+                            <img src="images/transparent images/cocorockettrspt.png" alt="Rocket" class="btn-rocket">
+                        </a>
+                        <button id="copy-contract" class="btn btn-secondary btn-large" style="display: none;">
+                            <span class="btn-text">Copy Contract</span>
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DeFi Integration Section -->
+    <section id="defi" class="defi-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>DeFi Integration</h2>
+                <p>Unlock the full potential of $COCO through our strategic DeFi partnerships</p>
+            </div>
+            
+            <div class="steps-container">
+                <!-- Pharaoh Exchange Card -->
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <div class="step-image">
+                        <img src="images/Ecosystem/Pharaoh/pharcoin.png" alt="Pharaoh Exchange">
+                    </div>
+                    <div class="step-content">
+                        <h3>Pharaoh Exchange</h3>
+                        <p>Get rewarded for voting for $COCO LP pools and providing $COCO LP on the Pharaoh Exchange.</p>
+                        <ul>
+                            <li><i class="fas fa-check"></i> Vote for $COCO pools to earn rewards</li>
+                            <li><i class="fas fa-check"></i> Provide liquidity to earn additional $COCO</li>
+                            <li><i class="fas fa-check"></i> Exclusive DEX partner for $COCO launch</li>
+                        </ul>
+                        <a href="https://pharaoh.exchange" target="_blank" class="btn btn-sm">Visit Pharaoh Exchange</a>
+                    </div>
+                </div>
+                
+                <!-- Apex DeFi Card -->
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <div class="step-image">
+                        <img src="images/Ecosystem/Apex/apex token.png" alt="Apex DeFi">
+                    </div>
+                    <div class="step-content">
+                        <h3>Infinite Money Loop</h3>
+                        <p>Multiply your gains with the Apex DeFi Infinite Loop strategy:</p>
+                        <ul>
+                            <li><i class="fas fa-check"></i> Create aCOCO/AVAX LP</li>
+                            <li><i class="fas fa-check"></i> Earn rewards in APEX and COCO</li>
+                            <li><i class="fas fa-check"></i> Stake xAPEX to receive AVAX revenue share</li>
+                            <li><i class="fas fa-check"></i> Increase your LP position and multiply gains</li>
+                        </ul>
+                        <a href="https://apexdefi.xyz" target="_blank" class="btn btn-sm">Visit Apex DeFi</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How to Buy Section -->
+    <section id="how-to-buy" class="how-to-buy-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>How to Buy $COCO</h2>
+                <p>Follow these simple steps to join the $COCO community on the Avalanche blockchain</p>
+            </div>
+            
+            <div class="steps-vertical-container">
+                <!-- Step 1: Buy AVAX -->
+                <div class="step-vertical reveal reveal-left">
+                    <div class="step-number-vertical">1</div>
+                    <div class="step-content-wrapper">
+                        <div class="step-image-vertical">
+                            <img src="images/transparent images/cococdcbuyavaxtrspt.png" alt="Buy AVAX" class="step-img">
+                        </div>
+                        <div class="step-content-vertical">
+                            <h3>Buy AVAX</h3>
+                            <p>Purchase AVAX on Crypto.com or your preferred centralized exchange. Make sure to buy enough to cover your desired $COCO purchase plus transaction fees.</p>
+                            <ul class="step-list">
+                                <li><i class="fas fa-check"></i> Create an account on Crypto.com</li>
+                                <li><i class="fas fa-check"></i> Complete verification</li>
+                                <li><i class="fas fa-check"></i> Buy AVAX with credit card or bank transfer</li>
+                            </ul>
+                            <a href="https://crypto.com" target="_blank" class="btn btn-sm">Visit Crypto.com</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 2: Set Up Wallet -->
+                <div class="step-vertical reveal reveal-right">
+                    <div class="step-number-vertical">2</div>
+                    <div class="step-content-wrapper">
+                        <div class="step-content-vertical">
+                            <h3>Set Up Wallet</h3>
+                            <p>Download and set up Core Wallet to store your AVAX and $COCO. Core Wallet is the recommended wallet for the Avalanche ecosystem.</p>
+                            <ul class="step-list">
+                                <li><i class="fas fa-check"></i> Download Core Wallet app or extension</li>
+                                <li><i class="fas fa-check"></i> Create a new wallet and save your seed phrase</li>
+                                <li><i class="fas fa-check"></i> Add Avalanche C-Chain network</li>
+                            </ul>
+                            <a href="https://core.app" target="_blank" class="btn btn-sm">Get Core Wallet</a>
+                        </div>
+                        <div class="step-image-vertical">
+                            <img src="images/transparent images/cococoreapptrspt.png" alt="Set Up Wallet" class="step-img">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 3: Transfer AVAX -->
+                <div class="step-vertical reveal reveal-left">
+                    <div class="step-number-vertical">3</div>
+                    <div class="step-content-wrapper">
+                        <div class="step-image-vertical">
+                            <img src="images/transparent images/cocogmavax-transparent.png" alt="Transfer AVAX" class="step-img">
+                        </div>
+                        <div class="step-content-vertical">
+                            <h3>Transfer AVAX</h3>
+                            <p>Send your AVAX from the exchange to your Core Wallet. Make sure to use the C-Chain address from your Core Wallet.</p>
+                            <ul class="step-list">
+                                <li><i class="fas fa-check"></i> Copy your C-Chain address from Core Wallet</li>
+                                <li><i class="fas fa-check"></i> Withdraw AVAX from Crypto.com to this address</li>
+                                <li><i class="fas fa-check"></i> Wait for confirmation (usually takes 1-2 minutes)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 4: Get COCO on Arena -->
+                <div class="step-vertical reveal reveal-right">
+                    <div class="step-number-vertical">4</div>
+                    <div class="step-content-wrapper">
+                        <div class="step-content-vertical">
+                            <h3>Get $COCO on Arena</h3>
+                            <p>Participate in the $COCO token launch on Arena.social platform.</p>
+                            <ul class="step-list">
+                                <li><i class="fas fa-check"></i> Visit Arena.social and connect your wallet</li>
+                                <li><i class="fas fa-check"></i> Find the $COCO token launch</li>
+                                <li><i class="fas fa-check"></i> Participate in the launch event</li>
+                                <li><i class="fas fa-check"></i> Add $COCO to your wallet using contract address</li>
+                            </ul>
+                            <a href="https://arena.social" target="_blank" class="btn btn-sm">Visit Arena.social</a>
+                        </div>
+                        <div class="step-image-vertical">
+                            <img src="images/transparent images/cocoswaptrspt.png" alt="Get COCO" class="step-img">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Community & Sticker Campaign Section -->
+    <section id="community" class="community-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Community & Sticker Campaign</h2>
+                <p>Join the $COCO movement and help spread the word</p>
+            </div>
+            
+            <div class="community-content">
+                <div class="sticker-campaign">
+                    <div class="sticker-image">
+                        <img src="images/cocoqrcode.png" alt="COCO QR Sticker">
+                    </div>
+                    <div class="sticker-info">
+                <h3>Sticker Campaign</h3>
+                        <p>Thousands of COCO QR code stickers are being deployed in real life. Each sticker is trackable to a wallet/user via unique URLs.</p>
+                        <p>Users earn points when others scan and visit the site → Leaderboard rises!</p>
+                        <a href="leaderboard.html" class="btn btn-primary">Leaderboard Coming Soon</a>
+                    </div>
+                </div>
+                
+                <div class="community-links">
+                    <h3>Join Our Community</h3>
+                    <p>Connect with fellow $COCO enthusiasts and stay updated on the latest news.</p>
+                    <div class="social-links">
+                        <a href="#" target="_blank" class="social-link x">
+                            <img src="images/Ecosystem/xiconwhite.png" alt="X" class="x-icon">
+                            <span>X</span>
+                        </a>
+                        <a href="#" target="_blank" class="social-link telegram">
+                            <i class="fab fa-telegram"></i>
+                            <span>Telegram</span>
+                        </a>
+                        <a href="#" target="_blank" class="social-link discord">
+                            <i class="fab fa-discord"></i>
+                            <span>Discord</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>$COCO</h3>
+                    <p>The Pink Ostrich of AVAX</p>
+                    <div class="social-links">
+                        <a href="#" target="_blank"><i class="fab fa-twitter"></i></a>
+                        <a href="#" target="_blank"><i class="fab fa-telegram"></i></a>
+                        <a href="#" target="_blank"><i class="fab fa-discord"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#hero">Home</a></li>
+                        <li><a href="#launch">Arena Launch</a></li>
+                        <li><a href="#how-to-buy">How to Buy</a></li>
+                        <li><a href="meme-gallery.html">Meme Gallery</a></li>
+                        <li><a href="arcade.html">Arcade</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="terms.html">Terms of Service</a></li>
+                        <li><a href="privacy.html">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 $COCO. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating COCO Characters -->
+    <div class="floating-characters">
+        <img src="images/transparent images/cocoannounce-transparent.png" alt="COCO" class="floating-character character-1">
+        <img src="images/transparent images/cocotrophy-transparent.png" alt="COCO" class="floating-character character-2">
+        <img src="images/transparent images/cococoffee-transparent.png" alt="COCO" class="floating-character character-3">
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="https://cdn.thirdweb.com/js/connect/dist/thirdweb-connect.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script src="js/main.js"></script>
+    <script src="js/animations.js"></script>
+    <script src="js/wallet.js"></script>
+    <script src="js/particles-config.js"></script>
+    <script src="js/fix-layout.js"></script>
+    </div><!-- End of page-wrapper -->
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COCO Run Game</title>
+    <link rel="icon" href="../favicon.ico" type="image/x-icon">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .game-header {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #ff6b9d;
+        }
+
+        .game-header h1 {
+            font-size: 2.5rem;
+            margin: 0;
+            text-shadow: 0 0 20px rgba(255, 107, 157, 0.5);
+        }
+
+        .game-header p {
+            font-size: 1.2rem;
+            margin: 10px 0;
+            color: #c9d1d9;
+        }
+
+        #gameCanvas {
+            border: 3px solid #ff6b9d;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            background: #87CEEB;
+        }
+
+        .game-controls {
+            text-align: center;
+            margin-top: 20px;
+            color: #c9d1d9;
+        }
+
+        .game-controls p {
+            margin: 5px 0;
+            font-size: 1rem;
+        }
+
+        .return-button {
+            margin-top: 20px;
+            padding: 12px 24px;
+            background: #ff6b9d;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .return-button:hover {
+            background: #ff5a8a;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 157, 0.4);
+        }
+
+        .score-display {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #ff6b9d;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(255, 107, 157, 0.5);
+            z-index: 100;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .game-header h1 {
+                font-size: 2rem;
+            }
+            
+            #gameCanvas {
+                max-width: 90vw;
+                height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-header">
+        <h1>COCO Run</h1>
+        <p>Help COCO run and jump through platforms!</p>
+    </div>
+
+    <canvas id="gameCanvas" width="480" height="640">
+        Your browser does not support the HTML canvas tag.
+    </canvas>
+
+    <div class="game-controls">
+        <p><strong>Controls:</strong></p>
+        <p>Arrow Keys or WASD to move</p>
+        <p>SPACE or UP arrow to jump</p>
+        <p>Collect coins and reach the end!</p>
+    </div>
+
+    <a href="../arcade.html" class="return-button">← Return to Arcade</a>
+
+    <script src="game.js"></script>
+</body>
+</html>

@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>$COCO Arcade Leaderboard - Top Players</title>
+    <meta name="description" content="Check out the top players in $COCO arcade games! Compete for the highest scores in COCO Run and Flappy COCO.">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    
+    <!-- Google Fonts - Fredoka -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    
+    <style>
+        /* Leaderboard Specific Styles */
+        .leaderboard-hero {
+            text-align: center;
+            padding: 80px 20px 40px;
+            background: linear-gradient(135deg, rgba(255, 107, 157, 0.1) 0%, rgba(255, 107, 157, 0.05) 100%);
+        }
+
+        .leaderboard-hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #ff6b9d, #ff8fab);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .leaderboard-hero p {
+            font-size: 1.1rem;
+            color: #c9d1d9;
+            margin-bottom: 20px;
+        }
+
+        .leaderboard-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 20px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            display: block;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ff6b9d;
+            text-shadow: 0 0 15px rgba(255, 107, 157, 0.5);
+        }
+
+        .stat-label {
+            display: block;
+            font-size: 0.9rem;
+            color: #8b949e;
+            margin-top: 0.5rem;
+        }
+
+        .leaderboard-section {
+            padding: 60px 0;
+            background: #0d1117;
+        }
+
+        .game-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 1rem 2rem;
+            background: rgba(255, 107, 157, 0.1);
+            color: #ff6b9d;
+            border: 1px solid rgba(255, 107, 157, 0.3);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .tab-btn:hover,
+        .tab-btn.active {
+            background: #ff6b9d;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 107, 157, 0.3);
+        }
+
+        .leaderboard-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .leaderboard-table {
+            background: linear-gradient(145deg, #161b22 0%, #21262d 100%);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid #30363d;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .table-header {
+            background: linear-gradient(45deg, #ff6b9d, #ff8fab);
+            padding: 1.5rem;
+            color: white;
+            font-weight: 700;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        .leaderboard-entry {
+            display: flex;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid #30363d;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .leaderboard-entry:hover {
+            background: rgba(255, 107, 157, 0.05);
+            transform: translateX(5px);
+        }
+
+        .leaderboard-entry:last-child {
+            border-bottom: none;
+        }
+
+        .rank {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-right: 1.5rem;
+            position: relative;
+        }
+
+        .rank.gold {
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            color: #000;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .rank.silver {
+            background: linear-gradient(45deg, #c0c0c0, #e8e8e8);
+            color: #000;
+            box-shadow: 0 0 20px rgba(192, 192, 192, 0.5);
+        }
+
+        .rank.bronze {
+            background: linear-gradient(45deg, #cd7f32, #daa520);
+            color: #fff;
+            box-shadow: 0 0 20px rgba(205, 127, 50, 0.5);
+        }
+
+        .rank.regular {
+            background: rgba(255, 107, 157, 0.2);
+            color: #ff6b9d;
+            border: 2px solid rgba(255, 107, 157, 0.3);
+        }
+
+        .crown {
+            position: absolute;
+            top: -10px;
+            font-size: 1.5rem;
+            color: #ffd700;
+        }
+
+        .player-info {
+            flex: 1;
+            margin-right: 1rem;
+        }
+
+        .player-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #c9d1d9;
+            margin-bottom: 0.25rem;
+        }
+
+        .player-date {
+            font-size: 0.9rem;
+            color: #8b949e;
+        }
+
+        .score {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ff6b9d;
+            text-shadow: 0 0 10px rgba(255, 107, 157, 0.5);
+        }
+
+        .score-badge {
+            background: rgba(255, 107, 157, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 107, 157, 0.3);
+        }
+
+        .empty-leaderboard {
+            text-align: center;
+            padding: 3rem;
+            color: #8b949e;
+        }
+
+        .empty-leaderboard i {
+            font-size: 4rem;
+            color: #ff6b9d;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-leaderboard h3 {
+            color: #c9d1d9;
+            margin-bottom: 1rem;
+        }
+
+        .play-now-btn {
+            margin-top: 1rem;
+            display: inline-block;
+        }
+
+        .personal-best {
+            background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            border: 1px solid rgba(255, 107, 157, 0.2);
+        }
+
+        .personal-best h3 {
+            color: #ff6b9d;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .personal-scores {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .personal-score-card {
+            background: rgba(255, 107, 157, 0.1);
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid rgba(255, 107, 157, 0.2);
+        }
+
+        .personal-score-card h4 {
+            color: #c9d1d9;
+            margin-bottom: 0.5rem;
+        }
+
+        .personal-score-card .score {
+            font-size: 2rem;
+        }
+
+        .clear-scores-btn {
+            background: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+            border: 1px solid rgba(220, 53, 69, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .clear-scores-btn:hover {
+            background: #dc3545;
+            color: white;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .leaderboard-entry {
+                padding: 1rem;
+            }
+
+            .rank {
+                width: 50px;
+                height: 50px;
+                margin-right: 1rem;
+            }
+
+            .player-name {
+                font-size: 1rem;
+            }
+
+            .score {
+                font-size: 1.2rem;
+            }
+
+            .leaderboard-stats {
+                gap: 20px;
+            }
+
+            .game-tabs {
+                gap: 0.5rem;
+            }
+
+            .tab-btn {
+                padding: 0.75rem 1.5rem;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-wrapper">
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="preloader-content">
+            <img src="images/transparent images/cocorockettrspt.png" alt="COCO Rocket" class="preloader-rocket">
+            <p>Loading Leaderboard...</p>
+        </div>
+    </div>
+
+    <!-- Particles Background -->
+    <div id="particles-js"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="container">
+                <div class="nav-brand">
+                    <h1>$COCO</h1>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="index.html#defi">DeFi</a></li>
+                    <li><a href="index.html#how-to-buy">How to Buy</a></li>
+                    <li><a href="index.html#community">Community</a></li>
+                    <li><a href="index.html#launch">Arena Launch</a></li>
+                    <li><a href="meme-gallery.html">Meme Gallery</a></li>
+                    <li><a href="leaderboard.html" class="active">Leaderboard</a></li>
+                    <li><a href="arcade.html">Arcade</a></li>
+                    <li><button id="connect-wallet" class="btn btn-primary btn-sm">Connect Wallet</button></li>
+                </ul>
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Leaderboard Hero Section -->
+    <section class="leaderboard-hero">
+        <div class="container">
+            <div class="leaderboard-hero-content">
+                <h1>$COCO Arcade Leaderboard</h1>
+                <p>Compete for the top spot and show off your gaming skills!</p>
+                <div class="leaderboard-stats">
+                    <div class="stat">
+                        <span class="stat-number" id="total-players">0</span>
+                        <span class="stat-label">Total Players</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number" id="total-games">0</span>
+                        <span class="stat-label">Games Played</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Leaderboard Section -->
+    <section class="leaderboard-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Top Players</h2>
+                <p>See who's dominating the $COCO arcade!</p>
+            </div>
+
+            <!-- Personal Best Section -->
+            <div class="personal-best" id="personal-best">
+                <h3><i class="fas fa-user"></i> Your Personal Best</h3>
+                <div class="personal-scores">
+                    <div class="personal-score-card">
+                        <h4>COCO Run</h4>
+                        <div class="score" id="personal-coco-run">0</div>
+                    </div>
+                    <div class="personal-score-card">
+                        <h4>Flappy COCO</h4>
+                        <div class="score" id="personal-flappy-coco">0</div>
+                    </div>
+                </div>
+                <div style="text-align: center;">
+                    <button class="clear-scores-btn" onclick="clearAllScores()">
+                        <i class="fas fa-trash"></i> Clear My Scores
+                    </button>
+                </div>
+            </div>
+
+            <!-- Game Tabs -->
+            <div class="game-tabs">
+                <button class="tab-btn active" data-game="coco-run">
+                    <i class="fas fa-running"></i> COCO Run
+                </button>
+                <button class="tab-btn" data-game="flappy-coco">
+                    <i class="fas fa-dove"></i> Flappy COCO
+                </button>
+            </div>
+
+            <!-- Leaderboard Container -->
+            <div class="leaderboard-container">
+                <div class="leaderboard-table" id="leaderboard-table">
+                    <!-- Leaderboard content will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div style="text-align: center; margin-top: 3rem;">
+                <a href="arcade.html" class="btn btn-primary btn-large">
+                    <i class="fas fa-gamepad"></i> Play Games
+                </a>
+                <button class="btn btn-secondary btn-large" onclick="refreshLeaderboard()" style="margin-left: 1rem;">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>$COCO</h3>
+                    <p>The Pink Ostrich of AVAX</p>
+                    <div class="social-links">
+                        <a href="#" target="_blank"><i class="fab fa-twitter"></i></a>
+                        <a href="#" target="_blank"><i class="fab fa-telegram"></i></a>
+                        <a href="#" target="_blank"><i class="fab fa-discord"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="index.html#launch">Arena Launch</a></li>
+                        <li><a href="index.html#how-to-buy">How to Buy</a></li>
+                        <li><a href="meme-gallery.html">Meme Gallery</a></li>
+                        <li><a href="arcade.html">Arcade</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="terms.html">Terms of Service</a></li>
+                        <li><a href="privacy.html">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 $COCO. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating COCO Characters -->
+    <div class="floating-characters">
+        <img src="images/transparent images/cocoannounce-transparent.png" alt="COCO" class="floating-character character-1">
+        <img src="images/transparent images/cocotrophy-transparent.png" alt="COCO" class="floating-character character-2">
+        <img src="images/transparent images/cococoffee-transparent.png" alt="COCO" class="floating-character character-3">
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script src="js/main.js"></script>
+    <script src="js/animations.js"></script>
+    <script src="js/particles-config.js"></script>
+
+    <script>
+        // Leaderboard Management System
+        class LeaderboardManager {
+            constructor() {
+                this.currentGame = 'coco-run';
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.loadLeaderboard();
+                this.updatePersonalBest();
+                this.updateStats();
+            }
+
+            setupEventListeners() {
+                // Tab switching
+                const tabBtns = document.querySelectorAll('.tab-btn');
+                tabBtns.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const game = btn.getAttribute('data-game');
+                        this.switchGame(btn, game);
+                    });
+                });
+            }
+
+            switchGame(activeBtn, game) {
+                // Update button states
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                activeBtn.classList.add('active');
+
+                this.currentGame = game;
+                this.loadLeaderboard();
+            }
+
+            loadLeaderboard() {
+                const scores = this.getScores(this.currentGame);
+                const sortedScores = scores.sort((a, b) => b.score - a.score).slice(0, 10);
+                
+                this.renderLeaderboard(sortedScores);
+            }
+
+            getScores(game) {
+                const key = `${game}-leaderboard`;
+                const scores = localStorage.getItem(key);
+                return scores ? JSON.parse(scores) : [];
+            }
+
+            saveScore(game, playerName, score) {
+                const key = `${game}-leaderboard`;
+                let scores = this.getScores(game);
+                
+                const newScore = {
+                    name: playerName,
+                    score: score,
+                    date: new Date().toLocaleDateString(),
+                    timestamp: Date.now()
+                };
+
+                scores.push(newScore);
+                
+                // Keep only top 50 scores to prevent localStorage bloat
+                scores = scores.sort((a, b) => b.score - a.score).slice(0, 50);
+                
+                localStorage.setItem(key, JSON.stringify(scores));
+                
+                // Update personal best
+                this.updatePersonalBest();
+                this.updateStats();
+                
+                return newScore;
+            }
+
+            renderLeaderboard(scores) {
+                const container = document.getElementById('leaderboard-table');
+                const gameTitle = this.currentGame === 'coco-run' ? 'COCO Run' : 'Flappy COCO';
+                
+                if (scores.length === 0) {
+                    container.innerHTML = `
+                        <div class="table-header">
+                            <i class="fas fa-trophy"></i> ${gameTitle} Leaderboard
+                        </div>
+                        <div class="empty-leaderboard">
+                            <i class="fas fa-gamepad"></i>
+                            <h3>No scores yet!</h3>
+                            <p>Be the first to set a high score in ${gameTitle}</p>
+                            <a href="arcade.html" class="btn btn-primary play-now-btn">Play Now</a>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let html = `
+                    <div class="table-header">
+                        <i class="fas fa-trophy"></i> ${gameTitle} Leaderboard
+                    </div>
+                `;
+
+                scores.forEach((score, index) => {
+                    const rank = index + 1;
+                    let rankClass = 'regular';
+                    let crownIcon = '';
+
+                    if (rank === 1) {
+                        rankClass = 'gold';
+                        crownIcon = '<i class="fas fa-crown crown"></i>';
+                    } else if (rank === 2) {
+                        rankClass = 'silver';
+                    } else if (rank === 3) {
+                        rankClass = 'bronze';
+                    }
+
+                    html += `
+                        <div class="leaderboard-entry">
+                            <div class="rank ${rankClass}">
+                                ${crownIcon}
+                                ${rank}
+                            </div>
+                            <div class="player-info">
+                                <div class="player-name">${score.name}</div>
+                                <div class="player-date">${score.date}</div>
+                            </div>
+                            <div class="score-badge">
+                                <div class="score">${score.score.toLocaleString()}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                container.innerHTML = html;
+            }
+
+            updatePersonalBest() {
+                const cocoRunScores = this.getScores('coco-run');
+                const flappyCocoScores = this.getScores('flappy-coco');
+
+                const cocoRunBest = cocoRunScores.length > 0 ? Math.max(...cocoRunScores.map(s => s.score)) : 0;
+                const flappyCocoBest = flappyCocoScores.length > 0 ? Math.max(...flappyCocoScores.map(s => s.score)) : 0;
+
+                document.getElementById('personal-coco-run').textContent = cocoRunBest.toLocaleString();
+                document.getElementById('personal-flappy-coco').textContent = flappyCocoBest.toLocaleString();
+            }
+
+            updateStats() {
+                const cocoRunScores = this.getScores('coco-run');
+                const flappyCocoScores = this.getScores('flappy-coco');
+                
+                const totalGames = cocoRunScores.length + flappyCocoScores.length;
+                const uniquePlayers = new Set([...cocoRunScores.map(s => s.name), ...flappyCocoScores.map(s => s.name)]).size;
+
+                document.getElementById('total-players').textContent = uniquePlayers;
+                document.getElementById('total-games').textContent = totalGames;
+            }
+
+            clearAllScores() {
+                if (confirm('Are you sure you want to clear all your scores? This action cannot be undone.')) {
+                    localStorage.removeItem('coco-run-leaderboard');
+                    localStorage.removeItem('flappy-coco-leaderboard');
+                    
+                    this.loadLeaderboard();
+                    this.updatePersonalBest();
+                    this.updateStats();
+                    
+                    alert('All scores have been cleared!');
+                }
+            }
+        }
+
+        // Global functions
+        function refreshLeaderboard() {
+            leaderboardManager.loadLeaderboard();
+            leaderboardManager.updatePersonalBest();
+            leaderboardManager.updateStats();
+        }
+
+        function clearAllScores() {
+            leaderboardManager.clearAllScores();
+        }
+
+        // Add score function (called from games)
+        function addScore(game, playerName, score) {
+            return leaderboardManager.saveScore(game, playerName, score);
+        }
+
+        // Initialize leaderboard when page loads
+        let leaderboardManager;
+        document.addEventListener('DOMContentLoaded', () => {
+            leaderboardManager = new LeaderboardManager();
+        });
+
+        // Add some demo scores for testing (remove in production)
+        function addDemoScores() {
+            const demoNames = ['COCO_Master', 'PinkOstrich', 'AvaxGamer', 'CocoFan123', 'OstrichKing'];
+            
+            // Add demo scores for COCO Run
+            for (let i = 0; i < 5; i++) {
+                const score = Math.floor(Math.random() * 10000) + 1000;
+                leaderboardManager.saveScore('coco-run', demoNames[i], score);
+            }
+            
+            // Add demo scores for Flappy COCO
+            for (let i = 0; i < 5; i++) {
+                const score = Math.floor(Math.random() * 100) + 10;
+                leaderboardManager.saveScore('flappy-coco', demoNames[i], score);
+            }
+            
+            leaderboardManager.loadLeaderboard();
+        }
+
+        // Uncomment to add demo scores for testing
+        // setTimeout(addDemoScores, 1000);
+    </script>
+    </div><!-- End of page-wrapper -->
+</body>
+</html>

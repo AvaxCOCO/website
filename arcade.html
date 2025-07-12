@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>$COCO Arcade - Play COCO Games</title>
+    <meta name="description" content="Play fun COCO games including COCO Run and Flappy COCO!">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    
+    <!-- Google Fonts - Fredoka -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+    <div class="page-wrapper">
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="preloader-content">
+            <img src="images/transparent images/cocorockettrspt.png" alt="COCO Rocket" class="preloader-rocket">
+            <p>Loading $COCO Arcade...</p>
+        </div>
+    </div>
+
+    <!-- Particles Background -->
+    <div id="particles-js"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="container">
+                <div class="nav-brand">
+                    <h1>$COCO</h1>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="index.html#defi">DeFi</a></li>
+                    <li><a href="index.html#how-to-buy">How to Buy</a></li>
+                    <li><a href="index.html#community">Community</a></li>
+                    <li><a href="index.html#launch">Arena Launch</a></li>
+                    <li><a href="meme-gallery.html">Meme Gallery</a></li>
+                    <li><a href="leaderboard.html">Leaderboard</a></li>
+                    <li><a href="arcade.html" class="active">Arcade</a></li>
+                    <li><button id="connect-wallet" class="btn btn-primary btn-sm">Connect Wallet</button></li>
+                </ul>
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Arcade Hero Section -->
+    <section class="arcade-hero">
+        <div class="container">
+            <div class="arcade-hero-content">
+                <h1>$COCO Arcade</h1>
+                <p>Play fun games featuring our beloved pink ostrich!</p>
+                <div class="arcade-stats">
+                    <div class="stat">
+                        <span class="stat-number">2</span>
+                        <span class="stat-label">Games Available</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">∞</span>
+                        <span class="stat-label">Fun Guaranteed</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Games Section -->
+    <section class="games-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Choose Your Game</h2>
+                <p>Select a game below to start playing!</p>
+            </div>
+            
+            <div class="games-grid">
+                <!-- COCO Run Game -->
+                <div class="game-card">
+                    <div class="game-image">
+                        <img src="COCORun_Game/ASSETS/cocorunnerthumb.png" alt="COCO Run Game">
+                        <div class="game-overlay">
+                            <div class="play-button">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="game-info">
+                        <h3>COCO Run</h3>
+                        <p>Help COCO run and jump through challenging platforms in this exciting platformer game!</p>
+                        <div class="game-features">
+                            <span class="feature"><i class="fas fa-gamepad"></i> Platformer</span>
+                            <span class="feature"><i class="fas fa-trophy"></i> High Score</span>
+                            <span class="feature"><i class="fas fa-clock"></i> Endless Fun</span>
+                        </div>
+                        <a href="COCORun_Game/index.html" class="btn btn-primary btn-large game-btn">
+                            <span>Play COCO Run</span>
+                            <i class="fas fa-external-link-alt"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Flappy COCO Game -->
+                <div class="game-card">
+                    <div class="game-image">
+                        <img src="FlappyCOCO_Game/COCOFLAP/flappycocothumb.png" alt="Flappy COCO Game">
+                        <div class="game-overlay">
+                            <div class="play-button">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="game-info">
+                        <h3>Flappy COCO</h3>
+                        <p>Guide COCO through obstacles in this addictive flappy-style game. How far can you go?</p>
+                        <div class="game-features">
+                            <span class="feature"><i class="fas fa-dove"></i> Flying</span>
+                            <span class="feature"><i class="fas fa-target"></i> Precision</span>
+                            <span class="feature"><i class="fas fa-medal"></i> Challenge</span>
+                        </div>
+                        <a href="FlappyCOCO_Game/index.html" class="btn btn-primary btn-large game-btn">
+                            <span>Play Flappy COCO</span>
+                            <i class="fas fa-external-link-alt"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Game Instructions Section -->
+    <section class="instructions-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>How to Play</h2>
+                <p>Quick instructions for each game</p>
+            </div>
+            
+            <div class="instructions-grid">
+                <div class="instruction-card">
+                    <div class="instruction-icon">
+                        <img src="COCORun_Game/ASSETS/coco_jump.png" alt="COCO Jump">
+                    </div>
+                    <h3>COCO Run Controls</h3>
+                    <ul>
+                        <li><i class="fas fa-arrow-right"></i> Use arrow keys or WASD to move</li>
+                        <li><i class="fas fa-arrow-up"></i> Press SPACE or UP arrow to jump</li>
+                        <li><i class="fas fa-coins"></i> Collect coins and avoid obstacles</li>
+                        <li><i class="fas fa-flag-checkered"></i> Reach the end to complete levels</li>
+                    </ul>
+                </div>
+                
+                <div class="instruction-card">
+                    <div class="instruction-icon">
+                        <img src="FlappyCOCO_Game/COCOFLAP/coco_flap.png" alt="COCO Flap">
+                    </div>
+                    <h3>Flappy COCO Controls</h3>
+                    <ul>
+                        <li><i class="fas fa-mouse-pointer"></i> Click or tap to flap</li>
+                        <li><i class="fas fa-space-shuttle"></i> Press SPACE to flap</li>
+                        <li><i class="fas fa-exclamation-triangle"></i> Avoid hitting obstacles</li>
+                        <li><i class="fas fa-chart-line"></i> Try to beat your high score</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Coming Soon Section -->
+    <section class="coming-soon-section">
+        <div class="container">
+            <div class="coming-soon-content">
+                <h2>More Games Coming Soon!</h2>
+                <p>We're working on more exciting COCO games. Stay tuned for updates!</p>
+                <div class="coming-soon-features">
+                    <div class="feature">
+                        <i class="fas fa-puzzle-piece"></i>
+                        <span>COCO Puzzle</span>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-racing-car"></i>
+                        <span>COCO Racing</span>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-crosshairs"></i>
+                        <span>COCO Shooter</span>
+                    </div>
+                </div>
+                <a href="index.html#community" class="btn btn-secondary">Join Community for Updates</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>$COCO</h3>
+                    <p>The Pink Ostrich of AVAX</p>
+                    <div class="social-links">
+                        <a href="#" target="_blank"><i class="fab fa-twitter"></i></a>
+                        <a href="#" target="_blank"><i class="fab fa-telegram"></i></a>
+                        <a href="#" target="_blank"><i class="fab fa-discord"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="index.html#launch">Arena Launch</a></li>
+                        <li><a href="index.html#how-to-buy">How to Buy</a></li>
+                        <li><a href="meme-gallery.html">Meme Gallery</a></li>
+                        <li><a href="arcade.html">Arcade</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="terms.html">Terms of Service</a></li>
+                        <li><a href="privacy.html">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 $COCO. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating COCO Characters -->
+    <div class="floating-characters">
+        <img src="images/transparent images/cocoannounce-transparent.png" alt="COCO" class="floating-character character-1">
+        <img src="images/transparent images/cocotrophy-transparent.png" alt="COCO" class="floating-character character-2">
+        <img src="images/transparent images/cococoffee-transparent.png" alt="COCO" class="floating-character character-3">
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="https://cdn.thirdweb.com/js/connect/dist/thirdweb-connect.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script src="js/main.js"></script>
+    <script src="js/animations.js"></script>
+    <script src="js/wallet.js"></script>
+    <script src="js/particles-config.js"></script>
+    <script src="js/fix-layout.js"></script>
+    </div><!-- End of page-wrapper -->
+
+    <style>
+    /* Arcade-specific styles */
+        .arcade-hero {
+            text-align: center;
+            padding: 80px 20px 20px;
+            background: linear-gradient(135deg, rgba(255, 107, 157, 0.1) 0%, rgba(255, 107, 157, 0.05) 100%);
+        }
+
+        .arcade-hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #ff6b9d, #ff8fab);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .arcade-hero p {
+            font-size: 1.1rem;
+            color: #c9d1d9;
+            margin-bottom: 20px;
+        }
+
+        .arcade-stats {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            margin-top: 20px;
+        }
+
+    .stat {
+        text-align: center;
+    }
+
+    .stat-number {
+        display: block;
+        font-size: 3rem;
+        font-weight: 700;
+        color: #ff6b9d;
+        text-shadow: 0 0 15px rgba(255, 107, 157, 0.5);
+    }
+
+    .stat-label {
+        display: block;
+        font-size: 1rem;
+        color: #8b949e;
+        margin-top: 0.5rem;
+    }
+
+    .games-section {
+        padding: 80px 0;
+        background: #0d1117;
+    }
+
+    .games-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 3rem;
+        margin-top: 3rem;
+    }
+
+    .game-card {
+        background: linear-gradient(145deg, #161b22 0%, #21262d 100%);
+        border-radius: 20px;
+        overflow: hidden;
+        border: 1px solid #30363d;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .game-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(255, 107, 157, 0.2);
+        border-color: #ff6b9d;
+    }
+
+    .game-image {
+        position: relative;
+        height: 250px;
+        overflow: hidden;
+    }
+
+    .game-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .game-card:hover .game-image img {
+        transform: scale(1.1);
+    }
+
+    .game-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .game-card:hover .game-overlay {
+        opacity: 1;
+    }
+
+    .play-button {
+        width: 80px;
+        height: 80px;
+        background: #ff6b9d;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: white;
+        transition: transform 0.3s ease;
+    }
+
+    .play-button:hover {
+        transform: scale(1.1);
+    }
+
+    .game-info {
+        padding: 2rem;
+    }
+
+    .game-info h3 {
+        font-size: 1.8rem;
+        color: #ff6b9d;
+        margin-bottom: 1rem;
+    }
+
+    .game-info p {
+        color: #8b949e;
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+    }
+
+    .game-features {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .feature {
+        background: rgba(255, 107, 157, 0.1);
+        color: #ff6b9d;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        border: 1px solid rgba(255, 107, 157, 0.2);
+    }
+
+    .feature i {
+        margin-right: 0.5rem;
+    }
+
+    .game-btn {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .instructions-section {
+        padding: 80px 0;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    }
+
+    .instructions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 3rem;
+        margin-top: 3rem;
+    }
+
+    .instruction-card {
+        background: rgba(255, 255, 255, 0.05);
+        padding: 2rem;
+        border-radius: 15px;
+        border: 1px solid rgba(255, 107, 157, 0.2);
+        text-align: center;
+    }
+
+    .instruction-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 1.5rem;
+        background: rgba(255, 107, 157, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid rgba(255, 107, 157, 0.3);
+    }
+
+    .instruction-icon img {
+        width: 50px;
+        height: 50px;
+        object-fit: contain;
+    }
+
+    .instruction-card h3 {
+        color: #ff6b9d;
+        margin-bottom: 1.5rem;
+        font-size: 1.5rem;
+    }
+
+    .instruction-card ul {
+        list-style: none;
+        padding: 0;
+        text-align: left;
+    }
+
+    .instruction-card li {
+        color: #c9d1d9;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .instruction-card li i {
+        color: #ff6b9d;
+        width: 20px;
+    }
+
+    .coming-soon-section {
+        padding: 80px 0;
+        background: #0d1117;
+        text-align: center;
+    }
+
+    .coming-soon-content h2 {
+        color: #ff6b9d;
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .coming-soon-content p {
+        color: #8b949e;
+        font-size: 1.2rem;
+        margin-bottom: 3rem;
+    }
+
+    .coming-soon-features {
+        display: flex;
+        justify-content: center;
+        gap: 3rem;
+        margin-bottom: 3rem;
+        flex-wrap: wrap;
+    }
+
+    .coming-soon-features .feature {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        background: rgba(255, 107, 157, 0.1);
+        padding: 2rem;
+        border-radius: 15px;
+        border: 1px solid rgba(255, 107, 157, 0.2);
+        min-width: 150px;
+    }
+
+    .coming-soon-features .feature i {
+        font-size: 2rem;
+        color: #ff6b9d;
+    }
+
+    .coming-soon-features .feature span {
+        color: #c9d1d9;
+        font-weight: 600;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .arcade-hero-content h1 {
+            font-size: 2.5rem;
+        }
+
+        .arcade-stats {
+            gap: 2rem;
+        }
+
+        .games-grid {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        .instructions-grid {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        .coming-soon-features {
+            gap: 1.5rem;
+        }
+
+        .coming-soon-features .feature {
+            min-width: 120px;
+            padding: 1.5rem;
+        }
+    }
+    </style>
+</body>
+</html>
