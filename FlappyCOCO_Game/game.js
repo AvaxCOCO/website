@@ -27,21 +27,21 @@ let gameOverScorePos = { x:0, y:0 };
 let images = {};
 let imagesToLoad = [
     // Player Sprites
-    { name: 'idle', src: 'COCOFLAP/coco_idle.png' },
-    { name: 'flap', src: 'COCOFLAP/coco_flap.png' },
-    { name: 'fall', src: 'COCOFLAP/coco_fall.png' },
-    { name: 'crash', src: 'COCOFLAP/coco_crash.png' },
+    { name: 'idle', src: 'FlappyCOCO_Game/COCOFLAP/coco_idle.png' },
+    { name: 'flap', src: 'FlappyCOCO_Game/COCOFLAP/coco_flap.png' },
+    { name: 'fall', src: 'FlappyCOCO_Game/COCOFLAP/coco_fall.png' },
+    { name: 'crash', src: 'FlappyCOCO_Game/COCOFLAP/coco_crash.png' },
     // UI Sprites
-    { name: 'gameOverBanner', src: 'COCOFLAP/game_over_banner.png' },
-    { name: 'startButton', src: 'COCOFLAP/start_button.png' },
-    { name: 'tryAgainButton', src: 'COCOFLAP/try_again_button.png' },
+    { name: 'gameOverBanner', src: 'FlappyCOCO_Game/COCOFLAP/game_over_banner.png' },
+    { name: 'startButton', src: 'FlappyCOCO_Game/COCOFLAP/start_button.png' },
+    { name: 'tryAgainButton', src: 'FlappyCOCO_Game/COCOFLAP/try_again_button.png' },
     // Scenery & Obstacles
-    { name: 'sky', src: 'COCOFLAP/sky_image.png' },
-    { name: 'ground', src: 'COCOFLAP/ground_image.png' },
-    { name: 'obstacle', src: 'COCOFLAP/obstacle_one.png' },
+    { name: 'sky', src: 'FlappyCOCO_Game/COCOFLAP/sky_image.png' },
+    { name: 'ground', src: 'FlappyCOCO_Game/COCOFLAP/ground_image.png' },
+    { name: 'obstacle', src: 'FlappyCOCO_Game/COCOFLAP/obstacle_one.png' },
     // Score & Title
-    { name: 'numbers', src: 'COCOFLAP/number_sprites.png' },
-    { name: 'title', src: 'COCOFLAP/title_image.png' }
+    { name: 'numbers', src: 'FlappyCOCO_Game/COCOFLAP/number_sprites.png' },
+    { name: 'title', src: 'FlappyCOCO_Game/COCOFLAP/title_image.png' }
 ];
 let imagesLoaded = 0;
 

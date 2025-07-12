@@ -399,26 +399,26 @@ const numberSpacing = 2;
 // --- Image Loading ---
 let imagesToLoad = [
     // Player Sprites
-    { name: 'p_idle', src: 'ASSETS/coco_idle.png' },
-    { name: 'p_jump', src: 'ASSETS/coco_jump.png' },
-    { name: 'p_fall', src: 'ASSETS/coco_fall.png' },
-    { name: 'p_run1', src: 'ASSETS/coco_platform_run_1.png' },
-    { name: 'p_run2', src: 'ASSETS/coco_platform_run_2.png' },
-    { name: 'p_run3', src: 'ASSETS/coco_platform_run_3.png' },
-    { name: 'p_run4', src: 'ASSETS/coco_platform_run_4.png' },
-    { name: 'p_run5', src: 'ASSETS/coco_platform_run_5.png' },
+    { name: 'p_idle', src: 'COCORun_Game/ASSETS/coco_idle.png' },
+    { name: 'p_jump', src: 'COCORun_Game/ASSETS/coco_jump.png' },
+    { name: 'p_fall', src: 'COCORun_Game/ASSETS/coco_fall.png' },
+    { name: 'p_run1', src: 'COCORun_Game/ASSETS/coco_platform_run_1.png' },
+    { name: 'p_run2', src: 'COCORun_Game/ASSETS/coco_platform_run_2.png' },
+    { name: 'p_run3', src: 'COCORun_Game/ASSETS/coco_platform_run_3.png' },
+    { name: 'p_run4', src: 'COCORun_Game/ASSETS/coco_platform_run_4.png' },
+    { name: 'p_run5', src: 'COCORun_Game/ASSETS/coco_platform_run_5.png' },
     // UI Sprites
-    { name: 'gameOverBanner', src: 'ASSETS/game_over_banner.png' },
-    { name: 'levelCompleteBanner', src: 'ASSETS/level_complete_banner.png' },
-    { name: 'startButton', src: 'ASSETS/start_button.png' },
-    { name: 'tryAgainButton', src: 'ASSETS/try_again_button.png' },
-    { name: 'nextLevelButton', src: 'ASSETS/next_level_button.png' },
+    { name: 'gameOverBanner', src: 'COCORun_Game/ASSETS/game_over_banner.png' },
+    { name: 'levelCompleteBanner', src: 'COCORun_Game/ASSETS/level_complete_banner.png' },
+    { name: 'startButton', src: 'COCORun_Game/ASSETS/start_button.png' },
+    { name: 'tryAgainButton', src: 'COCORun_Game/ASSETS/try_again_button.png' },
+    { name: 'nextLevelButton', src: 'COCORun_Game/ASSETS/next_level_button.png' },
     // Scenery & Obstacles
-    { name: 'sky', src: 'ASSETS/sky_image.png' },
-    { name: 'landscape', src: 'ASSETS/coco_landscape_sprites.png' },
+    { name: 'sky', src: 'COCORun_Game/ASSETS/sky_image.png' },
+    { name: 'landscape', src: 'COCORun_Game/ASSETS/coco_landscape_sprites.png' },
     // Score & Title
-    { name: 'numbers', src: 'ASSETS/number_sprites.png' },
-    { name: 'titleLogo', src: 'ASSETS/title_logo_platformer.png' }
+    { name: 'numbers', src: 'COCORun_Game/ASSETS/number_sprites.png' },
+    { name: 'titleLogo', src: 'COCORun_Game/ASSETS/title_logo_platformer.png' }
 ];
 
 function imageLoaded() {
