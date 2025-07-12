@@ -4,6 +4,7 @@ const ctx = canvas ? canvas.getContext('2d') : null; // Check canvas exists
 console.log("game.js script executing...");
 console.log("Canvas element:", canvas);
 console.log("Canvas context:", ctx);
+// Force deployment refresh - 2025-01-12
 
 // --- Game Settings ---
 const gravity = 0.5;
