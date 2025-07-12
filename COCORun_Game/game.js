@@ -612,48 +612,25 @@ function gameLoop() {
              return;
          }
          try {
-             const cocoXUserString = localStorage.getItem('cocoXUser');
-             if (cocoXUserString) {
-                 console.log("X User found in localStorage, attempting score submission...");
-                 const user = JSON.parse(cocoXUserString);
-                 // Validate parsed user data
-                 if (user && user.id && user.handle && user.profileImage) {
-                     // *** CORRECTED URL ***
-                     fetch('/api/arcade-leaderboard', { // Removed /submit
-                         method: 'POST',
-                         headers: { 'Content-Type': 'application/json' },
-                         body: JSON.stringify({
-                             gameName: 'COCORUN', // Correct game name for this file
-                             score: score, // Use the global score variable
-                             xUserId: user.id,
-                             xUsername: user.handle,
-                             xProfilePicUrl: user.profileImage
-                         })
-                     })
-                     .then(response => {
-                         if (!response.ok) {
-                            // Log detailed error
-                             response.text().then(text => {
-                                 console.error(`Failed to submit score: ${response.status} ${response.statusText}. Response: ${text}`);
-                             }).catch(() => {
-                                 console.error(`Failed to submit score: ${response.status} ${response.statusText}. Could not read response body.`);
-                             });
-                         } else {
-                             console.log('Score submitted successfully.');
-                             // Optionally update UI or provide feedback
-                         }
-                     })
-                     .catch(error => {
-                         console.error('Network or fetch error submitting score:', error);
-                     });
-                 } else {
-                     console.warn("Parsed X User data is incomplete or invalid. Cannot submit score.", user);
-                 }
-             } else {
-                 console.log("No X User found in localStorage. Score not submitted.");
-             }
+             // Save score to localStorage for local leaderboard
+             const key = 'coco-run-leaderboard';
+             let scores = localStorage.getItem(key);
+             scores = scores ? JSON.parse(scores) : [];
+             
+             const newScore = {
+                 score: score,
+                 level: currentLevelNumber,
+                 date: new Date().toLocaleDateString(),
+                 timestamp: Date.now()
+             };
+             
+             scores.push(newScore);
+             scores = scores.sort((a, b) => b.score - a.score).slice(0, 50); // Keep top 50
+             localStorage.setItem(key, JSON.stringify(scores));
+             
+             console.log(`Score ${score} saved locally for COCO Run (Level ${currentLevelNumber})`);
          } catch (error) {
-             console.error("Error during score submission logic:", error);
+             console.error("Error during score submission:", error);
          }
      }
      // --- End Score Submission Function ---

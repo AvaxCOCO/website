@@ -230,41 +230,22 @@ function gameLoop(currentTime) {
          }
          
          try {
-             // Get player name from prompt or use default
-             let playerName = prompt("Enter your name for the leaderboard:", "COCO Player");
-             if (!playerName || playerName.trim() === "") {
-                 playerName = "Anonymous";
-             }
-             playerName = playerName.trim().substring(0, 20); // Limit name length
+             // Save score to localStorage for local leaderboard
+             const key = 'flappy-coco-leaderboard';
+             let scores = localStorage.getItem(key);
+             scores = scores ? JSON.parse(scores) : [];
              
-             // Check if leaderboard system is available (from parent window or global)
-             if (typeof addScore === 'function') {
-                 // Direct function call if available
-                 addScore('flappy-coco', playerName, score);
-                 console.log(`Score ${score} submitted for ${playerName} in Flappy COCO`);
-             } else if (window.parent && typeof window.parent.addScore === 'function') {
-                 // Try parent window (if game is in iframe)
-                 window.parent.addScore('flappy-coco', playerName, score);
-                 console.log(`Score ${score} submitted for ${playerName} in Flappy COCO (via parent)`);
-             } else {
-                 // Fallback: Save directly to localStorage
-                 const key = 'flappy-coco-leaderboard';
-                 let scores = localStorage.getItem(key);
-                 scores = scores ? JSON.parse(scores) : [];
-                 
-                 const newScore = {
-                     name: playerName,
-                     score: score,
-                     date: new Date().toLocaleDateString(),
-                     timestamp: Date.now()
-                 };
-                 
-                 scores.push(newScore);
-                 scores = scores.sort((a, b) => b.score - a.score).slice(0, 50); // Keep top 50
-                 localStorage.setItem(key, JSON.stringify(scores));
-                 
-                 console.log(`Score ${score} saved locally for ${playerName} in Flappy COCO`);
-             }
+             const newScore = {
+                 score: score,
+                 date: new Date().toLocaleDateString(),
+                 timestamp: Date.now()
+             };
+             
+             scores.push(newScore);
+             scores = scores.sort((a, b) => b.score - a.score).slice(0, 50); // Keep top 50
+             localStorage.setItem(key, JSON.stringify(scores));
+             
+             console.log(`Score ${score} saved locally for Flappy COCO`);
          } catch (error) {
              console.error("Error during score submission:", error);
          }
