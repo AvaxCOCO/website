@@ -295,6 +295,124 @@
             color: white;
         }
 
+        /* Twitter Integration Styles */
+        .twitter-section {
+            background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(29, 161, 242, 0.2);
+        }
+
+        .twitter-section h3 {
+            color: #1da1f2;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .twitter-connect {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .twitter-input {
+            background: rgba(29, 161, 242, 0.1);
+            border: 1px solid rgba(29, 161, 242, 0.3);
+            border-radius: 25px;
+            padding: 0.75rem 1rem;
+            color: #c9d1d9;
+            font-size: 1rem;
+            width: 200px;
+        }
+
+        .twitter-input::placeholder {
+            color: #8b949e;
+        }
+
+        .twitter-btn {
+            background: #1da1f2;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .twitter-btn:hover {
+            background: #1991db;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(29, 161, 242, 0.4);
+        }
+
+        .twitter-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .share-score-btn {
+            background: rgba(29, 161, 242, 0.2);
+            color: #1da1f2;
+            border: 1px solid rgba(29, 161, 242, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            margin-left: 1rem;
+        }
+
+        .share-score-btn:hover {
+            background: #1da1f2;
+            color: white;
+        }
+
+        .twitter-status {
+            text-align: center;
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+
+        .twitter-status.connected {
+            background: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .twitter-status.disconnected {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .leaderboard-entry .share-btn {
+            background: rgba(29, 161, 242, 0.2);
+            color: #1da1f2;
+            border: 1px solid rgba(29, 161, 242, 0.3);
+            padding: 0.25rem 0.5rem;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+            margin-left: 0.5rem;
+        }
+
+        .leaderboard-entry .share-btn:hover {
+            background: #1da1f2;
+            color: white;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .leaderboard-entry {
@@ -398,6 +516,20 @@
                 <p>See who's dominating the $COCO arcade!</p>
             </div>
 
+            <!-- Twitter Integration Section -->
+            <div class="twitter-section" id="twitter-section">
+                <h3><i class="fab fa-twitter"></i> Connect Twitter to Share High Scores</h3>
+                <div class="twitter-connect">
+                    <input type="text" class="twitter-input" id="twitter-username" placeholder="@username" maxlength="15">
+                    <button class="twitter-btn" id="connect-twitter-btn" onclick="connectTwitter()">
+                        <i class="fab fa-twitter"></i> Connect
+                    </button>
+                </div>
+                <div class="twitter-status disconnected" id="twitter-status">
+                    <i class="fas fa-times-circle"></i> Not connected to Twitter
+                </div>
+            </div>
+
             <!-- Personal Best Section -->
             <div class="personal-best" id="personal-best">
                 <h3><i class="fas fa-user"></i> Your Personal Best</h3>
@@ -405,10 +537,16 @@
                     <div class="personal-score-card">
                         <h4>COCO Run</h4>
                         <div class="score" id="personal-coco-run">0</div>
+                        <button class="share-score-btn" onclick="sharePersonalBest('coco-run')" id="share-coco-run" style="display: none;">
+                            <i class="fab fa-twitter"></i> Share
+                        </button>
                     </div>
                     <div class="personal-score-card">
                         <h4>Flappy COCO</h4>
                         <div class="score" id="personal-flappy-coco">0</div>
+                        <button class="share-score-btn" onclick="sharePersonalBest('flappy-coco')" id="share-flappy-coco" style="display: none;">
+                            <i class="fab fa-twitter"></i> Share
+                        </button>
                     </div>
                 </div>
                 <div style="text-align: center;">
@@ -502,18 +640,109 @@
     <script src="js/particles-config.js"></script>
 
     <script>
-        // Leaderboard Management System
-        class LeaderboardManager {
+        // API Configuration
+        const API_BASE_URL = 'http://localhost:3001/api';
+
+        // Twitter Integration Manager
+        class TwitterManager {
             constructor() {
-                this.currentGame = 'coco-run';
+                this.connectedUsername = localStorage.getItem('twitter-username') || null;
                 this.init();
             }
 
             init() {
+                this.updateTwitterStatus();
+                this.updateShareButtons();
+            }
+
+            updateTwitterStatus() {
+                const statusElement = document.getElementById('twitter-status');
+                const connectBtn = document.getElementById('connect-twitter-btn');
+                const usernameInput = document.getElementById('twitter-username');
+
+                if (this.connectedUsername) {
+                    statusElement.className = 'twitter-status connected';
+                    statusElement.innerHTML = `<i class="fas fa-check-circle"></i> Connected as @${this.connectedUsername}`;
+                    connectBtn.innerHTML = '<i class="fas fa-unlink"></i> Disconnect';
+                    usernameInput.value = this.connectedUsername;
+                    usernameInput.disabled = true;
+                } else {
+                    statusElement.className = 'twitter-status disconnected';
+                    statusElement.innerHTML = '<i class="fas fa-times-circle"></i> Not connected to Twitter';
+                    connectBtn.innerHTML = '<i class="fab fa-twitter"></i> Connect';
+                    usernameInput.disabled = false;
+                }
+            }
+
+            updateShareButtons() {
+                const cocoRunBtn = document.getElementById('share-coco-run');
+                const flappyCocoBtn = document.getElementById('share-flappy-coco');
+                
+                if (this.connectedUsername) {
+                    const cocoRunScore = parseInt(document.getElementById('personal-coco-run').textContent.replace(/,/g, ''));
+                    const flappyCocoScore = parseInt(document.getElementById('personal-flappy-coco').textContent.replace(/,/g, ''));
+                    
+                    cocoRunBtn.style.display = cocoRunScore > 0 ? 'inline-block' : 'none';
+                    flappyCocoBtn.style.display = flappyCocoScore > 0 ? 'inline-block' : 'none';
+                } else {
+                    cocoRunBtn.style.display = 'none';
+                    flappyCocoBtn.style.display = 'none';
+                }
+            }
+
+            connect(username) {
+                if (!username || username.length < 1) {
+                    alert('Please enter a valid Twitter username');
+                    return false;
+                }
+
+                // Remove @ if user included it
+                username = username.replace('@', '');
+                
+                this.connectedUsername = username;
+                localStorage.setItem('twitter-username', username);
+                this.updateTwitterStatus();
+                this.updateShareButtons();
+                return true;
+            }
+
+            disconnect() {
+                this.connectedUsername = null;
+                localStorage.removeItem('twitter-username');
+                document.getElementById('twitter-username').value = '';
+                this.updateTwitterStatus();
+                this.updateShareButtons();
+            }
+
+            shareScore(game, score) {
+                if (!this.connectedUsername) {
+                    alert('Please connect your Twitter account first');
+                    return;
+                }
+
+                const gameTitle = game === 'coco-run' ? 'COCO Run' : 'Flappy COCO';
+                const emoji = game === 'coco-run' ? '🏃‍♂️' : '🐦';
+                
+                const tweetText = `Just scored ${score.toLocaleString()} points in ${gameTitle} ${emoji} on the $COCO Arcade! 🎮\n\nCan you beat my score? Play now at avaxcoco.com/arcade.html\n\n#COCO #AvaxGaming #Memecoin #GameFi`;
+                
+                const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
+                window.open(tweetUrl, '_blank', 'width=550,height=420');
+            }
+        }
+
+        // Leaderboard Management System with Neon PostgreSQL Backend
+        class LeaderboardManager {
+            constructor() {
+                this.currentGame = 'coco-run';
+                this.personalBests = {};
+                this.init();
+            }
+
+            async init() {
                 this.setupEventListeners();
-                this.loadLeaderboard();
-                this.updatePersonalBest();
-                this.updateStats();
+                await this.loadLeaderboard();
+                await this.updatePersonalBest();
+                await this.updateStats();
             }
 
             setupEventListeners() {
@@ -527,7 +756,7 @@
                 });
             }
 
-            switchGame(activeBtn, game) {
+            async switchGame(activeBtn, game) {
                 // Update button states
                 document.querySelectorAll('.tab-btn').forEach(btn => {
                     btn.classList.remove('active');
@@ -535,41 +764,98 @@
                 activeBtn.classList.add('active');
 
                 this.currentGame = game;
-                this.loadLeaderboard();
+                await this.loadLeaderboard();
             }
 
-            loadLeaderboard() {
-                const scores = this.getScores(this.currentGame);
+            async loadLeaderboard() {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/leaderboard/${this.currentGame}?limit=10`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    this.renderLeaderboard(data.leaderboard);
+                    
+                } catch (error) {
+                    console.error('Error loading leaderboard:', error);
+                    // Fallback to localStorage if API fails
+                    this.loadLocalLeaderboard();
+                }
+            }
+
+            loadLocalLeaderboard() {
+                const scores = this.getLocalScores(this.currentGame);
                 const sortedScores = scores.sort((a, b) => b.score - a.score).slice(0, 10);
-                
                 this.renderLeaderboard(sortedScores);
             }
 
-            getScores(game) {
+            getLocalScores(game) {
                 const key = `${game}-leaderboard`;
                 const scores = localStorage.getItem(key);
                 return scores ? JSON.parse(scores) : [];
             }
 
-            saveScore(game, playerName, score) {
+            async submitScore(game, playerName, score, levelReached = 1, playTimeSeconds = 0) {
+                try {
+                    const twitterHandle = window.twitterManager?.connectedUsername || null;
+                    
+                    const response = await fetch(`${API_BASE_URL}/score`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            game: game,
+                            score: score,
+                            level_reached: levelReached,
+                            play_time_seconds: playTimeSeconds,
+                            player_name: playerName,
+                            twitter_handle: twitterHandle
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    
+                    // Refresh leaderboard and personal bests
+                    await this.loadLeaderboard();
+                    await this.updatePersonalBest();
+                    await this.updateStats();
+                    
+                    if (window.twitterManager) {
+                        window.twitterManager.updateShareButtons();
+                    }
+                    
+                    return result;
+                    
+                } catch (error) {
+                    console.error('Error submitting score to API:', error);
+                    // Fallback to localStorage
+                    return this.saveLocalScore(game, playerName, score);
+                }
+            }
+
+            saveLocalScore(game, playerName, score) {
                 const key = `${game}-leaderboard`;
-                let scores = this.getScores(game);
+                let scores = this.getLocalScores(game);
                 
                 const newScore = {
-                    name: playerName,
+                    username: playerName,
                     score: score,
-                    date: new Date().toLocaleDateString(),
+                    created_at: new Date().toLocaleDateString(),
                     timestamp: Date.now()
                 };
 
                 scores.push(newScore);
-                
-                // Keep only top 50 scores to prevent localStorage bloat
                 scores = scores.sort((a, b) => b.score - a.score).slice(0, 50);
-                
                 localStorage.setItem(key, JSON.stringify(scores));
                 
-                // Update personal best
+                this.loadLocalLeaderboard();
                 this.updatePersonalBest();
                 this.updateStats();
                 
@@ -580,7 +866,7 @@
                 const container = document.getElementById('leaderboard-table');
                 const gameTitle = this.currentGame === 'coco-run' ? 'COCO Run' : 'Flappy COCO';
                 
-                if (scores.length === 0) {
+                if (!scores || scores.length === 0) {
                     container.innerHTML = `
                         <div class="table-header">
                             <i class="fas fa-trophy"></i> ${gameTitle} Leaderboard
@@ -602,7 +888,7 @@
                 `;
 
                 scores.forEach((score, index) => {
-                    const rank = index + 1;
+                    const rank = score.rank || (index + 1);
                     let rankClass = 'regular';
                     let crownIcon = '';
 
@@ -615,6 +901,9 @@
                         rankClass = 'bronze';
                     }
 
+                    const displayName = score.twitter_handle ? `@${score.twitter_handle}` : score.username;
+                    const scoreDate = score.created_at ? new Date(score.created_at).toLocaleDateString() : 'Unknown';
+
                     html += `
                         <div class="leaderboard-entry">
                             <div class="rank ${rankClass}">
@@ -622,8 +911,8 @@
                                 ${rank}
                             </div>
                             <div class="player-info">
-                                <div class="player-name">${score.name}</div>
-                                <div class="player-date">${score.date}</div>
+                                <div class="player-name">${displayName}</div>
+                                <div class="player-date">${scoreDate}</div>
                             </div>
                             <div class="score-badge">
                                 <div class="score">${score.score.toLocaleString()}</div>
@@ -635,9 +924,41 @@
                 container.innerHTML = html;
             }
 
-            updatePersonalBest() {
-                const cocoRunScores = this.getScores('coco-run');
-                const flappyCocoScores = this.getScores('flappy-coco');
+            async updatePersonalBest() {
+                if (!window.twitterManager?.connectedUsername) {
+                    // Show local scores if no Twitter connected
+                    this.updateLocalPersonalBest();
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`${API_BASE_URL}/player/${window.twitterManager.connectedUsername}/best`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    this.personalBests = {};
+                    
+                    data.personal_bests.forEach(best => {
+                        this.personalBests[best.game] = best.best_score;
+                    });
+                    
+                    document.getElementById('personal-coco-run').textContent = 
+                        (this.personalBests['coco-run'] || 0).toLocaleString();
+                    document.getElementById('personal-flappy-coco').textContent = 
+                        (this.personalBests['flappy-coco'] || 0).toLocaleString();
+                        
+                } catch (error) {
+                    console.error('Error fetching personal bests:', error);
+                    this.updateLocalPersonalBest();
+                }
+            }
+
+            updateLocalPersonalBest() {
+                const cocoRunScores = this.getLocalScores('coco-run');
+                const flappyCocoScores = this.getLocalScores('flappy-coco');
 
                 const cocoRunBest = cocoRunScores.length > 0 ? Math.max(...cocoRunScores.map(s => s.score)) : 0;
                 const flappyCocoBest = flappyCocoScores.length > 0 ? Math.max(...flappyCocoScores.map(s => s.score)) : 0;
@@ -646,27 +967,55 @@
                 document.getElementById('personal-flappy-coco').textContent = flappyCocoBest.toLocaleString();
             }
 
-            updateStats() {
-                const cocoRunScores = this.getScores('coco-run');
-                const flappyCocoScores = this.getScores('flappy-coco');
+            async updateStats() {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/stats`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    
+                    document.getElementById('total-players').textContent = 
+                        data.overall.total_players || 0;
+                    document.getElementById('total-games').textContent = 
+                        data.overall.total_games_played || 0;
+                        
+                } catch (error) {
+                    console.error('Error fetching stats:', error);
+                    this.updateLocalStats();
+                }
+            }
+
+            updateLocalStats() {
+                const cocoRunScores = this.getLocalScores('coco-run');
+                const flappyCocoScores = this.getLocalScores('flappy-coco');
                 
                 const totalGames = cocoRunScores.length + flappyCocoScores.length;
-                const uniquePlayers = new Set([...cocoRunScores.map(s => s.name), ...flappyCocoScores.map(s => s.name)]).size;
+                const uniquePlayers = new Set([
+                    ...cocoRunScores.map(s => s.username || s.name), 
+                    ...flappyCocoScores.map(s => s.username || s.name)
+                ]).size;
 
                 document.getElementById('total-players').textContent = uniquePlayers;
                 document.getElementById('total-games').textContent = totalGames;
             }
 
-            clearAllScores() {
-                if (confirm('Are you sure you want to clear all your scores? This action cannot be undone.')) {
+            async clearAllScores() {
+                if (confirm('Are you sure you want to clear all your LOCAL scores? This will not affect the global leaderboard.')) {
                     localStorage.removeItem('coco-run-leaderboard');
                     localStorage.removeItem('flappy-coco-leaderboard');
                     
-                    this.loadLeaderboard();
-                    this.updatePersonalBest();
-                    this.updateStats();
+                    await this.loadLeaderboard();
+                    await this.updatePersonalBest();
+                    await this.updateStats();
                     
-                    alert('All scores have been cleared!');
+                    if (window.twitterManager) {
+                        window.twitterManager.updateShareButtons();
+                    }
+                    
+                    alert('Local scores have been cleared!');
                 }
             }
         }
@@ -676,10 +1025,36 @@
             leaderboardManager.loadLeaderboard();
             leaderboardManager.updatePersonalBest();
             leaderboardManager.updateStats();
+            if (window.twitterManager) {
+                window.twitterManager.updateShareButtons();
+            }
         }
 
         function clearAllScores() {
             leaderboardManager.clearAllScores();
+        }
+
+        function connectTwitter() {
+            const username = document.getElementById('twitter-username').value.trim();
+            
+            if (window.twitterManager.connectedUsername) {
+                // Disconnect
+                window.twitterManager.disconnect();
+            } else {
+                // Connect
+                if (window.twitterManager.connect(username)) {
+                    // Successfully connected
+                }
+            }
+        }
+
+        function sharePersonalBest(game) {
+            const scoreElement = document.getElementById(`personal-${game}`);
+            const score = parseInt(scoreElement.textContent.replace(/,/g, ''));
+            
+            if (score > 0) {
+                window.twitterManager.shareScore(game, score);
+            }
         }
 
         // Add score function (called from games)
@@ -687,10 +1062,36 @@
             return leaderboardManager.saveScore(game, playerName, score);
         }
 
-        // Initialize leaderboard when page loads
+        // Enhanced score saving with Twitter username
+        function saveScoreWithTwitter(game, score) {
+            let playerName = 'Anonymous';
+            
+            // Use Twitter username if connected
+            if (window.twitterManager && window.twitterManager.connectedUsername) {
+                playerName = `@${window.twitterManager.connectedUsername}`;
+            } else {
+                // Prompt for name if no Twitter connected
+                playerName = prompt('Enter your name for the leaderboard:', 'Anonymous') || 'Anonymous';
+            }
+            
+            return leaderboardManager.saveScore(game, playerName, score);
+        }
+
+        // Initialize managers when page loads
         let leaderboardManager;
+        let twitterManager;
+        
         document.addEventListener('DOMContentLoaded', () => {
+            twitterManager = new TwitterManager();
             leaderboardManager = new LeaderboardManager();
+            
+            // Make twitterManager globally accessible
+            window.twitterManager = twitterManager;
+            
+            // Update share buttons after everything is loaded
+            setTimeout(() => {
+                twitterManager.updateShareButtons();
+            }, 100);
         });
 
         // Add some demo scores for testing (remove in production)
