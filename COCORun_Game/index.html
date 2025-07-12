@@ -146,11 +146,35 @@
         console.log("HTML script tag executing...");
         console.log("Canvas element exists:", document.getElementById('gameCanvas'));
         console.log("Document ready state:", document.readyState);
+        
+        // Wait for DOM to be ready, then initialize
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log("DOM loaded, calling initializeGame...");
+                setTimeout(() => {
+                    if (typeof initializeGame === 'function') {
+                        initializeGame();
+                    } else {
+                        console.error("initializeGame function not found!");
+                    }
+                }, 100);
+            });
+        } else {
+            console.log("DOM already loaded, calling initializeGame...");
+            setTimeout(() => {
+                if (typeof initializeGame === 'function') {
+                    initializeGame();
+                } else {
+                    console.error("initializeGame function not found!");
+                }
+            }, 100);
+        }
     </script>
     <script src="game.js"></script>
     <script>
         // Additional debug after game.js loads
         console.log("After game.js loaded, canvas:", document.getElementById('gameCanvas'));
+        console.log("initializeGame function available:", typeof initializeGame);
     </script>
 </body>
 </html>

@@ -1,48 +1,24 @@
 // --- Global Canvas and Context Variables ---
 let canvas, ctx;
 
-// --- Wait for DOM to be ready ---
-document.addEventListener('DOMContentLoaded', function() {
-    console.log("DOM loaded, initializing game...");
-    setTimeout(initializeGameAfterDOM, 100); // Add small delay for better compatibility
-});
-
-// Fallback if DOMContentLoaded already fired
-if (document.readyState === 'loading') {
-    // DOM is still loading, event listener will handle it
-} else {
-    // DOM is already loaded
-    console.log("DOM already loaded, initializing game immediately...");
-    setTimeout(initializeGameAfterDOM, 100); // Add small delay for better compatibility
-}
-
-// Additional fallback for web deployment
-window.addEventListener('load', function() {
-    console.log("Window fully loaded, ensuring game initialization...");
-    if (!canvas || !ctx) {
-        setTimeout(initializeGameAfterDOM, 200);
-    }
-});
-
-function initializeGameAfterDOM() {
-    // --- Get Canvas and Context ---
-    canvas = document.getElementById('gameCanvas');
-    ctx = canvas ? canvas.getContext('2d') : null; // Check canvas exists
-    console.log("game.js script executing...");
-    console.log("Canvas element:", canvas);
-    console.log("Canvas context:", ctx);
+// Simple initialization that waits for everything to be ready
+function initializeGame() {
+    console.log("Initializing game...");
     
+    // Get canvas and context
+    canvas = document.getElementById('gameCanvas');
     if (!canvas) {
         console.error("Canvas element not found!");
         return;
     }
     
+    ctx = canvas.getContext('2d');
     if (!ctx) {
         console.error("Canvas context not available!");
         return;
     }
     
-    // Continue with game initialization
+    console.log("Canvas and context ready, starting game initialization...");
     startGameInitialization();
 }
 
@@ -395,8 +371,8 @@ function isSolidTile(tileType) { return tileType === TILES.GRASS || tileType ===
 // --- End Tile Collision Helper ---
 
 // --- Initialization Function ---
-function initializeGame() {
-    console.log("Inside initializeGame()...");
+function completeInitialization() {
+    console.log("Inside completeInitialization()...");
     // Robust Image Check
     const requiredImages = ['p_idle', 'p_jump', 'p_fall', 'p_run1', 'p_run2', 'p_run3', 'p_run4', 'p_run5', 'gameOverBanner', 'startButton', 'tryAgainButton', 'sky', 'landscape', 'numbers', 'titleLogo', 'levelCompleteBanner', 'nextLevelButton']; // Added nextLevelButton
     let allLoadedAndValid = true; for (let name of requiredImages) { if (!images[name] || !(images[name].naturalWidth > 0 && images[name].naturalHeight > 0)) { console.error(`Initialization Error: Image "${name}" invalid!`); allLoadedAndValid = false; } } if (!allLoadedAndValid) { gameState = 'criticalError'; if(ctx){ ctx.fillStyle='red'; ctx.font='12px sans-serif'; ctx.textAlign='center'; ctx.fillText('ERROR: Invalid image assets. Check console.', canvas.width/2, canvas.height/2); } console.error("Initialization failed: Invalid image assets."); return; } console.log("All required image objects seem valid.");
