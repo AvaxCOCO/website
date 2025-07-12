@@ -19,7 +19,35 @@ function initializeGame() {
     }
     
     console.log("Canvas and context ready, starting game initialization...");
-    startGameInitialization();
+    
+    // Start loading images immediately
+    loadImages();
+}
+
+function loadImages() {
+    console.log("Starting image loading...");
+    
+    // Start loading all images
+    imagesToLoad.forEach(imgData => {
+        let img = new Image(); 
+        img.onload = imageLoaded;
+        img.onerror = () => { 
+            console.error(`!!! Failed to load image: ${imgData.name} from ${imgData.src} - Check path/filename !!!`); 
+            if (!imageLoadErrorOccurred) { 
+                imageLoadErrorOccurred = true; 
+            } 
+            images[imgData.name] = null; 
+        };
+        if (!imgData.src || typeof imgData.src !== 'string') { 
+            console.error(`Invalid image src definition for name: ${imgData.name}`); 
+            imageLoadErrorOccurred = true; 
+            images[imgData.name] = null; 
+        } else { 
+            console.log(`Loading image: ${imgData.name} from ${imgData.src}`);
+            img.src = imgData.src; 
+            images[imgData.name] = img; 
+        }
+    });
 }
 
 function startGameInitialization() {
@@ -646,29 +674,59 @@ function gameLoop() {
      } // End update playing state
 
      // --- Score Submission Function ---
-     function submitScore() {
+     async function submitScore() {
          if (typeof score !== 'number') {
              console.error("Invalid score type for submission:", score);
              return;
          }
          try {
-             // Save score to localStorage for local leaderboard
-             const key = 'coco-run-leaderboard';
-             let scores = localStorage.getItem(key);
-             scores = scores ? JSON.parse(scores) : [];
-             
-             const newScore = {
-                 score: score,
-                 level: currentLevelNumber,
-                 date: new Date().toLocaleDateString(),
-                 timestamp: Date.now()
-             };
-             
-             scores.push(newScore);
-             scores = scores.sort((a, b) => b.score - a.score).slice(0, 50); // Keep top 50
-             localStorage.setItem(key, JSON.stringify(scores));
-             
-             console.log(`Score ${score} saved locally for COCO Run (Level ${currentLevelNumber})`);
+             // Check if we're in the parent window (leaderboard system available)
+             if (window.parent && window.parent.leaderboardManager) {
+                 // Get player name - use Twitter handle if connected, otherwise prompt
+                 let playerName = 'Anonymous';
+                 if (window.parent.twitterManager && window.parent.twitterManager.connectedUsername) {
+                     playerName = window.parent.twitterManager.connectedUsername;
+                 } else {
+                     playerName = prompt('Enter your name for the leaderboard:', 'Anonymous') || 'Anonymous';
+                 }
+                 
+                 // Submit to the backend API via the leaderboard manager
+                 const result = await window.parent.leaderboardManager.submitScore(
+                     'coco-run', 
+                     playerName, 
+                     score, 
+                     currentLevelNumber, 
+                     Math.floor((LEVEL_TIME_LIMIT - levelTimer))
+                 );
+                 
+                 if (result && result.success) {
+                     console.log(`Score ${score} submitted successfully! Rank: ${result.rank}`);
+                     // Show rank notification
+                     if (result.rank <= 10) {
+                         alert(`🎉 Congratulations! You're ranked #${result.rank} on the leaderboard!`);
+                     }
+                 } else {
+                     console.log(`Score ${score} submitted via fallback system for COCO Run`);
+                 }
+             } else {
+                 // Fallback to local storage if leaderboard system not available
+                 const key = 'coco-run-leaderboard';
+                 let scores = localStorage.getItem(key);
+                 scores = scores ? JSON.parse(scores) : [];
+                 
+                 const newScore = {
+                     username: 'Anonymous',
+                     score: score,
+                     created_at: new Date().toLocaleDateString(),
+                     timestamp: Date.now()
+                 };
+                 
+                 scores.push(newScore);
+                 scores = scores.sort((a, b) => b.score - a.score).slice(0, 50); // Keep top 50
+                 localStorage.setItem(key, JSON.stringify(scores));
+                 
+                 console.log(`Score ${score} saved locally for COCO Run (Level ${currentLevelNumber})`);
+             }
          } catch (error) {
              console.error("Error during score submission:", error);
          }
