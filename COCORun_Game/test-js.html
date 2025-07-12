@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JS Test</title>
+</head>
+<body>
+    <canvas id="gameCanvas" width="480" height="640"></canvas>
+    <script src="game.js"></script>
+    <script>
+        console.log("Test script running...");
+        console.log("initializeGame function available:", typeof initializeGame);
+        console.log("startGameInitialization function available:", typeof startGameInitialization);
+        console.log("completeInitialization function available:", typeof completeInitialization);
+        
+        // Try to call initializeGame if it exists
+        if (typeof initializeGame === 'function') {
+            console.log("Calling initializeGame...");
+            initializeGame();
+        } else {
+            console.error("initializeGame function not found!");
+        }
+    </script>
+</body>
+</html>
