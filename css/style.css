@@ -420,6 +420,11 @@ button {
 .hero-coco-img {
     max-width: 100%;
     max-height: 500px;
+    width: auto;
+    height: auto;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
     animation: float 6s ease-in-out infinite;
 }
 
