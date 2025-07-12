@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asset Loading Test</title>
+</head>
+<body>
+    <h1>Asset Loading Test</h1>
+    <div id="results"></div>
+    
+    <script>
+        const results = document.getElementById('results');
+        
+        // Test different path approaches
+        const testPaths = [
+            'ASSETS/coco_idle.png',
+            './ASSETS/coco_idle.png',
+            '/COCORun_Game/ASSETS/coco_idle.png',
+            'https://www.avaxcoco.com/COCORun_Game/ASSETS/coco_idle.png'
+        ];
+        
+        console.log('Testing asset paths...');
+        console.log('Current location:', window.location.href);
+        console.log('Hostname:', window.location.hostname);
+        console.log('Protocol:', window.location.protocol);
+        
+        testPaths.forEach((path, index) => {
+            const img = new Image();
+            const div = document.createElement('div');
+            div.innerHTML = `<strong>Test ${index + 1}:</strong> ${path} - <span id="result${index}">Loading...</span>`;
+            results.appendChild(div);
+            
+            img.onload = () => {
+                document.getElementById(`result${index}`).innerHTML = '<span style="color: green;">SUCCESS</span>';
+                console.log(`SUCCESS: ${path}`);
+            };
+            
+            img.onerror = () => {
+                document.getElementById(`result${index}`).innerHTML = '<span style="color: red;">FAILED</span>';
+                console.log(`FAILED: ${path}`);
+            };
+            
+            console.log(`Testing: ${path}`);
+            img.src = path;
+        });
+    </script>
+</body>
+</html>
