@@ -514,6 +514,22 @@ section {
     color: var(--text-muted);
 }
 
+/* How to Buy Header Image */
+.how-to-buy-header-image {
+    margin-bottom: var(--spacing-lg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.header-img {
+    max-width: 400px;
+    max-height: 200px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 15px rgba(255, 20, 147, 0.4));
+    animation: float 6s ease-in-out infinite;
+}
+
 /* ===== Arena Launch Section ===== */
 .launch-section {
     background: linear-gradient(rgba(13, 2, 33, 0.9), rgba(13, 2, 33, 0.9)), url('../images/wenpresale.png');
