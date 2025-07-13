@@ -758,9 +758,9 @@
     </div>
 
     <!-- JavaScript Libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
     
     <!-- Custom JavaScript -->
     <script src="js/main.js"></script>
@@ -1314,15 +1314,11 @@
         }
 
         function connectX() {
-            const username = document.getElementById('x-username').value.trim();
-            
-            if (window.xManager.connectedUsername) {
-                // Disconnect
-                window.xManager.disconnect();
-            } else {
-                // Connect
-                if (window.xManager.connect(username)) {
-                    // Successfully connected
+            if (window.xOAuthManager) {
+                if (window.xOAuthManager.isAuthenticated) {
+                    window.xOAuthManager.logout();
+                } else {
+                    window.xOAuthManager.initiateOAuth();
                 }
             }
         }
