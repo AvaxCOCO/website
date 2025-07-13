@@ -73,14 +73,69 @@ export default async function handler(req, res) {
             RETURNING *;
         `);
         
+        // Create reset system tables
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS leaderboard_archive (
+                id SERIAL PRIMARY KEY,
+                game VARCHAR(50) NOT NULL,
+                username VARCHAR(100),
+                score INTEGER NOT NULL,
+                level_reached INTEGER DEFAULT 1,
+                play_time_seconds INTEGER DEFAULT 0,
+                player_name VARCHAR(100),
+                twitter_handle VARCHAR(50),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                archived_at TIMESTAMP NOT NULL,
+                reset_week INTEGER
+            );
+        `);
+
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS leaderboard_resets (
+                id SERIAL PRIMARY KEY,
+                reset_time TIMESTAMP NOT NULL,
+                scores_archived INTEGER DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        `);
+
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS leaderboard_seasons (
+                id SERIAL PRIMARY KEY,
+                season_number INTEGER UNIQUE NOT NULL,
+                start_date TIMESTAMP NOT NULL,
+                end_date TIMESTAMP,
+                total_players INTEGER DEFAULT 0,
+                total_games INTEGER DEFAULT 0,
+                coco_run_winner VARCHAR(100),
+                coco_run_high_score INTEGER,
+                flappy_coco_winner VARCHAR(100),
+                flappy_coco_high_score INTEGER,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        `);
+
+        // Create indexes for reset tables
+        await client.query(`
+            CREATE INDEX IF NOT EXISTS idx_archive_game ON leaderboard_archive(game);
+        `);
+        
+        await client.query(`
+            CREATE INDEX IF NOT EXISTS idx_archive_reset_week ON leaderboard_archive(reset_week);
+        `);
+        
+        await client.query(`
+            CREATE INDEX IF NOT EXISTS idx_archive_twitter ON leaderboard_archive(twitter_handle);
+        `);
+        
         // Check existing games
         const existingGames = await client.query('SELECT * FROM games ORDER BY name');
         
         console.log('✅ Database initialized successfully!');
         
         res.status(200).json({
-            message: 'Database initialized successfully',
-            tables_created: ['players', 'games', 'scores'],
+            message: 'Database and reset system initialized successfully',
+            tables_created: ['players', 'games', 'scores', 'leaderboard_archive', 'leaderboard_resets', 'leaderboard_seasons'],
             games: existingGames.rows,
             new_games_added: gameResult.rows.length
         });
