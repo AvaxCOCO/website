@@ -8,7 +8,7 @@ const pool = new Pool({
 
 const scoreSchema = Joi.object({
     game: Joi.string().valid('coco-run', 'flappy-coco').required(),
-    score: Joi.number().integer().min(0).max(1000000).required(),
+    score: Joi.number().integer().min(1).max(1000000).required(), // Changed min from 0 to 1
     level_reached: Joi.number().integer().min(1).max(100).default(1),
     play_time_seconds: Joi.number().integer().min(0).max(3600).default(0),
     username: Joi.string().min(1).max(50).required(),
@@ -70,11 +70,47 @@ export default async function handler(req, res) {
 
         const gameId = gameResult.rows[0].id;
 
-        // Insert score
-        const scoreResult = await client.query(
-            'INSERT INTO scores (player_id, game_id, score, level_reached, play_time_seconds) VALUES ($1, $2, $3, $4, $5) RETURNING id, created_at',
-            [playerId, gameId, score, level_reached, play_time_seconds]
+        // Check if player already has a score for this game
+        const existingScoreResult = await client.query(
+            'SELECT id, score FROM scores WHERE player_id = $1 AND game_id = $2',
+            [playerId, gameId]
         );
+
+        let scoreResult;
+        let isNewRecord = false;
+
+        if (existingScoreResult.rows.length > 0) {
+            const existingScore = existingScoreResult.rows[0];
+            
+            // Only update if new score is higher
+            if (score > existingScore.score) {
+                scoreResult = await client.query(
+                    'UPDATE scores SET score = $1, level_reached = $2, play_time_seconds = $3, created_at = CURRENT_TIMESTAMP WHERE id = $4 RETURNING id, created_at',
+                    [score, level_reached, play_time_seconds, existingScore.id]
+                );
+                isNewRecord = true;
+            } else {
+                // New score is not higher, don't update but still return success
+                await client.query('COMMIT');
+                return res.status(200).json({
+                    message: 'Score not updated - existing score is higher',
+                    score: {
+                        game,
+                        score: existingScore.score,
+                        username,
+                        twitter_handle,
+                        isPersonalBest: false
+                    }
+                });
+            }
+        } else {
+            // Insert new score
+            scoreResult = await client.query(
+                'INSERT INTO scores (player_id, game_id, score, level_reached, play_time_seconds) VALUES ($1, $2, $3, $4, $5) RETURNING id, created_at',
+                [playerId, gameId, score, level_reached, play_time_seconds]
+            );
+            isNewRecord = true;
+        }
 
         const newScore = scoreResult.rows[0];
 
