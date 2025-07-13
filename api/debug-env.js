@@ -2,9 +2,10 @@ export default async function handler(req, res) {
     // Only allow this in development or for debugging
     const isDev = process.env.NODE_ENV !== 'production';
     
-    if (!isDev) {
-        return res.status(403).json({ error: 'Debug endpoint disabled in production' });
-    }
+    // Temporarily allow in production for debugging
+    // if (!isDev) {
+    //     return res.status(403).json({ error: 'Debug endpoint disabled in production' });
+    // }
     
     try {
         const envCheck = {
