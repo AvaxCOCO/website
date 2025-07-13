@@ -949,18 +949,25 @@ section {
     font-weight: 500;
 }
 
+.community-cta-section {
+    margin-top: var(--spacing-2xl);
+    text-align: center;
+}
+
 .community-cta {
     font-size: var(--font-size-2xl);
     font-weight: 700;
     color: var(--primary-light);
     text-align: center;
-    margin-top: var(--spacing-2xl);
+    margin: 0 auto;
     padding: var(--spacing-xl);
     background: rgba(255, 20, 147, 0.15);
     border-radius: var(--border-radius-lg);
     border: 2px solid rgba(255, 20, 147, 0.5);
     text-shadow: 0 0 10px rgba(255, 20, 147, 0.5);
     box-shadow: 0 0 20px rgba(255, 20, 147, 0.3);
+    max-width: 800px;
+    display: inline-block;
 }
 
 .social-links {
