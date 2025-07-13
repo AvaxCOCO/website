@@ -439,6 +439,78 @@
             font-size: 0.9rem;
         }
 
+        /* Reset Timer Styles */
+        .reset-timer {
+            background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem auto;
+            max-width: 600px;
+            border: 1px solid rgba(255, 107, 157, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .timer-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #ff6b9d;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .timer-header i {
+            margin-right: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .countdown {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .time-unit {
+            text-align: center;
+            background: rgba(255, 107, 157, 0.1);
+            border-radius: 10px;
+            padding: 1rem;
+            min-width: 80px;
+            border: 1px solid rgba(255, 107, 157, 0.2);
+        }
+
+        .time-value {
+            display: block;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ff6b9d;
+            text-shadow: 0 0 10px rgba(255, 107, 157, 0.5);
+            margin-bottom: 0.25rem;
+        }
+
+        .time-label {
+            display: block;
+            font-size: 0.8rem;
+            color: #8b949e;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .reset-warning {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 1rem;
+            text-align: center;
+            color: #ffc107;
+            font-size: 0.9rem;
+        }
+
+        .reset-warning i {
+            margin-right: 0.5rem;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .leaderboard-entry {
@@ -514,12 +586,39 @@
         </nav>
     </header>
 
-    <!-- Leaderboard Hero Section -->
+            <!-- Leaderboard Hero Section -->
     <section class="leaderboard-hero">
         <div class="container">
             <div class="leaderboard-hero-content">
                 <h1>$COCO Arcade Leaderboard</h1>
                 <p>Compete for the top spot and show off your gaming skills!</p>
+                
+                <!-- Reset Timer -->
+                <div class="reset-timer" id="reset-timer">
+                    <div class="timer-header">
+                        <i class="fas fa-clock"></i>
+                        <span>Next Reset: Friday 10:00 PM CST</span>
+                    </div>
+                    <div class="countdown" id="countdown">
+                        <div class="time-unit">
+                            <span class="time-value" id="days">0</span>
+                            <span class="time-label">Days</span>
+                        </div>
+                        <div class="time-unit">
+                            <span class="time-value" id="hours">0</span>
+                            <span class="time-label">Hours</span>
+                        </div>
+                        <div class="time-unit">
+                            <span class="time-value" id="minutes">0</span>
+                            <span class="time-label">Minutes</span>
+                        </div>
+                        <div class="time-unit">
+                            <span class="time-value" id="seconds">0</span>
+                            <span class="time-label">Seconds</span>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="leaderboard-stats">
                     <div class="stat">
                         <span class="stat-number" id="total-players">0</span>
@@ -1254,16 +1353,172 @@
             return leaderboardManager.saveScore(game, playerName, score);
         }
 
+        // Reset Timer Manager
+        class ResetTimerManager {
+            constructor() {
+                this.timerInterval = null;
+                this.nextResetTime = null;
+                this.init();
+            }
+
+            async init() {
+                await this.fetchResetTimer();
+                this.startCountdown();
+            }
+
+            async fetchResetTimer() {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/reset-timer`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    this.nextResetTime = new Date(data.next_reset);
+                    
+                    console.log('Next reset time:', this.nextResetTime);
+                    
+                } catch (error) {
+                    console.error('Error fetching reset timer:', error);
+                    // Fallback calculation
+                    this.calculateFallbackResetTime();
+                }
+            }
+
+            calculateFallbackResetTime() {
+                const now = new Date();
+                const cstOffset = -6; // CST is UTC-6
+                const nowCST = new Date(now.getTime() + (cstOffset * 60 * 60 * 1000));
+                
+                // Find next Friday
+                const daysUntilFriday = (5 - nowCST.getDay() + 7) % 7;
+                const nextFriday = new Date(nowCST);
+                nextFriday.setDate(nowCST.getDate() + (daysUntilFriday === 0 ? 7 : daysUntilFriday));
+                
+                // Set to 10pm CST
+                nextFriday.setHours(22, 0, 0, 0);
+                
+                // If it's Friday and past 10pm, get next Friday
+                if (nowCST.getDay() === 5 && nowCST.getHours() >= 22) {
+                    nextFriday.setDate(nextFriday.getDate() + 7);
+                }
+                
+                // Convert back to UTC
+                this.nextResetTime = new Date(nextFriday.getTime() - (cstOffset * 60 * 60 * 1000));
+            }
+
+            startCountdown() {
+                this.updateCountdown();
+                
+                // Update every second
+                this.timerInterval = setInterval(() => {
+                    this.updateCountdown();
+                }, 1000);
+            }
+
+            updateCountdown() {
+                if (!this.nextResetTime) return;
+
+                const now = new Date();
+                const timeUntilReset = this.nextResetTime.getTime() - now.getTime();
+
+                if (timeUntilReset <= 0) {
+                    // Reset has occurred, refresh the page or show notification
+                    this.handleResetOccurred();
+                    return;
+                }
+
+                // Calculate time components
+                const days = Math.floor(timeUntilReset / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeUntilReset % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeUntilReset % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeUntilReset % (1000 * 60)) / 1000);
+
+                // Update display
+                document.getElementById('days').textContent = days.toString().padStart(2, '0');
+                document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+                document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+                document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+
+                // Show warning if less than 24 hours
+                this.updateWarning(timeUntilReset);
+            }
+
+            updateWarning(timeUntilReset) {
+                const resetTimer = document.getElementById('reset-timer');
+                let warningElement = resetTimer.querySelector('.reset-warning');
+
+                if (timeUntilReset <= 24 * 60 * 60 * 1000) { // Less than 24 hours
+                    if (!warningElement) {
+                        warningElement = document.createElement('div');
+                        warningElement.className = 'reset-warning';
+                        resetTimer.appendChild(warningElement);
+                    }
+                    
+                    const hours = Math.floor(timeUntilReset / (1000 * 60 * 60));
+                    warningElement.innerHTML = `
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Leaderboard resets in ${hours} hours! Get your high scores in now!
+                    `;
+                } else if (warningElement) {
+                    warningElement.remove();
+                }
+            }
+
+            handleResetOccurred() {
+                clearInterval(this.timerInterval);
+                
+                // Show notification
+                const resetTimer = document.getElementById('reset-timer');
+                resetTimer.innerHTML = `
+                    <div class="timer-header">
+                        <i class="fas fa-sync-alt"></i>
+                        <span>Leaderboard Reset Complete!</span>
+                    </div>
+                    <div style="text-align: center; padding: 2rem;">
+                        <p style="color: #22c55e; font-size: 1.1rem; margin-bottom: 1rem;">
+                            <i class="fas fa-check-circle"></i>
+                            The leaderboard has been reset for a new week of competition!
+                        </p>
+                        <button class="btn btn-primary" onclick="location.reload()">
+                            <i class="fas fa-refresh"></i> Refresh Page
+                        </button>
+                    </div>
+                `;
+
+                // Refresh leaderboard data
+                if (window.leaderboardManager) {
+                    setTimeout(() => {
+                        window.leaderboardManager.loadLeaderboard();
+                        window.leaderboardManager.updatePersonalBest();
+                        window.leaderboardManager.updateStats();
+                    }, 2000);
+                }
+            }
+
+            stop() {
+                if (this.timerInterval) {
+                    clearInterval(this.timerInterval);
+                    this.timerInterval = null;
+                }
+            }
+        }
+
         // Initialize managers when page loads
         let leaderboardManager;
         let xManager;
+        let resetTimerManager;
         
         document.addEventListener('DOMContentLoaded', () => {
             xManager = new XManager();
             leaderboardManager = new LeaderboardManager();
+            resetTimerManager = new ResetTimerManager();
             
-            // Make xManager globally accessible
+            // Make managers globally accessible
             window.xManager = xManager;
+            window.leaderboardManager = leaderboardManager;
+            window.resetTimerManager = resetTimerManager;
             
             // Update share buttons after everything is loaded
             setTimeout(() => {
