@@ -21,50 +21,73 @@ function initGSAPAnimations() {
         gsap.registerPlugin(ScrollTrigger);
     }
     
-    // Hero section animations
-    const heroTimeline = gsap.timeline();
+    // Hero section animations - only if hero elements exist
+    const heroTextH1 = document.querySelector('.hero-text h1');
+    const heroTextH2 = document.querySelector('.hero-text h2');
+    const heroTextP = document.querySelector('.hero-text p');
+    const heroButtons = document.querySelector('.hero-buttons .btn');
+    const heroCocoImg = document.querySelector('.hero-coco-img');
     
-    heroTimeline
-        .from('.hero-text h1', {
-            duration: 1,
-            y: 50,
-            opacity: 0,
-            ease: 'power3.out'
-        })
-        .from('.hero-text h2', {
-            duration: 0.8,
-            y: 30,
-            opacity: 0,
-            ease: 'power3.out'
-        }, '-=0.5')
-        .from('.hero-text p', {
-            duration: 0.8,
-            y: 30,
-            opacity: 0,
-            ease: 'power3.out'
-        }, '-=0.3')
-        .from('.hero-buttons .btn', {
-            duration: 0.6,
-            y: 20,
-            opacity: 0,
-            stagger: 0.2,
-            ease: 'power3.out'
-        }, '-=0.3')
-        .from('.hero-coco-img', {
-            duration: 1.2,
-            scale: 0.8,
-            opacity: 0,
-            ease: 'elastic.out(1, 0.5)'
-        }, '-=0.8');
+    if (heroTextH1 || heroTextH2 || heroTextP || heroButtons || heroCocoImg) {
+        const heroTimeline = gsap.timeline();
+        
+        if (heroTextH1) {
+            heroTimeline.from('.hero-text h1', {
+                duration: 1,
+                y: 50,
+                opacity: 0,
+                ease: 'power3.out'
+            });
+        }
+        
+        if (heroTextH2) {
+            heroTimeline.from('.hero-text h2', {
+                duration: 0.8,
+                y: 30,
+                opacity: 0,
+                ease: 'power3.out'
+            }, '-=0.5');
+        }
+        
+        if (heroTextP) {
+            heroTimeline.from('.hero-text p', {
+                duration: 0.8,
+                y: 30,
+                opacity: 0,
+                ease: 'power3.out'
+            }, '-=0.3');
+        }
+        
+        if (heroButtons) {
+            heroTimeline.from('.hero-buttons .btn', {
+                duration: 0.6,
+                y: 20,
+                opacity: 0,
+                stagger: 0.2,
+                ease: 'power3.out'
+            }, '-=0.3');
+        }
+        
+        if (heroCocoImg) {
+            heroTimeline.from('.hero-coco-img', {
+                duration: 1.2,
+                scale: 0.8,
+                opacity: 0,
+                ease: 'elastic.out(1, 0.5)'
+            }, '-=0.8');
+        }
+    }
     
-    // Floating COCO animation
-    gsap.to('.hero-coco-img', {
-        y: -20,
-        duration: 3,
-        ease: 'power1.inOut',
-        yoyo: true,
-        repeat: -1
-    });
+    // Floating COCO animation - only if element exists
+    if (document.querySelector('.hero-coco-img')) {
+        gsap.to('.hero-coco-img', {
+            y: -20,
+            duration: 3,
+            ease: 'power1.inOut',
+            yoyo: true,
+            repeat: -1
+        });
+    }
     
     // Section reveal animations
     gsap.utils.toArray('section').forEach((section, index) => {
@@ -100,34 +123,48 @@ function initGSAPAnimations() {
         });
     });
     
-    // Launch section animations
-    const launchTl = gsap.timeline({
-        scrollTrigger: {
-            trigger: '.launch-section',
-            start: 'top 70%',
-            toggleActions: 'play none none reverse'
+    // Launch section animations - only if launch section exists
+    const launchSection = document.querySelector('.launch-section');
+    if (launchSection) {
+        const launchTl = gsap.timeline({
+            scrollTrigger: {
+                trigger: '.launch-section',
+                start: 'top 70%',
+                toggleActions: 'play none none reverse'
+            }
+        });
+        
+        const launchInfo = document.querySelector('.launch-info');
+        const launchAction = document.querySelector('.launch-action');
+        const launchImg = document.querySelector('.launch-img');
+        
+        if (launchInfo) {
+            launchTl.from('.launch-info', {
+                duration: 0.8,
+                x: -50,
+                opacity: 0,
+                ease: 'power3.out'
+            });
         }
-    });
-    
-    launchTl
-        .from('.launch-info', {
-            duration: 0.8,
-            x: -50,
-            opacity: 0,
-            ease: 'power3.out'
-        })
-        .from('.launch-action', {
-            duration: 0.8,
-            x: 50,
-            opacity: 0,
-            ease: 'power3.out'
-        }, '-=0.4')
-        .from('.launch-img', {
-            duration: 1,
-            scale: 0.8,
-            opacity: 0,
-            ease: 'elastic.out(1, 0.5)'
-        }, '-=0.4');
+        
+        if (launchAction) {
+            launchTl.from('.launch-action', {
+                duration: 0.8,
+                x: 50,
+                opacity: 0,
+                ease: 'power3.out'
+            }, '-=0.4');
+        }
+        
+        if (launchImg) {
+            launchTl.from('.launch-img', {
+                duration: 1,
+                scale: 0.8,
+                opacity: 0,
+                ease: 'elastic.out(1, 0.5)'
+            }, '-=0.4');
+        }
+    }
     
     // Button hover animations
     gsap.utils.toArray('.btn').forEach(button => {
