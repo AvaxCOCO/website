@@ -659,56 +659,91 @@ function gameLoop() {
              console.error("Invalid score type for submission:", score);
              return;
          }
+         
          try {
-             // Check if we're in the parent window (leaderboard system available)
-             if (window.parent && window.parent.leaderboardManager) {
-                 // Get player name - use Twitter handle if connected, otherwise prompt
-                 let playerName = 'Anonymous';
-                 if (window.parent.twitterManager && window.parent.twitterManager.connectedUsername) {
-                     playerName = window.parent.twitterManager.connectedUsername;
-                 } else {
-                     playerName = prompt('Enter your name for the leaderboard:', 'Anonymous') || 'Anonymous';
-                 }
-                 
-                 // Submit to the backend API via the leaderboard manager
-                 const result = await window.parent.leaderboardManager.submitScore(
-                     'coco-run', 
-                     playerName, 
-                     score, 
-                     currentLevelNumber, 
-                     Math.floor((LEVEL_TIME_LIMIT - levelTimer))
-                 );
-                 
-                 if (result && result.success) {
-                     console.log(`Score ${score} submitted successfully! Rank: ${result.rank}`);
-                     // Show rank notification
-                     if (result.rank <= 10) {
-                         alert(`🎉 Congratulations! You're ranked #${result.rank} on the leaderboard!`);
-                     }
-                 } else {
-                     console.log(`Score ${score} submitted via fallback system for COCO Run`);
-                 }
-             } else {
-                 // Fallback to local storage if leaderboard system not available
-                 const key = 'coco-run-leaderboard';
-                 let scores = localStorage.getItem(key);
-                 scores = scores ? JSON.parse(scores) : [];
-                 
-                 const newScore = {
-                     username: 'Anonymous',
-                     score: score,
-                     created_at: new Date().toLocaleDateString(),
-                     timestamp: Date.now()
-                 };
-                 
-                 scores.push(newScore);
-                 scores = scores.sort((a, b) => b.score - a.score).slice(0, 50); // Keep top 50
-                 localStorage.setItem(key, JSON.stringify(scores));
-                 
-                 console.log(`Score ${score} saved locally for COCO Run (Level ${currentLevelNumber})`);
-             }
+             // Save score to localStorage for local leaderboard (backup)
+             const key = 'coco-run-leaderboard';
+             let scores = localStorage.getItem(key);
+             scores = scores ? JSON.parse(scores) : [];
+             
+             const newScore = {
+                 score: score,
+                 level: currentLevelNumber,
+                 date: new Date().toLocaleDateString(),
+                 timestamp: Date.now()
+             };
+             
+             scores.push(newScore);
+             scores = scores.sort((a, b) => b.score - a.score).slice(0, 50); // Keep top 50
+             localStorage.setItem(key, JSON.stringify(scores));
+             
+             console.log(`Score ${score} saved locally for COCO Run (Level ${currentLevelNumber})`);
+             
+             // Submit to database with X profile integration
+             submitToDatabase();
+             
          } catch (error) {
              console.error("Error during score submission:", error);
+         }
+     }
+     
+     // --- Database Submission Function ---
+     async function submitToDatabase() {
+         try {
+             // Get X profile data if available
+             const xProfile = JSON.parse(localStorage.getItem('xProfile') || '{}');
+             
+             // Generate username - use X username or fallback
+             let username = 'Anonymous';
+             let twitterHandle = null;
+             
+             if (xProfile && xProfile.username) {
+                 username = xProfile.username;
+                 twitterHandle = xProfile.username;
+                 console.log(`Submitting score for X user: @${username}`);
+             } else {
+                 // Generate anonymous username with score and level
+                 username = `Runner_${score}_L${currentLevelNumber}_${Date.now().toString().slice(-4)}`;
+                 console.log(`Submitting score for anonymous user: ${username}`);
+             }
+             
+             const scoreData = {
+                 game: 'coco-run',
+                 score: score,
+                 level_reached: currentLevelNumber,
+                 play_time_seconds: Math.floor(LEVEL_TIME_LIMIT - levelTimer) || 0,
+                 username: username,
+                 twitter_handle: twitterHandle
+             };
+             
+             console.log('Submitting score to database:', scoreData);
+             
+             const response = await fetch('/api/score', {
+                 method: 'POST',
+                 headers: {
+                     'Content-Type': 'application/json',
+                 },
+                 body: JSON.stringify(scoreData)
+             });
+             
+             if (response.ok) {
+                 const result = await response.json();
+                 console.log('✅ Score submitted successfully!', result);
+                 console.log(`🏆 Your rank: #${result.score.rank}`);
+                 
+                 // Show success message to user
+                 if (result.score.rank <= 10) {
+                     console.log(`🎉 TOP 10! You're rank #${result.score.rank}!`);
+                 }
+             } else {
+                 const error = await response.json();
+                 console.error('❌ Failed to submit score:', error);
+                 console.log('💾 Score saved locally only');
+             }
+             
+         } catch (error) {
+             console.error('❌ Error submitting to database:', error);
+             console.log('💾 Score saved locally only');
          }
      }
      // --- End Score Submission Function ---

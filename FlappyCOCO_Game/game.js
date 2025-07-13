@@ -58,6 +58,7 @@ let groundImageWidth = 0, obstacleWidth = 0, obstacleNaturalHeight = 0;
 let startButtonArea = null, tryAgainButtonArea = null;
 let gameOverBannerPos = { x:0, y:0, w:0, h:0 }; 
 let gameOverScorePos = { x:0, y:0 };
+let gameStartTime = 0;
 
 // --- Image Loading ---
 let images = {};
@@ -173,7 +174,7 @@ function initializeGame() {
 function handleInput(event) {
     const rect = canvas.getBoundingClientRect(); const clickX = event.clientX - rect.left; const clickY = event.clientY - rect.top;
     if (gameState === 'playing') { playerVy = flapStrength; }
-    else if (gameState === 'start' && startButtonArea) { if (checkCollision({x: clickX, y: clickY, width:1, height:1}, startButtonArea)) { obstacles = []; playerY = canvas.height / 2.5; playerVy = flapStrength; score = 0; frame = 0; gameState = 'playing'; if (!canvas.gameLoopRunning) { gameLoop(); canvas.gameLoopRunning = true;} } }
+    else if (gameState === 'start' && startButtonArea) { if (checkCollision({x: clickX, y: clickY, width:1, height:1}, startButtonArea)) { obstacles = []; playerY = canvas.height / 2.5; playerVy = flapStrength; score = 0; frame = 0; gameStartTime = Date.now(); gameState = 'playing'; if (!canvas.gameLoopRunning) { gameLoop(); canvas.gameLoopRunning = true;} } }
     else if (gameState === 'gameOver' && tryAgainButtonArea) { if (checkCollision({x: clickX, y: clickY, width:1, height:1}, tryAgainButtonArea)) { obstacles = []; playerY = canvas.height / 2.5; playerVy = 0; score = 0; frame = 0; gameState = 'start'; if (!canvas.gameLoopRunning) { gameLoop(); canvas.gameLoopRunning = true;} } }
 }
 
@@ -266,7 +267,7 @@ function gameLoop(currentTime) {
          }
          
          try {
-             // Save score to localStorage for local leaderboard
+             // Save score to localStorage for local leaderboard (backup)
              const key = 'flappy-coco-leaderboard';
              let scores = localStorage.getItem(key);
              scores = scores ? JSON.parse(scores) : [];
@@ -282,8 +283,72 @@ function gameLoop(currentTime) {
              localStorage.setItem(key, JSON.stringify(scores));
              
              console.log(`Score ${score} saved locally for Flappy COCO`);
+             
+             // Submit to database with X profile integration
+             submitToDatabase();
+             
          } catch (error) {
              console.error("Error during score submission:", error);
+         }
+     }
+     
+     // --- Database Submission Function ---
+     async function submitToDatabase() {
+         try {
+             // Get X profile data if available
+             const xProfile = JSON.parse(localStorage.getItem('xProfile') || '{}');
+             
+             // Generate username - use X username or fallback
+             let username = 'Anonymous';
+             let twitterHandle = null;
+             
+             if (xProfile && xProfile.username) {
+                 username = xProfile.username;
+                 twitterHandle = xProfile.username;
+                 console.log(`Submitting score for X user: @${username}`);
+             } else {
+                 // Generate anonymous username with score
+                 username = `Player_${score}_${Date.now().toString().slice(-4)}`;
+                 console.log(`Submitting score for anonymous user: ${username}`);
+             }
+             
+             const scoreData = {
+                 game: 'flappy-coco',
+                 score: score,
+                 level_reached: 1, // Flappy COCO doesn't have levels
+                 play_time_seconds: Math.floor((Date.now() - gameStartTime) / 1000) || 0,
+                 username: username,
+                 twitter_handle: twitterHandle
+             };
+             
+             console.log('Submitting score to database:', scoreData);
+             
+             const response = await fetch('/api/score', {
+                 method: 'POST',
+                 headers: {
+                     'Content-Type': 'application/json',
+                 },
+                 body: JSON.stringify(scoreData)
+             });
+             
+             if (response.ok) {
+                 const result = await response.json();
+                 console.log('✅ Score submitted successfully!', result);
+                 console.log(`🏆 Your rank: #${result.score.rank}`);
+                 
+                 // Show success message to user
+                 if (result.score.rank <= 10) {
+                     console.log(`🎉 TOP 10! You're rank #${result.score.rank}!`);
+                 }
+             } else {
+                 const error = await response.json();
+                 console.error('❌ Failed to submit score:', error);
+                 console.log('💾 Score saved locally only');
+             }
+             
+         } catch (error) {
+             console.error('❌ Error submitting to database:', error);
+             console.log('💾 Score saved locally only');
          }
      }
      // --- End Score Submission Function ---
