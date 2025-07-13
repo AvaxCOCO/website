@@ -296,7 +296,7 @@ function gameLoop(currentTime) {
      async function submitToDatabase() {
          try {
              // Get X profile data if available
-             const xProfile = JSON.parse(localStorage.getItem('xProfile') || '{}');
+             const xProfile = JSON.parse(localStorage.getItem('x-profile') || '{}');
              
              // Generate username - use X username or fallback
              let username = 'Anonymous';
@@ -310,6 +310,7 @@ function gameLoop(currentTime) {
                  // Generate anonymous username with score
                  username = `Player_${score}_${Date.now().toString().slice(-4)}`;
                  console.log(`Submitting score for anonymous user: ${username}`);
+                 console.log(`💡 Tip: Connect your X profile on the leaderboard page to show your @username instead!`);
              }
              
              const scoreData = {
