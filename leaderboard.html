@@ -667,9 +667,16 @@
 
     <script>
         // API Configuration
-        const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+        const isLocalhost = window.location.hostname === 'localhost' || 
+                           window.location.hostname === '127.0.0.1' ||
+                           window.location.hostname === '0.0.0.0';
+        
+        const API_BASE_URL = isLocalhost 
             ? 'http://localhost:3001/api' 
             : `${window.location.protocol}//${window.location.host}/api`;
+        
+        console.log('API_BASE_URL:', API_BASE_URL);
+        console.log('Current hostname:', window.location.hostname);
 
         // X (Twitter) Integration Manager with API Support
         class XManager {
