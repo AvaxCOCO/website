@@ -28,10 +28,14 @@ export default async function handler(req, res) {
                 p.username,
                 p.twitter_handle,
                 s.created_at,
+                au.display_name,
+                au.profile_image_url,
+                au.verified,
                 ROW_NUMBER() OVER (ORDER BY s.score DESC, s.created_at ASC) as rank
             FROM scores s
             JOIN games g ON s.game_id = g.id
             JOIN players p ON s.player_id = p.id
+            LEFT JOIN authenticated_users au ON p.twitter_handle = au.username
             WHERE g.name = $1 
             ORDER BY s.score DESC, s.created_at ASC 
             LIMIT $2

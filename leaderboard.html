@@ -643,15 +643,17 @@
 
             <!-- X Integration Section -->
             <div class="x-section" id="x-section">
-                <h3><i class="fab fa-x-twitter"></i> Connect to X to Share High Scores</h3>
+                <h3><i class="fab fa-x-twitter"></i> Login with X to Share High Scores</h3>
                 <div class="x-connect">
-                    <input type="text" class="x-input" id="x-username" placeholder="@username" maxlength="15">
                     <button class="x-btn" id="connect-x-btn" onclick="connectX()">
-                        <i class="fab fa-x-twitter"></i> Connect
+                        <i class="fab fa-x-twitter"></i> Login with X
                     </button>
                 </div>
                 <div class="x-status disconnected" id="x-status">
                     <i class="fas fa-times-circle"></i> Not connected to X
+                </div>
+                <div class="x-info" style="text-align: center; margin-top: 1rem; font-size: 0.9rem; color: #8b949e;">
+                    <i class="fas fa-shield-alt"></i> Secure OAuth authentication - only you can use your account
                 </div>
             </div>
 
@@ -764,6 +766,7 @@
     <script src="js/main.js"></script>
     <script src="js/animations.js"></script>
     <script src="js/particles-config.js"></script>
+    <script src="js/x-oauth.js"></script>
 
     <script>
         // API Configuration
