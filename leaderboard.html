@@ -1010,15 +1010,45 @@
                     
                     const userHighlight = isCurrentUser ? ' style="background: rgba(255, 107, 157, 0.1); border-left: 3px solid #ff6b9d;"' : '';
 
+                    // Get profile picture - try multiple sources
+                    let profilePicture = null;
+                    
+                    // First, try to get from stored X profile data
+                    if (score.twitter_handle && window.xManager?.connectedUsername === score.twitter_handle) {
+                        const userProfile = window.xManager.getUserProfile();
+                        if (userProfile && userProfile.profile_image_url) {
+                            profilePicture = userProfile.profile_image_url;
+                        }
+                    }
+                    
+                    // If no profile picture found, try to fetch it
+                    if (!profilePicture && score.twitter_handle && score.twitter_handle !== 'undefined' && score.twitter_handle !== 'null') {
+                        // We'll fetch this asynchronously and update the display
+                        this.fetchProfilePicture(score.twitter_handle, rank);
+                    }
+
+                    // Create avatar HTML
+                    const avatarHtml = profilePicture 
+                        ? `<img src="${profilePicture}" alt="${displayName}" class="player-avatar" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">`
+                        : '';
+                    
+                    // Fallback avatar (colored circle with first letter or rank number)
+                    const fallbackLetter = displayName.charAt(0).toUpperCase();
+                    const fallbackAvatar = `<div class="player-avatar-fallback" style="display: ${profilePicture ? 'none' : 'flex'}; width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(45deg, #ff6b9d, #ff8fab); color: white; align-items: center; justify-content: center; font-weight: bold; margin-right: 1rem; border: 2px solid rgba(255, 107, 157, 0.3);">${fallbackLetter}</div>`;
+
                     html += `
                         <div class="leaderboard-entry"${userHighlight}>
                             <div class="rank ${rankClass}">
                                 ${crownIcon}
                                 ${rank}
                             </div>
-                            <div class="player-info">
-                                <div class="player-name">${displayName}${isCurrentUser ? ' <i class="fas fa-user" style="color: #ff6b9d; font-size: 0.8rem;"></i>' : ''}</div>
-                                <div class="player-date">${scoreDate}</div>
+                            <div class="player-info-with-avatar">
+                                ${avatarHtml}
+                                ${fallbackAvatar}
+                                <div class="player-details">
+                                    <div class="player-name">${displayName}${isCurrentUser ? ' <i class="fas fa-user" style="color: #ff6b9d; font-size: 0.8rem;"></i>' : ''}</div>
+                                    <div class="player-date">${scoreDate}</div>
+                                </div>
                             </div>
                             <div class="score-badge">
                                 <div class="score">${score.score.toLocaleString()}</div>
@@ -1106,6 +1136,47 @@
 
                 document.getElementById('total-players').textContent = uniquePlayers;
                 document.getElementById('total-games').textContent = totalGames;
+            }
+
+            async fetchProfilePicture(username, rank) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/x/user/${username}`);
+                    
+                    if (response.ok) {
+                        const userData = await response.json();
+                        if (userData.profile_image_url) {
+                            // Find the leaderboard entry for this user and update the avatar
+                            const leaderboardEntries = document.querySelectorAll('.leaderboard-entry');
+                            leaderboardEntries.forEach(entry => {
+                                const rankElement = entry.querySelector('.rank');
+                                if (rankElement && rankElement.textContent.trim() == rank) {
+                                    const fallbackAvatar = entry.querySelector('.player-avatar-fallback');
+                                    if (fallbackAvatar) {
+                                        // Create and insert the profile image
+                                        const profileImg = document.createElement('img');
+                                        profileImg.src = userData.profile_image_url;
+                                        profileImg.alt = `@${username}`;
+                                        profileImg.className = 'player-avatar';
+                                        profileImg.style.display = 'block';
+                                        
+                                        // Handle image load error
+                                        profileImg.onerror = function() {
+                                            this.style.display = 'none';
+                                            fallbackAvatar.style.display = 'flex';
+                                        };
+                                        
+                                        // Insert before fallback and hide fallback
+                                        fallbackAvatar.parentNode.insertBefore(profileImg, fallbackAvatar);
+                                        fallbackAvatar.style.display = 'none';
+                                    }
+                                }
+                            });
+                        }
+                    }
+                } catch (error) {
+                    console.error(`Error fetching profile picture for @${username}:`, error);
+                    // Fallback avatar will remain visible
+                }
             }
 
             async clearAllScores() {
