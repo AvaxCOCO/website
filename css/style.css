@@ -912,52 +912,84 @@ section {
 
 .social-links {
     display: flex;
-    flex-direction: column;
-    gap: var(--spacing-md);
-    max-width: 200px;
+    flex-direction: row;
+    gap: var(--spacing-lg);
+    justify-content: center;
+    flex-wrap: wrap;
     margin: 0 auto;
 }
 
 .social-link {
-    width: 100%;
-    min-width: 180px;
-    padding: var(--spacing-lg);
+    min-width: 160px;
+    padding: var(--spacing-lg) var(--spacing-md);
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: var(--spacing-sm);
+    justify-content: center;
     background: rgba(255, 255, 255, 0.05);
-    border-radius: var(--border-radius-md);
+    border-radius: var(--border-radius-lg);
     transition: all var(--transition-normal);
+    text-decoration: none;
+    color: var(--text-light);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+}
+
+.social-link::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.5s;
+}
+
+.social-link:hover::before {
+    left: 100%;
 }
 
 .social-link i {
-    font-size: var(--font-size-3xl);
+    font-size: var(--font-size-2xl);
+    margin-bottom: var(--spacing-sm);
+    transition: transform var(--transition-normal);
 }
 
-.x-icon {
-    width: 32px;
-    height: 32px;
-    margin-bottom: var(--spacing-sm);
+.social-link:hover i {
+    transform: scale(1.1);
 }
 
 .social-link span {
     font-weight: 600;
+    font-size: var(--font-size-sm);
+    text-align: center;
 }
 
 .social-link.x:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.1));
     color: #FFFFFF;
+    border-color: #FFFFFF;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
 }
 
 .social-link.telegram:hover {
-    background-color: rgba(0, 136, 204, 0.2);
+    background: linear-gradient(135deg, rgba(0, 136, 204, 0.3), rgba(0, 136, 204, 0.1));
     color: #0088cc;
+    border-color: #0088cc;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 136, 204, 0.3);
 }
 
-.social-link.discord:hover {
-    background-color: rgba(114, 137, 218, 0.2);
-    color: #7289da;
+.social-link.arena:hover {
+    background: linear-gradient(135deg, rgba(255, 20, 147, 0.3), rgba(138, 43, 226, 0.1));
+    color: var(--primary-light);
+    border-color: var(--primary-color);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(255, 20, 147, 0.3);
 }
 
 /* ===== Footer ===== */
