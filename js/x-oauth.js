@@ -83,6 +83,15 @@ class XOAuthManager {
             const response = await fetch(`${API_BASE_URL}/auth/oauth?action=x-oauth`);
             
             if (!response.ok) {
+                const errorData = await response.json();
+                
+                // Check if OAuth is not configured
+                if (response.status === 503 && errorData.fallback_available) {
+                    console.warn('X OAuth not configured, enabling fallback mode');
+                    this.enableFallbackMode();
+                    return;
+                }
+                
                 throw new Error('Failed to initiate OAuth');
             }
             
@@ -316,6 +325,30 @@ class XOAuthManager {
         } else {
             console.log('Success:', message);
         }
+    }
+
+    enableFallbackMode() {
+        // Enable fallback to username input when OAuth isn't configured
+        const statusElement = document.getElementById('x-status');
+        const connectBtn = document.getElementById('connect-x-btn');
+        const usernameInput = document.getElementById('x-username');
+        
+        if (statusElement) {
+            statusElement.className = 'x-status fallback';
+            statusElement.innerHTML = '<i class="fas fa-info-circle"></i> X OAuth not configured - using username input';
+        }
+        
+        if (connectBtn) {
+            connectBtn.style.display = 'none';
+        }
+        
+        if (usernameInput) {
+            usernameInput.disabled = false;
+            usernameInput.placeholder = 'Enter X username (fallback mode)';
+        }
+        
+        // Show informational message
+        this.showError('X OAuth is not configured. Using fallback username input. See setup guide for OAuth configuration.');
     }
 }
 

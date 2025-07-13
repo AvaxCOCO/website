@@ -47,7 +47,9 @@ async function initiateOAuth(req, res) {
         if (!clientId || !clientSecret) {
             return res.status(503).json({ 
                 error: 'X OAuth not configured',
-                message: 'Client credentials not available'
+                message: 'Client credentials not available',
+                fallback_available: true,
+                setup_guide: 'See X_OAUTH_SETUP_GUIDE.md for configuration instructions'
             });
         }
 
