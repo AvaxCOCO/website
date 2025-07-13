@@ -1,7 +1,16 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
+  "functions": {
+    "backend/server.js": {
+      "runtime": "nodejs18.x"
+    }
+  },
   "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/backend/server.js"
+    },
     {
       "source": "/FlappyCOCO_Game",
       "destination": "/FlappyCOCO_Game/index.html"
