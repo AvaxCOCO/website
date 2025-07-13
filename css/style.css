@@ -641,6 +641,9 @@ section {
     object-fit: contain;
     transition: transform 0.5s ease;
     filter: drop-shadow(0 0 10px rgba(255, 20, 147, 0.3));
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 .launch-img:hover {
