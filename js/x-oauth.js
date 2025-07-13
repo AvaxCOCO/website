@@ -49,7 +49,7 @@ class XOAuthManager {
 
     async verifySession() {
         try {
-            const response = await fetch(`${API_BASE_URL}/auth/profile?session_token=${this.sessionToken}`);
+            const response = await fetch(`${API_BASE_URL}/auth/oauth?action=profile&session_token=${this.sessionToken}`);
             
             if (!response.ok) {
                 // Session expired or invalid
@@ -80,7 +80,7 @@ class XOAuthManager {
 
     async initiateOAuth() {
         try {
-            const response = await fetch(`${API_BASE_URL}/auth/x-oauth`);
+            const response = await fetch(`${API_BASE_URL}/auth/oauth?action=x-oauth`);
             
             if (!response.ok) {
                 throw new Error('Failed to initiate OAuth');
@@ -132,7 +132,7 @@ class XOAuthManager {
 
     async completeOAuth(code, state) {
         try {
-            const response = await fetch(`${API_BASE_URL}/auth/x-oauth`, {
+            const response = await fetch(`${API_BASE_URL}/auth/oauth?action=x-oauth`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -181,7 +181,7 @@ class XOAuthManager {
 
     async storeUserProfile(user, sessionToken) {
         try {
-            const response = await fetch(`${API_BASE_URL}/auth/profile`, {
+            const response = await fetch(`${API_BASE_URL}/auth/oauth?action=profile`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
