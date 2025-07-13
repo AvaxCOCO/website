@@ -12,18 +12,27 @@ The $COCO Leaderboard now includes full X API integration to fetch real user pro
 4. Copy your **Bearer Token**
 
 ### 2. Configure Backend
+
+#### For Local Development:
 1. Open `backend/.env` file
 2. Replace the placeholder with your actual Bearer Token:
    ```
    X_BEARER_TOKEN=your_actual_bearer_token_here
    ```
 
-### 3. Restart Backend Server
-After adding the token, restart your backend server:
-```bash
-cd backend
-npm start
-```
+#### For Production (Vercel):
+1. Go to your Vercel dashboard
+2. Navigate to your project settings
+3. Go to "Environment Variables" section
+4. Add a new environment variable:
+   - **Name**: `X_BEARER_TOKEN`
+   - **Value**: Your actual Bearer Token
+   - **Environment**: Production (and Preview if needed)
+5. Redeploy your project for changes to take effect
+
+### 3. Restart/Redeploy
+- **Local**: Restart your backend server: `npm start`
+- **Vercel**: Redeploy your project (automatic on git push)
 
 ## Features Enabled with X API
 
