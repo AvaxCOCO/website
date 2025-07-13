@@ -1,4 +1,5 @@
 // --- Global Canvas and Context Variables ---
+// Updated: Fixed asset loading paths for production deployment
 let canvas, ctx;
 
 // --- Wait for DOM to be ready ---

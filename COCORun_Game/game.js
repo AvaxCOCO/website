@@ -1,4 +1,5 @@
 // --- Global Canvas and Context Variables ---
+// Updated: Production deployment fix
 let canvas, ctx;
 
 // Simple initialization that waits for everything to be ready
