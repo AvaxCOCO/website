@@ -241,6 +241,70 @@ app.post('/api/score', async (req, res) => {
     }
 });
 
+// Get X (Twitter) user profile
+app.get('/api/x/user/:username', async (req, res) => {
+    try {
+        const { username } = req.params;
+        
+        // Validate username
+        if (!username || username.length < 1 || username.length > 15) {
+            return res.status(400).json({ error: 'Invalid username' });
+        }
+        
+        // Remove @ if present
+        const cleanUsername = username.replace('@', '');
+        
+        // Check if we have X API credentials
+        if (!process.env.X_BEARER_TOKEN) {
+            console.warn('X_BEARER_TOKEN not configured, returning mock data');
+            return res.json({
+                username: cleanUsername,
+                name: cleanUsername,
+                profile_image_url: null,
+                verified: false,
+                public_metrics: {
+                    followers_count: 0
+                }
+            });
+        }
+        
+        // Fetch from X API v2
+        const response = await fetch(`https://api.twitter.com/2/users/by/username/${cleanUsername}?user.fields=name,profile_image_url,verified,public_metrics`, {
+            headers: {
+                'Authorization': `Bearer ${process.env.X_BEARER_TOKEN}`,
+                'User-Agent': 'COCO-Arcade-Bot/1.0'
+            }
+        });
+        
+        if (!response.ok) {
+            if (response.status === 404) {
+                return res.status(404).json({ error: 'User not found' });
+            }
+            throw new Error(`X API error: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (!data.data) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        
+        const userData = data.data;
+        
+        res.json({
+            username: userData.username,
+            name: userData.name,
+            profile_image_url: userData.profile_image_url,
+            verified: userData.verified || false,
+            public_metrics: userData.public_metrics || { followers_count: 0 }
+        });
+        
+    } catch (error) {
+        console.error('Error fetching X user profile:', error);
+        res.status(500).json({ error: 'Failed to fetch user profile' });
+    }
+});
+
 // Get leaderboard statistics
 app.get('/api/stats', async (req, res) => {
     try {
