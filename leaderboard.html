@@ -750,33 +750,43 @@
                             followers_count: userData.public_metrics?.followers_count || 0
                         };
                         localStorage.setItem('x-profile', JSON.stringify(this.userProfile));
+                        console.log('Successfully connected to X with profile data:', this.userProfile);
                     } else {
                         // Fallback if API fails - still allow connection but without profile data
-                        console.warn('Could not fetch X profile data, proceeding without it');
+                        console.warn('Could not fetch X profile data, proceeding without it. Status:', response.status);
                         this.userProfile = {
                             username: username,
-                            display_name: username,
+                            display_name: `@${username}`,
                             profile_image_url: null,
                             verified: false,
                             followers_count: 0
                         };
+                        localStorage.setItem('x-profile', JSON.stringify(this.userProfile));
                     }
                 } catch (error) {
                     console.error('Error fetching X profile:', error);
                     // Fallback - allow connection without profile data
                     this.userProfile = {
                         username: username,
-                        display_name: username,
+                        display_name: `@${username}`,
                         profile_image_url: null,
                         verified: false,
                         followers_count: 0
                     };
+                    localStorage.setItem('x-profile', JSON.stringify(this.userProfile));
                 }
                 
                 this.connectedUsername = username;
                 localStorage.setItem('x-username', username);
                 this.updateXStatus();
                 this.updateShareButtons();
+                
+                // Refresh leaderboard to show updated profile info
+                if (window.leaderboardManager) {
+                    await window.leaderboardManager.loadLeaderboard();
+                    await window.leaderboardManager.updatePersonalBest();
+                }
+                
                 return true;
             }
 
@@ -981,17 +991,33 @@
                         rankClass = 'bronze';
                     }
 
-                    const displayName = score.twitter_handle ? `@${score.twitter_handle}` : score.username;
+                    // Better handling of display names with fallbacks
+                    let displayName = 'Anonymous Player';
+                    if (score.twitter_handle && score.twitter_handle !== 'undefined' && score.twitter_handle !== 'null') {
+                        displayName = `@${score.twitter_handle}`;
+                    } else if (score.username && score.username !== 'undefined' && score.username !== 'null') {
+                        displayName = score.username;
+                    } else if (score.player_name && score.player_name !== 'undefined' && score.player_name !== 'null') {
+                        displayName = score.player_name;
+                    }
+
                     const scoreDate = score.created_at ? new Date(score.created_at).toLocaleDateString() : 'Unknown';
 
+                    // Check if this is the connected user's score
+                    const isCurrentUser = window.xManager?.connectedUsername && 
+                        (score.twitter_handle === window.xManager.connectedUsername || 
+                         score.username === window.xManager.connectedUsername);
+                    
+                    const userHighlight = isCurrentUser ? ' style="background: rgba(255, 107, 157, 0.1); border-left: 3px solid #ff6b9d;"' : '';
+
                     html += `
-                        <div class="leaderboard-entry">
+                        <div class="leaderboard-entry"${userHighlight}>
                             <div class="rank ${rankClass}">
                                 ${crownIcon}
                                 ${rank}
                             </div>
                             <div class="player-info">
-                                <div class="player-name">${displayName}</div>
+                                <div class="player-name">${displayName}${isCurrentUser ? ' <i class="fas fa-user" style="color: #ff6b9d; font-size: 0.8rem;"></i>' : ''}</div>
                                 <div class="player-date">${scoreDate}</div>
                             </div>
                             <div class="score-badge">
