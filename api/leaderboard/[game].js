@@ -20,18 +20,20 @@ export default async function handler(req, res) {
 
         const query = `
             SELECT 
-                id,
-                game,
-                score,
-                level_reached,
-                play_time_seconds,
-                player_name as username,
-                twitter_handle,
-                created_at,
-                ROW_NUMBER() OVER (ORDER BY score DESC, created_at ASC) as rank
-            FROM scores 
-            WHERE game = $1 
-            ORDER BY score DESC, created_at ASC 
+                s.id,
+                g.name as game,
+                s.score,
+                s.level_reached,
+                s.play_time_seconds,
+                p.username,
+                p.twitter_handle,
+                s.created_at,
+                ROW_NUMBER() OVER (ORDER BY s.score DESC, s.created_at ASC) as rank
+            FROM scores s
+            JOIN games g ON s.game_id = g.id
+            JOIN players p ON s.player_id = p.id
+            WHERE g.name = $1 
+            ORDER BY s.score DESC, s.created_at ASC 
             LIMIT $2
         `;
 

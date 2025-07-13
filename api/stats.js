@@ -12,9 +12,12 @@ export default async function handler(req, res) {
 
     try {
         const queries = [
-            'SELECT COUNT(DISTINCT COALESCE(twitter_handle, player_name)) as total_players FROM scores',
+            'SELECT COUNT(DISTINCT p.id) as total_players FROM players p JOIN scores s ON p.id = s.player_id',
             'SELECT COUNT(*) as total_games_played FROM scores',
-            'SELECT game, COUNT(*) as count, MAX(score) as high_score, AVG(score) as average_score FROM scores GROUP BY game'
+            `SELECT g.name as game, COUNT(*) as count, MAX(s.score) as high_score, AVG(s.score) as average_score 
+             FROM scores s 
+             JOIN games g ON s.game_id = g.id 
+             GROUP BY g.name`
         ];
 
         const [playersResult, gamesResult, gameStatsResult] = await Promise.all([
