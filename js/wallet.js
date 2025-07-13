@@ -48,6 +48,7 @@ class WalletManager {
                     // Check if we're on Avalanche network
                     await this.checkNetwork();
                     
+                    this.showSuccess('Wallet connected successfully!');
                     console.log('Wallet connected:', this.currentAccount);
                 } else {
                     throw new Error('No accounts found');
@@ -160,12 +161,27 @@ class WalletManager {
     }
 
     showWalletNotFound() {
-        alert('No Ethereum wallet found. Please install MetaMask or Core Wallet to connect.');
+        if (window.CocoApp && window.CocoApp.showNotification) {
+            window.CocoApp.showNotification('No Ethereum wallet found. Please install MetaMask or Core Wallet to connect.', 'error');
+        } else {
+            alert('No Ethereum wallet found. Please install MetaMask or Core Wallet to connect.');
+        }
     }
 
     showError(message) {
-        // You can replace this with a more sophisticated notification system
-        alert(message);
+        if (window.CocoApp && window.CocoApp.showNotification) {
+            window.CocoApp.showNotification(message, 'error');
+        } else {
+            alert(message);
+        }
+    }
+
+    showSuccess(message) {
+        if (window.CocoApp && window.CocoApp.showNotification) {
+            window.CocoApp.showNotification(message, 'success');
+        } else {
+            console.log('Success:', message);
+        }
     }
 
     // Utility method to get current account
