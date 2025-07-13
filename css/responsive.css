@@ -308,6 +308,22 @@
         margin-bottom: var(--spacing-lg);
     }
     
+    /* Ensure launch image is always visible */
+    .launch-coco-image {
+        min-height: 150px;
+        display: flex !important;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .launch-img {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        max-width: 200px;
+        max-height: 150px;
+    }
+    
     /* Community */
     .community-content {
         flex-direction: column;
