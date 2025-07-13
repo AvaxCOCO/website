@@ -889,7 +889,7 @@
 
             async submitScore(game, playerName, score, levelReached = 1, playTimeSeconds = 0) {
                 try {
-                    const twitterHandle = window.twitterManager?.connectedUsername || null;
+                    const twitterHandle = window.xManager?.connectedUsername || null;
                     
                     const response = await fetch(`${API_BASE_URL}/score`, {
                         method: 'POST',
@@ -917,8 +917,8 @@
                     await this.updatePersonalBest();
                     await this.updateStats();
                     
-                    if (window.twitterManager) {
-                        window.twitterManager.updateShareButtons();
+                    if (window.xManager) {
+                        window.xManager.updateShareButtons();
                     }
                     
                     return result;
@@ -1061,14 +1061,14 @@
             }
 
             async updatePersonalBest() {
-                if (!window.twitterManager?.connectedUsername) {
-                    // Show local scores if no Twitter connected
+                if (!window.xManager?.connectedUsername) {
+                    // Show local scores if no X connected
                     this.updateLocalPersonalBest();
                     return;
                 }
 
                 try {
-                    const response = await fetch(`${API_BASE_URL}/player/${window.twitterManager.connectedUsername}/best`);
+                    const response = await fetch(`${API_BASE_URL}/player/${window.xManager.connectedUsername}/best`);
                     
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
